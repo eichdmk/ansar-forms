@@ -10,7 +10,7 @@ export class AuthRepository{
     }
 
     createUser = async (dto: LoginUserDto) =>{
-        const {rows} = await this.pool.query("INSERT INTO users(email, hash_password) VALUES($1, $2) RETURNING id, name", [dto.email, dto.password])
+        const {rows} = await this.pool.query("INSERT INTO users(email, hash_password) VALUES($1, $2) RETURNING id, email", [dto.email, dto.password])
         return rows[0]
     }
 }

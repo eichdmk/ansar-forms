@@ -43,7 +43,9 @@ export class AuthService {
             throw new BadRequestError('Такой пользователь уже существует')
         }
 
-        const result = await this.authRepository.createUser(dto)
+        const hash_password = await bcrypt.hash(dto.password, 10)
+
+        const result = await this.authRepository.createUser({email: dto.email, password: hash_password})
 
         return result
     }

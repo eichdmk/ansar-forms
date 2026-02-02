@@ -18,7 +18,7 @@ export function LoginPage() {
         setLoading(true)
         try {
             const result = await authAPI.login({ email, password })
-            setValue(result.data)
+            setValue(result)
         } catch (err) {
             const error = err as AxiosError<{ error?: string }>;
             if (error.response) {
