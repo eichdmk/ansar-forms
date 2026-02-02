@@ -6,6 +6,7 @@ import { createAuthModule } from './modules/auth/auth.module.js'
 import { authRequired } from './middleware/auth.js'
 import fastifyCors from '@fastify/cors'
 import dotenv from 'dotenv'
+import { createQuestionModule } from './modules/questions/questions.module.js'
 
 dotenv.config()
 
@@ -13,9 +14,11 @@ const app = Fastify()
 
 await app.register(fastifyCors, {
     origin: true,
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 })
-
+const questionModule = createQuestionModule()
 const formModule = createFormModule()
 const authModule = createAuthModule()
 
@@ -30,6 +33,13 @@ app.register(async (instance) => {
 app.register(async (instance)=>{
     instance.post('/auth/login', (req, reply)=> authModule.controller.login(req, reply))
     instance.post('/auth/register', (req, reply)=> authModule.controller.register(req, reply))
+}, { prefix: '/api' })
+
+app.register(async (instance)=>{
+    instance.get('/questions/:formId', (req, reply)=> questionModule.controller.findAllQuestions(req, reply))
+    instance.post('/questions/:formId', {preHandler: authRequired}, (req, reply)=> questionModule.controller.createQuestion(req, reply))
+    instance.put('/questions/:formId/:questionId', {preHandler: authRequired}, (req, reply)=> questionModule.controller.updateQuestiion(req, reply))
+    instance.delete('/questions/:formId/:questionId', {preHandler: authRequired}, (req, reply)=> questionModule.controller.deleteQuestion(req, reply))
 }, { prefix: '/api' })
 
 

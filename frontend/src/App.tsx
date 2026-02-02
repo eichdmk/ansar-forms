@@ -1,5 +1,5 @@
 import { ProtectedRoute } from "./components/ProtectedRoute"
-import { FormsPage } from "./pages/CreateFormPage/FormPage"
+import { FormsPage } from "./pages/FormPage/FormPage"
 import { LoginPage } from "./pages/LoginPage/LoginPage"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 

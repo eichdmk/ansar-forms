@@ -2,6 +2,7 @@ import { useState } from "react";
 import { authAPI } from "../../api";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import type { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 export function LoginPage() {
     const [email, setEmail] = useState('')
@@ -9,6 +10,8 @@ export function LoginPage() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [value, setValue] = useLocalStorage('token')
+
+    const navigate = useNavigate()
 
 
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -19,6 +22,8 @@ export function LoginPage() {
         try {
             const result = await authAPI.login({ email, password })
             setValue(result)
+            navigate('/forms')
+
         } catch (err) {
             const error = err as AxiosError<{ error?: string }>;
             if (error.response) {
