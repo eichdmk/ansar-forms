@@ -4,11 +4,17 @@ import { AppError } from './errors.js'
 import { ParamsId } from './modules/forms/forms.types.js'
 import { createAuthModule } from './modules/auth/auth.module.js'
 import { authRequired } from './middleware/auth.js'
+import fastifyCors from '@fastify/cors'
 import dotenv from 'dotenv'
 
 dotenv.config()
 
 const app = Fastify()
+
+await app.register(fastifyCors, {
+    origin: true,
+    credentials: true
+})
 
 const formModule = createFormModule()
 const authModule = createAuthModule()
