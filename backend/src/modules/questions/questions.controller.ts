@@ -7,7 +7,7 @@ export class QuestionContoller {
 
 
     findAllQuestions = async (req: FastifyRequest, reply: FastifyReply) => {
-        const form_id = (req as any).params.id
+        const form_id = (req as any).params.formId
 
         const result = await this.questionService.findAll(form_id)
 
@@ -25,7 +25,7 @@ export class QuestionContoller {
     }
 
     updateQuestiion = async (req: FastifyRequest, reply: FastifyReply) => {
-        const form_id = (req as any).params.id
+        const form_id = (req as any).params.formId
         const question_id = (req as any).params.questionId
         const dto = req.body as UpdateQuestionDto
         const owner_id = (req as any).user.id
@@ -37,7 +37,7 @@ export class QuestionContoller {
     }
 
     deleteQuestion = async (req: FastifyRequest, reply: FastifyReply) => {
-        const form_id = (req as any).params.id
+        const form_id = (req as any).params.formId
         const question_id = (req as any).params.questionId
         const owner_id = (req as any).user.id
 
