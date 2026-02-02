@@ -1,0 +1,23 @@
+export interface Form {
+    id: string;
+    owner_id: string
+    title: string;
+    description: string;
+    is_published: boolean;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export interface CreateFormDto {
+    title: string
+    description?: string
+    is_published?: boolean
+  }
+
+export interface UpdateFormDto{
+    title?: string;
+    description?: string;
+    is_published?: boolean;
+}
+
+export type ParamsId = { Params: { id: string } }
