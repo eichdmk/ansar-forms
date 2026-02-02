@@ -3,8 +3,9 @@ import { createFormModule } from './modules/forms/forms.module.js'
 import { AppError } from './errors.js'
 import { ParamsId } from './modules/forms/forms.types.js'
 import { createAuthModule } from './modules/auth/auth.module.js'
-import dotenv from 'dotenv'
 import { authRequired } from './middleware/auth.js'
+import dotenv from 'dotenv'
+
 dotenv.config()
 
 const app = Fastify()
