@@ -30,17 +30,6 @@ export class FormService {
 
     }
 
-    findByIdOnly = async (id: string) => {
-        if (!id) {
-            throw new BadRequestError('Отсутствует id')
-        }
-        const result = await this.formRepository.findFormByIdOnly(id)
-        if (!result) {
-            throw new NotFoundError('Такой формы не существует')
-        }
-        return result
-    }
-
     findById = async (id: string) => {
         if (!id) {
             throw new BadRequestError('Отствует id')
@@ -65,7 +54,7 @@ export class FormService {
             throw new BadRequestError('Отсутствует id')
         }
 
-        const form = await this.formRepository.findFormByIdOnly(id)
+        const form = await this.formRepository.findFormById(id)
 
         if (!form) {
             throw new NotFoundError('Такой формы не существует')
@@ -86,7 +75,7 @@ export class FormService {
         }
 
 
-        const form = await this.formRepository.findFormByIdOnly(id)
+        const form = await this.formRepository.findFormById(id)
 
         if (!form) {
             throw new NotFoundError('Такой формы не существует')

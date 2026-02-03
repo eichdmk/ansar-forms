@@ -39,7 +39,7 @@ export class QuestionService {
             throw new BadRequestError('Введите данные корректно!')
         }
 
-        const form = await this.formService.findByIdOnly(form_id)
+        const form = await this.formService.findById(form_id)
 
         if (!form) {
             throw new NotFoundError('Такой формы не существует')
@@ -63,7 +63,7 @@ export class QuestionService {
             throw new BadRequestError('Введите данные корректно!')
         }
 
-        const form = await this.formService.findByIdOnly(form_id)
+        const form = await this.formService.findById(form_id)
         const question = await this.questionRepository.findQuestionById(id)
 
         if (!question) {
@@ -92,7 +92,7 @@ export class QuestionService {
             throw new BadRequestError("id не указан")
         }
 
-        const form = await this.formService.findByIdOnly(form_id)
+        const form = await this.formService.findById(form_id)
         const question = await this.questionRepository.findQuestionById(id)
 
         if (!question) {
