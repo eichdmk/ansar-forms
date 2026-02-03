@@ -59,6 +59,12 @@ export function ResponsesPage() {
 
   const questionMap = new Map(questions.map((q) => [q.id, q]))
 
+  const total = responses.length
+  const [currentPage, setCurrentPage] = useState(0)
+  const currentResponse = total > 0 ? responses[currentPage] : null
+  const hasPrev = currentPage > 0
+  const hasNext = currentPage < total - 1
+
   return (
     <div className={styles.wrap}>
       <Link className={styles.backLink} to={`/forms/edit/${id}`}>
@@ -73,18 +79,20 @@ export function ResponsesPage() {
         </>
       )}
       <p className={styles.count}>
-        Ответов: {responses.length}
+        Ответов: {total}
       </p>
 
-      {responses.length === 0 && !message && form && (
+      {total === 0 && !message && form && (
         <p className={styles.empty}>Пока нет ответов на форму.</p>
       )}
 
-      <ul className={styles.list}>
-        {responses.map((r) => (
-          <li key={r.id} className={styles.responseCard}>
-            <p className={styles.responseDate}>{formatDate(r.created_at)}</p>
-            {r.answers.map((a) => {
+      {currentResponse && (
+        <>
+          <article className={styles.responseCard}>
+            <p className={styles.responseDate}>
+              {formatDate(currentResponse.created_at)}
+            </p>
+            {currentResponse.answers.map((a) => {
               const q = questionMap.get(a.question_id)
               const label = q ? q.label : a.question_id
               return (
@@ -94,9 +102,31 @@ export function ResponsesPage() {
                 </div>
               )
             })}
-          </li>
-        ))}
-      </ul>
+          </article>
+
+          <nav className={styles.pagination} aria-label="Навигация по ответам">
+            <button
+              type="button"
+              className={styles.paginationBtn}
+              disabled={!hasPrev}
+              onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
+            >
+              ← Назад
+            </button>
+            <span className={styles.paginationInfo}>
+              Ответ {currentPage + 1} из {total}
+            </span>
+            <button
+              type="button"
+              className={styles.paginationBtn}
+              disabled={!hasNext}
+              onClick={() => setCurrentPage((p) => Math.min(total - 1, p + 1))}
+            >
+              Вперёд →
+            </button>
+          </nav>
+        </>
+      )}
 
       {message && <p className={styles.message}>{message}</p>}
     </div>

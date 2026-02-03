@@ -56,35 +56,50 @@ export function CreateForm() {
 
 
     return (
-        <>
+        <div className={styles.card}>
+            <h2 className={styles.title}>Новая форма</h2>
+            <p className={styles.subtitle}>Создайте форму и добавьте в неё вопросы</p>
             <form className={styles.form} onSubmit={handleSubmit}>
-                <input
-                    className={styles.input}
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Название"
-                />
-                <input
-                    className={styles.input}
-                    type="text"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Описание"
-                />
-                <select
-                    className={styles.select}
-                    value={is_published ? "true" : "false"}
-                    onChange={(e) => setIs_published(e.target.value === "true")}
-                >
-                    <option value="false">Черновик</option>
-                    <option value="true">Опубликовать</option>
-                </select>
+                <div className={styles.field}>
+                    <label className={styles.label} htmlFor="create-form-title">Название формы</label>
+                    <input
+                        id="create-form-title"
+                        className={styles.input}
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Например: Опрос удовлетворённости"
+                        required
+                    />
+                </div>
+                <div className={styles.field}>
+                    <label className={`${styles.label} ${styles.labelOptional}`} htmlFor="create-form-desc">Описание (необязательно)</label>
+                    <input
+                        id="create-form-desc"
+                        className={styles.input}
+                        type="text"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Краткое описание формы"
+                    />
+                </div>
+                <div className={styles.field}>
+                    <label className={styles.label} htmlFor="create-form-status">Статус</label>
+                    <select
+                        id="create-form-status"
+                        className={styles.select}
+                        value={is_published ? "true" : "false"}
+                        onChange={(e) => setIs_published(e.target.value === "true")}
+                    >
+                        <option value="false">Черновик</option>
+                        <option value="true">Опубликовать</option>
+                    </select>
+                </div>
                 <button className={styles.button} disabled={loading} type="submit">
-                    Добавить
+                    {loading ? "Создание…" : "Создать форму"}
                 </button>
             </form>
             {message && <p className={styles.message}>{message}</p>}
-        </>
+        </div>
     )
 }

@@ -1,30 +1,190 @@
-.title {
-  margin: 0 0 4px 0;
-  font-size: 2rem;
+.page {
+  min-height: 100vh;
+  background: var(--color-page-bg);
+  padding-bottom: 48px;
+}
+
+/* Top bar - like Google Forms header */
+.topBar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 12px 24px 12px 32px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 1px 2px rgba(60, 64, 67, 0.08);
+}
+
+.topBarLeft {
+  min-width: 0;
+}
+
+.topBarTitle {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 400;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.tabActive {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  border-bottom: 3px solid var(--color-accent);
+  margin-bottom: -1px;
+}
+
+.tabLink {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.2s;
+}
+
+.tabLink:hover {
+  color: var(--color-text);
+}
+
+.tabBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-bg);
+  background: var(--color-accent);
+  border-radius: 10px;
+}
+
+.topBarRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.previewBtn {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  background: transparent;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.previewBtn:hover {
+  background: var(--color-accent-tint);
+}
+
+.publishBadgeOn {
+  padding: 6px 14px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  background: rgba(26, 115, 232, 0.12);
+  border-radius: var(--radius);
+}
+
+.publishBadgeOff {
+  padding: 6px 14px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: rgba(95, 99, 104, 0.12);
+  border-radius: var(--radius);
+}
+
+/* Content + sidebar layout */
+.contentWrap {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 24px 0;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .contentWrap {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: static;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .sidebarTitle {
+    width: 100%;
+    margin-bottom: 8px;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .sidebarBtn {
+    flex: 1;
+    min-width: 120px;
+    margin-bottom: 0;
+  }
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  max-width: 640px;
+}
+
+/* Form header card */
+.headerCard {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 24px 24px 28px;
+  margin-bottom: 12px;
+}
+
+.formTitle {
+  margin: 0 0 8px 0;
+  font-size: 1.5rem;
   font-weight: 400;
   color: var(--color-text);
 }
 
-.description {
-  margin: 0 0 24px 0;
+.formDescription {
+  margin: 0;
   font-size: 0.875rem;
   color: var(--color-text-secondary);
-}
-
-.topActions {
-  margin: 0 0 24px 0;
-}
-
-.responsesLink {
-  font-size: 0.875rem;
-  color: var(--color-accent);
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.responsesLink:hover {
-  color: var(--color-accent-hover);
-  text-decoration: underline;
+  line-height: 1.5;
 }
 
 .list {
@@ -105,6 +265,11 @@
   margin-bottom: 12px;
 }
 
+.optionsTitle {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
 .optionRow {
   display: flex;
   gap: 8px;
@@ -129,6 +294,24 @@
   border-bottom-color: var(--color-accent);
 }
 
+.optionRemove {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 1.125rem;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.optionRemove:hover {
+  background: rgba(217, 48, 37, 0.08);
+  color: var(--color-required);
+}
+
 .addOptionBtn {
   margin-top: 12px;
   padding: 8px 16px;
@@ -137,6 +320,7 @@
   background: transparent;
   border: none;
   cursor: pointer;
+  font-family: var(--font);
 }
 
 .addOptionBtn:hover {
@@ -187,9 +371,84 @@
   background: var(--color-accent-tint);
 }
 
+.buttonDanger {
+  padding: 8px 24px;
+  font-size: 0.875rem;
+  color: var(--color-required);
+  background: rgba(217, 48, 37, 0.08);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.buttonDanger:hover {
+  background: rgba(217, 48, 37, 0.15);
+}
+
 .message {
   color: var(--color-required);
   font-weight: 500;
   margin: 16px 0 0 0;
   font-size: 0.875rem;
+}
+
+/* Floating right sidebar */
+.sidebar {
+  flex-shrink: 0;
+  width: 200px;
+  padding: 16px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  height: fit-content;
+  position: sticky;
+  top: 80px;
+}
+
+.sidebarTitle {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sidebarBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  font-size: 0.8125rem;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.sidebarBtn:hover {
+  background: var(--color-accent-tint);
+}
+
+.sidebarIcon {
+  font-size: 1.125rem;
+  width: 24px;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.sidebarLabel {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

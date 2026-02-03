@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { addQuestion } from "../../store/slices/questionSlices"
 import { questionsApi } from "../../api"
@@ -39,11 +39,21 @@ type QuestionConstructorProps = {
     formId: string
     questionsCount: number
     onError?: (message: string) => void
+    openWithType?: string | null
+    onOpenWithTypeConsumed?: () => void
+    showTypeButtons?: boolean
 }
 
-export function QuestionConstructor({ formId, questionsCount, onError }: QuestionConstructorProps) {
+export function QuestionConstructor({ formId, questionsCount, onError, openWithType, onOpenWithTypeConsumed, showTypeButtons = true }: QuestionConstructorProps) {
     const [newQuestionDraft, setNewQuestionDraft] = useState<QuestionDraft | null>(null)
     const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (openWithType) {
+            setNewQuestionDraft(initialDraft(openWithType))
+            onOpenWithTypeConsumed?.()
+        }
+    }, [openWithType, onOpenWithTypeConsumed])
 
     const needsOptions = newQuestionDraft != null && ['radio', 'checkbox', 'select'].includes(newQuestionDraft.type)
 
@@ -72,18 +82,20 @@ export function QuestionConstructor({ formId, questionsCount, onError }: Questio
 
     return (
         <>
-            <div className={styles.typeButtons}>
-                {QUESTION_TYPES.map((t) => (
-                    <button
-                        key={t.value}
-                        type="button"
-                        className={styles.typeButton}
-                        onClick={() => setNewQuestionDraft(initialDraft(t.value))}
-                    >
-                        {t.label}
-                    </button>
-                ))}
-            </div>
+            {showTypeButtons && (
+                <div className={styles.typeButtons}>
+                    {QUESTION_TYPES.map((t) => (
+                        <button
+                            key={t.value}
+                            type="button"
+                            className={styles.typeButton}
+                            onClick={() => setNewQuestionDraft(initialDraft(t.value))}
+                        >
+                            {t.label}
+                        </button>
+                    ))}
+                </div>
+            )}
 
             {newQuestionDraft && (
                 <div className={styles.card}>

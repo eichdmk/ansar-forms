@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useParams, Link } from "react-router-dom"
-import { formsAPI, questionsApi } from "../../api"
+import { formsAPI, questionsApi, responsesAPI } from "../../api"
 import type { Form, Question } from "../../types"
 import type { AxiosError } from "axios"
 import { useAppSelector } from "../../hooks/useAppSelector"
@@ -12,11 +12,12 @@ import styles from "./DetailFormPage.module.css"
 
 export function DetailFormPage() {
     const { id } = useParams()
-
     const [form, setForm] = useState<Form | null>(null)
-    const [message, setMessage] = useState('')
+    const [responseCount, setResponseCount] = useState(0)
+    const [message, setMessage] = useState("")
     const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null)
     const [editDraft, setEditDraft] = useState<ReturnType<typeof questionToDraft> | null>(null)
+    const [sidebarQuestionType, setSidebarQuestionType] = useState<string | null>(null)
     const questions = useAppSelector(state => state.questions.questions)
     const dispatch = useDispatch()
 
@@ -25,10 +26,14 @@ export function DetailFormPage() {
             if (!id) return
             dispatch(setQuestions([]))
             try {
-                const fResult = await formsAPI.getById(id)
+                const [fResult, qResult, responsesRes] = await Promise.all([
+                    formsAPI.getById(id),
+                    questionsApi.getByFormId(id),
+                    responsesAPI.getByFormId(id).catch(() => []),
+                ])
                 setForm(fResult)
-                const qResult = await questionsApi.getByFormId(id)
                 dispatch(setQuestions(qResult))
+                setResponseCount(Array.isArray(responsesRes) ? responsesRes.length : 0)
             } catch (error) {
                 const err = error as AxiosError<{ error?: string }>
                 if (err.response) {
@@ -36,9 +41,12 @@ export function DetailFormPage() {
                 }
             }
         }
-
         loadFormAndQuestions()
     }, [id, dispatch])
+
+    const handleOpenWithTypeConsumed = useCallback(() => {
+        setSidebarQuestionType(null)
+    }, [])
 
     function startEditing(q: Question) {
         setEditingQuestionId(q.id)
@@ -55,7 +63,7 @@ export function DetailFormPage() {
         const q = questions.find(qq => qq.id === editingQuestionId)
         if (!q) return
         const opts = editDraft.options.filter(Boolean)
-        const needsOptions = ['radio', 'checkbox', 'select'].includes(editDraft.type)
+        const needsOptions = ["radio", "checkbox", "select"].includes(editDraft.type)
         const dto = {
             type: editDraft.type,
             label: editDraft.label,
@@ -67,7 +75,7 @@ export function DetailFormPage() {
             const result = await questionsApi.update(editingQuestionId, id, dto)
             dispatch(updateQuestion(result))
             cancelEditing()
-            setMessage('')
+            setMessage("")
         } catch (error) {
             const err = error as AxiosError<{ error?: string }>
             if (err.response) {
@@ -89,175 +97,240 @@ export function DetailFormPage() {
         }
     }
 
+    const fillUrl = id ? `${typeof window !== "undefined" ? window.location.origin : ""}/forms/${id}/fill` : ""
+
     return (
-        <>
-            <h1 className={styles.title}>{form?.title}</h1>
-            <p className={styles.description}>{form?.description}</p>
-            {id && (
-                <p className={styles.topActions}>
-                    <Link className={styles.responsesLink} to={`/forms/${id}/responses`}>
-                        Просмотр ответов
+        <div className={styles.page}>
+            {/* Top bar like Google Forms */}
+            <header className={styles.topBar}>
+                <div className={styles.topBarLeft}>
+                    <h1 className={styles.topBarTitle}>{form?.title ?? "Форма"}</h1>
+                </div>
+                <nav className={styles.tabs} aria-label="Разделы формы">
+                    <span className={styles.tabActive}>Вопросы</span>
+                    <Link
+                        className={styles.tabLink}
+                        to={`/forms/${id}/responses`}
+                    >
+                        Ответы
+                        {responseCount > 0 && (
+                            <span className={styles.tabBadge}>{responseCount}</span>
+                        )}
                     </Link>
-                </p>
-            )}
-            {id && (
-                <QuestionConstructor
-                    formId={id}
-                    questionsCount={questions.length}
-                    onError={setMessage}
-                />
-            )}
+                </nav>
+                <div className={styles.topBarRight}>
+                    <a
+                        className={styles.previewBtn}
+                        href={fillUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Просмотр
+                    </a>
+                    <span
+                        className={
+                            form?.is_published ? styles.publishBadgeOn : styles.publishBadgeOff
+                        }
+                    >
+                        {form?.is_published ? "Опубликовано" : "Черновик"}
+                    </span>
+                </div>
+            </header>
 
-            <ul className={styles.list}>
-                {questions.map((q) => {
-                    const isEditing = editingQuestionId === q.id
-                    const draft = isEditing ? editDraft : null
-                    const needsOptions =
-                        draft != null && ["radio", "checkbox", "select"].includes(draft.type)
+            <div className={styles.contentWrap}>
+                <main className={styles.main}>
+                    {/* Form header card */}
+                    <div className={styles.headerCard}>
+                        <h2 className={styles.formTitle}>{form?.title}</h2>
+                        {form?.description && (
+                            <p className={styles.formDescription}>{form.description}</p>
+                        )}
+                    </div>
 
-                    return (
-                        <li key={q.id} className={styles.card}>
-                            {isEditing && draft ? (
-                                <>
-                                    <p className={styles.typeLabel}>
-                                        <strong>Тип:</strong>{" "}
-                                        {QUESTION_TYPES.find((t) => t.value === draft.type)?.label}
-                                    </p>
-                                    <input
-                                        className={styles.input}
-                                        placeholder="Текст вопроса"
-                                        value={draft.label}
-                                        onChange={(e) =>
-                                            setEditDraft((prev) =>
-                                                prev ? { ...prev, label: e.target.value } : null
-                                            )
-                                        }
-                                    />
-                                    <label className={styles.checkboxLabel}>
-                                        <input
-                                            type="checkbox"
-                                            checked={draft.required}
-                                            onChange={(e) =>
-                                                setEditDraft((prev) =>
-                                                    prev ? { ...prev, required: e.target.checked } : null
-                                                )
-                                            }
-                                        />{" "}
-                                        Обязательный вопрос
-                                    </label>
-                                    {needsOptions && (
-                                        <div className={styles.optionsBlock}>
-                                            <strong>Варианты ответа:</strong>
-                                            {draft.options.map((opt, i) => (
-                                                <div key={i} className={styles.optionRow}>
-                                                    <input
-                                                        className={styles.optionInput}
-                                                        value={opt}
-                                                        onChange={(e) => {
-                                                            const next = [...draft.options]
-                                                            next[i] = e.target.value
-                                                            setEditDraft((prev) =>
-                                                                prev ? { ...prev, options: next } : null
-                                                            )
-                                                        }}
-                                                        placeholder={`Вариант ${i + 1}`}
-                                                    />
+                    {id && (
+                        <QuestionConstructor
+                            formId={id}
+                            questionsCount={questions.length}
+                            onError={setMessage}
+                            openWithType={sidebarQuestionType}
+                            onOpenWithTypeConsumed={handleOpenWithTypeConsumed}
+                            showTypeButtons={false}
+                        />
+                    )}
+
+                    <ul className={styles.list}>
+                        {questions.map((q) => {
+                            const isEditing = editingQuestionId === q.id
+                            const draft = isEditing ? editDraft : null
+                            const needsOptions =
+                                draft != null && ["radio", "checkbox", "select"].includes(draft.type)
+
+                            return (
+                                <li key={q.id} className={styles.card}>
+                                    {isEditing && draft ? (
+                                        <>
+                                            <p className={styles.typeLabel}>
+                                                {QUESTION_TYPES.find((t) => t.value === draft.type)?.label}
+                                            </p>
+                                            <input
+                                                className={styles.input}
+                                                placeholder="Вопрос"
+                                                value={draft.label}
+                                                onChange={(e) =>
+                                                    setEditDraft((prev) =>
+                                                        prev ? { ...prev, label: e.target.value } : null
+                                                    )
+                                                }
+                                            />
+                                            <label className={styles.checkboxLabel}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={draft.required}
+                                                    onChange={(e) =>
+                                                        setEditDraft((prev) =>
+                                                            prev ? { ...prev, required: e.target.checked } : null
+                                                        )
+                                                    }
+                                                />{" "}
+                                                Обязательный вопрос
+                                            </label>
+                                            {needsOptions && (
+                                                <div className={styles.optionsBlock}>
+                                                    <span className={styles.optionsTitle}>Варианты:</span>
+                                                    {draft.options.map((opt, i) => (
+                                                        <div key={i} className={styles.optionRow}>
+                                                            <input
+                                                                className={styles.optionInput}
+                                                                value={opt}
+                                                                onChange={(e) => {
+                                                                    const next = [...draft.options]
+                                                                    next[i] = e.target.value
+                                                                    setEditDraft((prev) =>
+                                                                        prev ? { ...prev, options: next } : null
+                                                                    )
+                                                                }}
+                                                                placeholder={`Вариант ${i + 1}`}
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                className={styles.optionRemove}
+                                                                onClick={() =>
+                                                                    setEditDraft((prev) =>
+                                                                        prev
+                                                                            ? {
+                                                                                  ...prev,
+                                                                                  options: prev.options.filter(
+                                                                                      (_, j) => j !== i
+                                                                                  ),
+                                                                              }
+                                                                            : null
+                                                                    )
+                                                                }
+                                                            >
+                                                                −
+                                                            </button>
+                                                        </div>
+                                                    ))}
                                                     <button
                                                         type="button"
-                                                        className={styles.buttonSecondary}
+                                                        className={styles.addOptionBtn}
                                                         onClick={() =>
                                                             setEditDraft((prev) =>
                                                                 prev
-                                                                    ? {
-                                                                          ...prev,
-                                                                          options: prev.options.filter(
-                                                                              (_, j) => j !== i
-                                                                          ),
-                                                                      }
+                                                                    ? { ...prev, options: [...prev.options, ""] }
                                                                     : null
                                                             )
                                                         }
                                                     >
-                                                        −
+                                                        + Добавить вариант
                                                     </button>
                                                 </div>
-                                            ))}
-                                            <button
-                                                type="button"
-                                                className={`${styles.buttonSecondary} ${styles.addOptionBtn}`}
-                                                onClick={() =>
-                                                    setEditDraft((prev) =>
-                                                        prev
-                                                            ? {
-                                                                  ...prev,
-                                                                  options: [...prev.options, ""],
-                                                              }
-                                                            : null
-                                                    )
-                                                }
-                                            >
-                                                + Добавить вариант
-                                            </button>
-                                        </div>
-                                    )}
-                                    <div className={styles.actions}>
-                                        <button
-                                            type="button"
-                                            className={styles.buttonSecondary}
-                                            onClick={cancelEditing}
-                                        >
-                                            Отмена
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className={styles.buttonPrimary}
-                                            onClick={handleSaveQuestion}
-                                        >
-                                            Сохранить
-                                        </button>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <p className={styles.questionLabel}>
-                                        {q.label}
-                                        {q.required && <span className={styles.requiredStar}> *</span>}
-                                    </p>
-                                    <p className={styles.meta}>
-                                        {QUESTION_TYPES.find((t) => t.value === q.type)?.label ??
-                                            q.type}
-                                    </p>
-                                    {q.options &&
-                                        Array.isArray(q.options) &&
-                                        q.options.length > 0 && (
-                                            <p className={styles.optionsMeta}>
-                                                Варианты: {q.options.join(", ")}
+                                            )}
+                                            <div className={styles.actions}>
+                                                <button
+                                                    type="button"
+                                                    className={styles.buttonSecondary}
+                                                    onClick={cancelEditing}
+                                                >
+                                                    Отмена
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={styles.buttonPrimary}
+                                                    onClick={handleSaveQuestion}
+                                                >
+                                                    Сохранить
+                                                </button>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p className={styles.questionLabel}>
+                                                {q.label}
+                                                {q.required && (
+                                                    <span className={styles.requiredStar}> *</span>
+                                                )}
                                             </p>
-                                        )}
-                                    <div className={styles.cardActions}>
-                                        <button
-                                            type="button"
-                                            className={styles.buttonSecondary}
-                                            onClick={() => startEditing(q)}
-                                        >
-                                            Редактировать
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className={styles.buttonSecondary}
-                                            onClick={() => handleDelete(q.id)}
-                                        >
-                                            Удалить
-                                        </button>
-                                    </div>
-                                </>
-                            )}
-                        </li>
-                    )
-                })}
-            </ul>
+                                            <p className={styles.meta}>
+                                                {QUESTION_TYPES.find((t) => t.value === q.type)?.label ??
+                                                    q.type}
+                                            </p>
+                                            {q.options &&
+                                                Array.isArray(q.options) &&
+                                                q.options.length > 0 && (
+                                                    <p className={styles.optionsMeta}>
+                                                        {q.options.join(", ")}
+                                                    </p>
+                                                )}
+                                            <div className={styles.cardActions}>
+                                                <button
+                                                    type="button"
+                                                    className={styles.buttonSecondary}
+                                                    onClick={() => startEditing(q)}
+                                                >
+                                                    Редактировать
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={styles.buttonDanger}
+                                                    onClick={() => handleDelete(q.id)}
+                                                >
+                                                    Удалить
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </li>
+                            )
+                        })}
+                    </ul>
 
-            {message && <p className={styles.message}>{message}</p>}
-        </>
+                    {message && <p className={styles.message}>{message}</p>}
+                </main>
+
+                {/* Floating right sidebar - add question types */}
+                <aside className={styles.sidebar} aria-label="Добавить элемент">
+                    <div className={styles.sidebarTitle}>Добавить вопрос</div>
+                    {QUESTION_TYPES.map((t) => (
+                        <button
+                            key={t.value}
+                            type="button"
+                            className={styles.sidebarBtn}
+                            onClick={() => setSidebarQuestionType(t.value)}
+                            title={t.label}
+                        >
+                            <span className={styles.sidebarIcon}>
+                                {t.value === "text" && "▭"}
+                                {t.value === "textarea" && "¶"}
+                                {t.value === "radio" && "○"}
+                                {t.value === "checkbox" && "☑"}
+                                {t.value === "select" && "▾"}
+                            </span>
+                            <span className={styles.sidebarLabel}>{t.label}</span>
+                        </button>
+                    ))}
+                </aside>
+            </div>
+        </div>
     )
 }

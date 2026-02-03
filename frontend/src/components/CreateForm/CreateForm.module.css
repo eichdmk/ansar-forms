@@ -1,25 +1,59 @@
-.form {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
-  padding: 20px 24px;
+.card {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
+  padding: 28px 32px;
+  margin-bottom: 32px;
+}
+
+.title {
+  margin: 0 0 4px 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.subtitle {
+  margin: 0 0 24px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 480px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.labelOptional {
+  font-weight: 400;
+  color: var(--color-text-secondary);
 }
 
 .input {
-  padding: 10px 14px;
-  font-size: 0.875rem;
+  padding: 12px 14px;
+  font-size: 0.9375rem;
   font-family: var(--font);
   color: var(--color-text);
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  min-width: 180px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .input::placeholder {
@@ -32,14 +66,15 @@
 }
 
 .select {
-  padding: 10px 14px;
-  font-size: 0.875rem;
+  padding: 12px 14px;
+  font-size: 0.9375rem;
   font-family: var(--font);
   color: var(--color-text);
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   cursor: pointer;
+  max-width: 200px;
 }
 
 .select:focus {
@@ -48,8 +83,8 @@
 }
 
 .button {
-  padding: 10px 24px;
-  font-size: 0.875rem;
+  padding: 12px 28px;
+  font-size: 0.9375rem;
   font-weight: 500;
   color: var(--color-bg);
   background: var(--color-accent);
@@ -57,6 +92,7 @@
   border-radius: var(--radius);
   cursor: pointer;
   transition: background-color 0.2s;
+  align-self: flex-start;
 }
 
 .button:hover:not(:disabled) {
@@ -71,6 +107,6 @@
 .message {
   color: var(--color-required);
   font-weight: 500;
-  margin: 0 0 16px 0;
+  margin: 8px 0 0 0;
   font-size: 0.875rem;
 }

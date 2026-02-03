@@ -5,18 +5,37 @@
 }
 
 .sidebar {
-  width: 240px;
-  min-width: 240px;
+  width: 260px;
+  min-width: 260px;
   background: var(--color-bg);
   border-right: 1px solid var(--color-border);
-  padding: 24px 0;
+  padding: 0;
   box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  padding: 24px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.brandText {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  letter-spacing: -0.02em;
+}
+
+.navWrap {
+  flex: 1;
+  padding: 16px 12px 0;
 }
 
 .nav {
   list-style: none;
   margin: 0;
-  padding: 0 12px;
+  padding: 0;
 }
 
 .navItem {
@@ -30,7 +49,7 @@
   padding: 12px 16px;
   color: var(--color-text-secondary);
   text-decoration: none;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 500;
   border-radius: var(--radius);
   transition: background-color 0.15s, color 0.15s;
@@ -46,9 +65,41 @@
   color: var(--color-accent);
 }
 
+.navIcon {
+  font-size: 1.125rem;
+  opacity: 0.9;
+}
+
+.sidebarFooter {
+  padding: 16px 12px 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+  font-family: var(--font);
+}
+
+.logoutBtn:hover {
+  background: rgba(217, 48, 37, 0.08);
+  color: var(--color-required);
+}
+
 .main {
   flex: 1;
-  padding: 32px 48px;
+  padding: 32px 40px 48px;
   overflow: auto;
   min-height: 100vh;
 }

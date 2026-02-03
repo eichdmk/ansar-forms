@@ -45,10 +45,47 @@
 .responseCard {
   border: 1px solid var(--color-border);
   padding: 24px;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   border-radius: var(--radius);
   background: var(--color-bg);
   box-shadow: var(--shadow-card);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.paginationBtn {
+  padding: 10px 20px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  background: var(--color-accent-tint);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.paginationBtn:hover:not(:disabled) {
+  background: rgba(26, 115, 232, 0.15);
+}
+
+.paginationBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.paginationInfo {
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
 }
 
 .responseDate {
