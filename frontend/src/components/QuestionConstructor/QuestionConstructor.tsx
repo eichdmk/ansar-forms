@@ -4,8 +4,9 @@ import { addQuestion } from "../../store/slices/questionSlices"
 import { questionsApi } from "../../api"
 import { QUESTION_TYPES } from "../../constants/questionTypes"
 import type { AxiosError } from "axios"
+import type { Question } from "../../types"
 
-type QuestionDraft = {
+export type QuestionDraft = {
     type: string
     label: string
     required: boolean
@@ -19,6 +20,20 @@ const initialDraft = (type: string): QuestionDraft => ({
     options: ['radio', 'checkbox', 'select'].includes(type) ? ['', ''] : [],
 })
 
+export function questionToDraft(q: Question): QuestionDraft {
+    const opts = Array.isArray(q.options)
+        ? q.options.map(String)
+        : q.options != null
+            ? [String(q.options)]
+            : []
+    return {
+        type: q.type,
+        label: q.label,
+        required: q.required,
+        options: ['radio', 'checkbox', 'select'].includes(q.type) && opts.length === 0 ? ['', ''] : opts,
+    }
+}
+
 type QuestionConstructorProps = {
     formId: string
     questionsCount: number
@@ -29,7 +44,7 @@ export function QuestionConstructor({ formId, questionsCount, onError }: Questio
     const [newQuestionDraft, setNewQuestionDraft] = useState<QuestionDraft | null>(null)
     const dispatch = useDispatch()
 
-    const needsOptions = newQuestionDraft && ['radio', 'checkbox', 'select'].includes(newQuestionDraft.type)
+    const needsOptions = newQuestionDraft != null && ['radio', 'checkbox', 'select'].includes(newQuestionDraft.type)
 
     async function handleAddQuestion() {
         if (!newQuestionDraft) return
