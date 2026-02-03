@@ -1,20 +1,26 @@
 .page {
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
   background: var(--color-page-bg);
-  padding-bottom: 48px;
 }
 
-/* Top bar - like Google Forms header */
+.scrollArea {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
 .topBar {
-  position: sticky;
-  top: 0;
+  flex-shrink: 0;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
-  padding: 12px 24px 12px 32px;
+  padding: 12px 24px;
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
   box-shadow: 0 1px 2px rgba(60, 64, 67, 0.08);
@@ -22,6 +28,82 @@
 
 .topBarLeft {
   min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.topBarForm {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  max-width: 320px;
+}
+
+.topBarFormTitle {
+  margin: 0;
+  padding: 2px 0;
+  font-size: 1.125rem;
+  font-weight: 400;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.topBarFormTitle:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius);
+}
+
+.topBarFormTitle:focus {
+  outline: none;
+  background: var(--color-bg);
+  box-shadow: 0 0 0 1px var(--color-accent);
+  border-radius: var(--radius);
+  padding: 4px 8px;
+  margin: -2px -4px 0 -4px;
+}
+
+.topBarFormTitle::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.topBarFormDescription {
+  margin: 0;
+  padding: 2px 0;
+  font-size: 0.8125rem;
+  font-family: var(--font);
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.topBarFormDescription:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius);
+}
+
+.topBarFormDescription:focus {
+  outline: none;
+  background: var(--color-bg);
+  box-shadow: 0 0 0 1px var(--color-accent);
+  border-radius: var(--radius);
+  padding: 4px 8px;
+  margin: 0 -4px;
+  color: var(--color-text);
+}
+
+.topBarFormDescription::placeholder {
+  color: var(--color-text-secondary);
 }
 
 .topBarTitle {
@@ -81,10 +163,61 @@
   border-radius: 10px;
 }
 
+.topBarIconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 1.125rem;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  text-decoration: none;
+}
+
+.topBarIconBtn:hover {
+  background: var(--color-accent-tint);
+  color: var(--color-text);
+}
+
+.topBarStatusSelect {
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
 .topBarRight {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+}
+
+.tabButton {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: color 0.2s;
+}
+
+.tabButton:hover {
+  color: var(--color-text);
 }
 
 .previewBtn {
@@ -100,6 +233,49 @@
 
 .previewBtn:hover {
   background: var(--color-accent-tint);
+}
+
+.copyLinkBtn {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.copyLinkBtn:hover {
+  background: var(--color-accent-tint);
+}
+
+.copyToast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  z-index: 10000;
+  animation: detailCopyFadeIn 0.2s ease;
+}
+
+@keyframes detailCopyFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 .publishBadgeOn {
@@ -120,27 +296,155 @@
   border-radius: var(--radius);
 }
 
-/* Content + sidebar layout */
-.contentWrap {
+.settingsStub {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+}
+
+/* Vertical icon toolbar (desktop) */
+.verticalToolbar {
+  flex-shrink: 0;
+  width: 56px;
+  padding: 12px 8px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  height: fit-content;
+  position: sticky;
+  top: 24px;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.toolbarIconWrap {
+  position: relative;
+}
+
+.toolbarIconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.toolbarIconBtn:hover {
+  background: var(--color-accent-tint);
+  color: var(--color-text);
+}
+
+.toolbarIconSymbol {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.toolbarDropdown {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  margin-left: 8px;
+  min-width: 220px;
+  padding: 8px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toolbarDropdownBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 0.8125rem;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.toolbarDropdownBtn:hover {
+  background: var(--color-accent-tint);
+}
+
+.toolbarDropdownIcon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+}
+
+.toolbarDropdownIcon svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Content + sidebar layout: колонка редактирования по центру */
+.contentWrap {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 640px) 1fr;
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px 24px 0;
   gap: 24px;
+  align-items: start;
+}
+
+.contentWrap .main {
+  grid-column: 2;
+}
+
+.contentWrap .sidebar {
+  grid-column: 3;
+  justify-self: start;
 }
 
 @media (max-width: 900px) {
+  .topBar {
+    padding: 12px 20px;
+  }
+
   .contentWrap {
+    display: flex;
     flex-direction: column;
     padding: 16px 16px 0;
   }
 
-  .main {
-    padding-bottom: calc(56px + env(safe-area-inset-bottom));
+  .contentWrap .main,
+  .contentWrap .sidebar {
+    grid-column: auto;
   }
 
-  /* Нижняя панель как в Google Forms: закреплена внизу, на всю ширину экрана */
+  .main {
+    padding-bottom: calc(48px + env(safe-area-inset-bottom));
+  }
+
+  /* Нижняя панель на мобильных */
   .sidebar {
     position: fixed !important;
     top: auto !important;
@@ -148,9 +452,8 @@
     left: 0 !important;
     right: 0 !important;
     z-index: 9999;
-    width: 100vw !important;
-    max-width: 100vw !important;
-    min-width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box;
     display: flex;
     flex-direction: row;
@@ -158,7 +461,7 @@
     justify-content: space-evenly;
     align-items: center;
     gap: 2px;
-    padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
     padding-left: max(4px, env(safe-area-inset-left));
     padding-right: max(4px, env(safe-area-inset-right));
     background: var(--color-bg);
@@ -176,10 +479,10 @@
     flex: 1;
     flex-direction: column;
     min-width: 0;
-    max-width: 56px;
+    max-width: 52px;
     margin: 0;
-    padding: 0;
-    min-height: 44px;
+    padding: 4px;
+    min-height: 38px;
     justify-content: center;
     align-items: center;
     background: transparent;
@@ -199,13 +502,17 @@
   }
 
   .sidebarIcon {
-    font-size: 1.375rem;
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
+  }
+
+  .sidebarIcon svg {
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -213,6 +520,21 @@
   .topBar {
     padding: 10px 16px;
     gap: 8px;
+  }
+
+  .sidebarBtn {
+    max-width: 48px;
+    min-height: 36px;
+  }
+
+  .sidebarIcon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .sidebarIcon svg {
+    width: 16px;
+    height: 16px;
   }
 
   .topBarTitle {
@@ -246,23 +568,15 @@
     padding: 16px;
   }
 
-  .formTitle {
+  .formTitleInput {
     font-size: 1.25rem;
   }
 
-  .sidebarBtn {
-    max-width: 52px;
-  }
-
-  .sidebarIcon {
-    font-size: 1.25rem;
-    width: 24px;
-    height: 24px;
-  }
 }
 
 @media (max-width: 480px) {
   .topBar {
+    padding: 10px 12px 12px;
     flex-direction: column;
     align-items: flex-start;
   }
@@ -282,6 +596,11 @@
   .topBarRight {
     width: 100%;
     flex-wrap: wrap;
+  }
+
+  .copyToast {
+    bottom: max(24px, env(safe-area-inset-bottom));
+    max-width: calc(100vw - 32px);
   }
 
   .headerCard,
@@ -321,18 +640,137 @@
   margin-bottom: 12px;
 }
 
-.formTitle {
+.formTitleInput {
+  display: block;
+  width: 100%;
   margin: 0 0 8px 0;
+  padding: 4px 0 8px 0;
   font-size: 1.5rem;
   font-weight: 400;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+
+.formTitleInput:hover {
+  border-bottom-color: var(--color-border);
+}
+
+.formTitleInput:focus {
+  outline: none;
+  border-bottom-color: var(--color-accent);
+  border-bottom-width: 2px;
+  padding-bottom: 7px;
+}
+
+.formTitleInput::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.formDescriptionInput {
+  display: block;
+  width: 100%;
+  margin: 0 0 16px 0;
+  padding: 4px 0 8px 0;
+  font-size: 0.875rem;
+  font-family: var(--font);
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+
+.formDescriptionInput:hover {
+  border-bottom-color: var(--color-border);
+}
+
+.formDescriptionInput:focus {
+  outline: none;
+  border-bottom-color: var(--color-accent);
+  border-bottom-width: 2px;
+  padding-bottom: 7px;
   color: var(--color-text);
 }
 
-.formDescription {
-  margin: 0;
+.formDescriptionInput::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.formHeaderActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.formSettingsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.formStatusLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 0.875rem;
   color: var(--color-text-secondary);
-  line-height: 1.5;
+  cursor: default;
+}
+
+.formStatusText {
+  font-weight: 500;
+}
+
+.formStatusSelect {
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.formStatusSelect:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.formSaveBtn {
+  padding: 8px 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font);
+  color: var(--color-bg);
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.formSaveBtn:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.formSaveBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .list {
@@ -587,10 +1025,18 @@
 }
 
 .sidebarIcon {
-  font-size: 1.125rem;
+  flex-shrink: 0;
   width: 24px;
-  text-align: center;
-  color: var(--color-text-secondary);
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+}
+
+.sidebarIcon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .sidebarLabel {

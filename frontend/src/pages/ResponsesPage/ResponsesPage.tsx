@@ -79,9 +79,6 @@ export function ResponsesPage() {
 
   return (
     <div className={styles.wrap}>
-      <Link className={styles.backLink} to={`/forms/edit/${id}`}>
-        ← К редактированию формы
-      </Link>
       {form && (
         <>
           <h1 className={styles.title}>{form.title}</h1>

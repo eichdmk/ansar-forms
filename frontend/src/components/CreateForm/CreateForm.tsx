@@ -6,7 +6,11 @@ import type { AxiosError } from "axios"
 import { useAppSelector } from "../../hooks/useAppSelector"
 import styles from "./CreateForm.module.css"
 
-export function CreateForm() {
+type CreateFormProps = {
+    onCreated?: (formId: string) => void
+}
+
+export function CreateForm({ onCreated }: CreateFormProps = {}) {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [is_published, setIs_published] = useState(false)
@@ -38,6 +42,7 @@ export function CreateForm() {
             try {
                 const result = await formsAPI.create({ title, description, is_published })
                 dispatch(addForm(result))
+                onCreated?.(result.id)
             } catch (error) {
                 const err = error as AxiosError<{ error?: string }>
                 if (!err.response) {
