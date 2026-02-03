@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { formsAPI } from '../../api'
 import { useDispatch } from 'react-redux'
-import { addForm, updateForm } from '../../store/slices/formSlices'
+import { addForm, setSelectedForm, updateForm } from '../../store/slices/formSlices'
 import type { AxiosError } from "axios";
 import { useAppSelector } from '../../hooks/useAppSelector';
 
@@ -80,8 +80,9 @@ export function CreateForm() {
                     <option value="false">Черновик</option>
                     <option value="true">Опубликовать</option>
                 </select>
-                <button disabled={loading}>Добавить</button>
+                <button disabled={loading}>{selectedForm ? "Редактировать" : "Добавить"}</button>
             </form >
+            {selectedForm && <button onClick={()=> dispatch(setSelectedForm(undefined))}>Отмена</button>}
             {message && <p>{message}</p>}
         </>
     )

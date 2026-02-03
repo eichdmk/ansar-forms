@@ -43,8 +43,8 @@ export function FormsPage() {
             <CreateForm />
             <ul>
                 {forms.map(f => {
-                    return <li>
-                        <Link to={`/forms/${f.id}`} key={f.id}>
+                    return <li key={f.id}>
+                        <Link to={`/forms/${f.id}`} >
                             {f.title}
                             {f.description}
                         </Link>

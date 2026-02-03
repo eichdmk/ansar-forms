@@ -15,12 +15,12 @@ export class QuestionsRepository {
     }
 
     createQuestion = async (dto: CreateQuestionDto, form_id: string) => {
-        const { rows } = await this.pool.query<Question>('INSERT INTO questions(type, label, required, "order", options, form_id) VALUES($1, $2, $3, $4, $5, $6) RETURNING *', [dto.type, dto.label, dto.required, dto.order, dto.options ?? null, form_id])
+        const { rows } = await this.pool.query<Question>('INSERT INTO questions(type, label, required, "order", options, form_id) VALUES($1, $2, $3, $4, $5, $6) RETURNING *', [dto.type, dto.label, dto.required, dto.order, dto.options ? JSON.stringify(dto.options) : null, form_id])
         return rows[0]
     }
 
     updateQuestion = async (dto: UpdateQuestionDto, id: string) => {
-        const { rows } = await this.pool.query<Question>('UPDATE questions SET type = $1, label = $2, required = $3, "order" = $4, options = $5 WHERE id = $6 RETURNING *', [dto.type, dto.label, dto.required, dto.order, dto.options ?? null, id])
+        const { rows } = await this.pool.query<Question>('UPDATE questions SET type = $1, label = $2, required = $3, "order" = $4, options = $5 WHERE id = $6 RETURNING *', [dto.type, dto.label, dto.required, dto.order, dto.options ? JSON.stringify(dto.options) : null, id])
         return rows[0]
     }
 
