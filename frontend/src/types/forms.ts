@@ -21,5 +21,3 @@ export interface UpdateFormDto {
   description?: string
   is_published?: boolean
 }
-
-export type FormWithQuestions = Form & { questions: Question[] }
