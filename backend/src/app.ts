@@ -7,6 +7,7 @@ import { authRequired } from './middleware/auth.js'
 import fastifyCors from '@fastify/cors'
 import dotenv from 'dotenv'
 import { createQuestionModule } from './modules/questions/questions.module.js'
+import { createResponsesModule } from './modules/responses/responses.module.js'
 
 dotenv.config()
 
@@ -21,6 +22,7 @@ await app.register(fastifyCors, {
 const questionModule = createQuestionModule()
 const formModule = createFormModule()
 const authModule = createAuthModule()
+const responsesModule = createResponsesModule()
 
 app.register(async (instance) => {
     instance.post('/forms', {preHandler: authRequired}, (req, reply) => formModule.controller.createForm(req, reply))
@@ -28,6 +30,7 @@ app.register(async (instance) => {
     instance.get('/forms', {preHandler: authRequired}, (req, reply) => formModule.controller.getForms(req, reply))
     instance.put<ParamsId>('/forms/:id', {preHandler: authRequired}, (req, reply) => formModule.controller.updateForm(req, reply))
     instance.delete<ParamsId>('/forms/:id', {preHandler: authRequired}, (req, reply) => formModule.controller.deleteForm(req, reply))
+    instance.post('/forms/:formId/responses', (req, reply) => responsesModule.controller.createResponse(req, reply))
 }, { prefix: '/api' })
 
 app.register(async (instance)=>{

@@ -16,19 +16,6 @@ export function CreateForm() {
     const dispatch = useDispatch()
     const selectedForm = useAppSelector(state => state.forms.selectedForm)
 
-    useEffect(() => {
-        if (selectedForm) {
-            setTitle(selectedForm.title)
-            setDescription(selectedForm.description)
-            setIs_published(selectedForm.is_published)
-        } else {
-            setTitle('')
-            setDescription('')
-            setIs_published(false)
-        }
-    }, [selectedForm])
-
-
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault()
 
@@ -80,9 +67,8 @@ export function CreateForm() {
                     <option value="false">Черновик</option>
                     <option value="true">Опубликовать</option>
                 </select>
-                <button disabled={loading}>{selectedForm ? "Редактировать" : "Добавить"}</button>
+                <button disabled={loading}>Добавить</button>
             </form >
-            {selectedForm && <button onClick={()=> dispatch(setSelectedForm(undefined))}>Отмена</button>}
             {message && <p>{message}</p>}
         </>
     )
