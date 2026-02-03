@@ -134,3 +134,26 @@
 .buttonSecondary:hover {
   background: var(--color-accent-tint);
 }
+
+@media (max-width: 480px) {
+  .card {
+    padding: 16px;
+  }
+
+  .input {
+    max-width: none;
+  }
+
+  .optionInput {
+    max-width: none;
+  }
+
+  .typeButton {
+    min-height: 44px;
+  }
+
+  .buttonPrimary,
+  .buttonSecondary {
+    min-height: 44px;
+  }
+}

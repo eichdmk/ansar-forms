@@ -27,43 +27,55 @@ function formatValue(value: unknown): string {
   return String(value)
 }
 
+const PAGE_SIZE = 1
+
 export function ResponsesPage() {
   const { id } = useParams()
   const [form, setForm] = useState<Form | null>(null)
   const [questions, setQuestions] = useState<Question[]>([])
-  const [responses, setResponses] = useState<ResponseWithAnswers[]>([])
+  const [currentResponse, setCurrentResponse] = useState<ResponseWithAnswers | null>(null)
+  const [total, setTotal] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
 
   useEffect(() => {
-    async function load() {
-      if (!id) return
-      setMessage("")
-      try {
-        const [formRes, questionsRes, responsesRes] = await Promise.all([
-          formsAPI.getById(id),
-          questionsApi.getByFormId(id),
-          responsesAPI.getByFormId(id),
-        ])
+    if (!id) return
+    setMessage("")
+    Promise.all([formsAPI.getById(id), questionsApi.getByFormId(id)])
+      .then(([formRes, questionsRes]) => {
         setForm(formRes)
         setQuestions(questionsRes)
-        setResponses(responsesRes)
-      } catch (error) {
-        const err = error as AxiosError<{ error?: string }>
-        if (err.response) {
-          setMessage(err.response.data?.error ?? "Произошла ошибка")
+      })
+      .catch((error: AxiosError<{ error?: string }>) => {
+        if (error.response) {
+          setMessage(error.response.data?.error ?? "Произошла ошибка")
         }
-      }
-    }
-    load()
+      })
   }, [id])
 
-  const questionMap = new Map(questions.map((q) => [q.id, q]))
+  useEffect(() => {
+    if (!id) return
+    setLoading(true)
+    responsesAPI
+      .getByFormId(id, currentPage, PAGE_SIZE)
+      .then((res) => {
+        setTotal(res.total)
+        setCurrentResponse(res.items[0] ?? null)
+      })
+      .catch((error: AxiosError<{ error?: string }>) => {
+        if (error.response) {
+          setMessage(error.response.data?.error ?? "Произошла ошибка")
+        }
+        setCurrentResponse(null)
+      })
+      .finally(() => setLoading(false))
+  }, [id, currentPage])
 
-  const total = responses.length
-  const [currentPage, setCurrentPage] = useState(0)
-  const currentResponse = total > 0 ? responses[currentPage] : null
-  const hasPrev = currentPage > 0
-  const hasNext = currentPage < total - 1
+  const questionMap = new Map(questions.map((q) => [q.id, q]))
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const hasPrev = currentPage > 1
+  const hasNext = currentPage < totalPages
 
   return (
     <div className={styles.wrap}>
@@ -82,11 +94,15 @@ export function ResponsesPage() {
         Ответов: {total}
       </p>
 
-      {total === 0 && !message && form && (
+      {total === 0 && !message && !loading && form && (
         <p className={styles.empty}>Пока нет ответов на форму.</p>
       )}
 
-      {currentResponse && (
+      {loading && (
+        <p className={styles.loading}>Загрузка…</p>
+      )}
+
+      {!loading && currentResponse && (
         <>
           <article className={styles.responseCard}>
             <p className={styles.responseDate}>
@@ -109,18 +125,19 @@ export function ResponsesPage() {
               type="button"
               className={styles.paginationBtn}
               disabled={!hasPrev}
-              onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             >
               ← Назад
             </button>
             <span className={styles.paginationInfo}>
-              Ответ {currentPage + 1} из {total}
+              Ответ {currentPage} из {totalPages}
+              {total > 0 && ` (всего ${total})`}
             </span>
             <button
               type="button"
               className={styles.paginationBtn}
               disabled={!hasNext}
-              onClick={() => setCurrentPage((p) => Math.min(total - 1, p + 1))}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             >
               Вперёд →
             </button>

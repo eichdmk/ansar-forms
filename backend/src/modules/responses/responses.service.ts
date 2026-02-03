@@ -11,7 +11,12 @@ export class ResponsesService {
         private questionsRepository: QuestionsRepository
     ) { }
 
-    list = async (formId: string, ownerId: string) => {
+    list = async (
+        formId: string,
+        ownerId: string,
+        page: number = 1,
+        limit: number = 1
+    ) => {
         if (!formId) {
             throw new BadRequestError('id формы не указан')
         }
@@ -22,7 +27,14 @@ export class ResponsesService {
         if (form.owner_id !== ownerId) {
             throw new ForbiddenError()
         }
-        return this.responsesRepository.getResponsesWithAnswers(formId)
+        const pageNum = Math.max(1, Math.floor(page))
+        const limitNum = Math.max(1, Math.min(100, Math.floor(limit)))
+        const offset = (pageNum - 1) * limitNum
+        const [items, total] = await Promise.all([
+            this.responsesRepository.getResponsesWithAnswersPaginated(formId, limitNum, offset),
+            this.responsesRepository.getResponsesCount(formId),
+        ])
+        return { items, total, page: pageNum, limit: limitNum }
     }
 
     create = async (formId: string, dto: CreateResponseDto) => {

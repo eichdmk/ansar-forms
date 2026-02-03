@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react"
+import { createPortal } from "react-dom"
 import { useParams, Link } from "react-router-dom"
 import { formsAPI, questionsApi, responsesAPI } from "../../api"
 import type { Form, Question } from "../../types"
@@ -29,11 +30,11 @@ export function DetailFormPage() {
                 const [fResult, qResult, responsesRes] = await Promise.all([
                     formsAPI.getById(id),
                     questionsApi.getByFormId(id),
-                    responsesAPI.getByFormId(id).catch(() => []),
+                    responsesAPI.getByFormId(id, 1, 1).catch(() => ({ total: 0, items: [], page: 1, limit: 1 })),
                 ])
                 setForm(fResult)
                 dispatch(setQuestions(qResult))
-                setResponseCount(Array.isArray(responsesRes) ? responsesRes.length : 0)
+                setResponseCount(responsesRes.total ?? 0)
             } catch (error) {
                 const err = error as AxiosError<{ error?: string }>
                 if (err.response) {
@@ -98,6 +99,39 @@ export function DetailFormPage() {
     }
 
     const fillUrl = id ? `${typeof window !== "undefined" ? window.location.origin : ""}/forms/${id}/fill` : ""
+
+    const [isMobileToolbar, setIsMobileToolbar] = useState(false)
+    useEffect(() => {
+        const mq = window.matchMedia("(max-width: 900px)")
+        const handler = () => setIsMobileToolbar(mq.matches)
+        handler()
+        mq.addEventListener("change", handler)
+        return () => mq.removeEventListener("change", handler)
+    }, [])
+
+    const toolbarContent = (
+        <aside className={styles.sidebar} aria-label="Добавить элемент">
+            <div className={styles.sidebarTitle}>Добавить вопрос</div>
+            {QUESTION_TYPES.map((t) => (
+                <button
+                    key={t.value}
+                    type="button"
+                    className={styles.sidebarBtn}
+                    onClick={() => setSidebarQuestionType(t.value)}
+                    title={t.label}
+                >
+                    <span className={styles.sidebarIcon}>
+                        {t.value === "text" && "▭"}
+                        {t.value === "textarea" && "¶"}
+                        {t.value === "radio" && "○"}
+                        {t.value === "checkbox" && "☑"}
+                        {t.value === "select" && "▾"}
+                    </span>
+                    <span className={styles.sidebarLabel}>{t.label}</span>
+                </button>
+            ))}
+        </aside>
+    )
 
     return (
         <div className={styles.page}>
@@ -308,28 +342,8 @@ export function DetailFormPage() {
                     {message && <p className={styles.message}>{message}</p>}
                 </main>
 
-                {/* Floating right sidebar - add question types */}
-                <aside className={styles.sidebar} aria-label="Добавить элемент">
-                    <div className={styles.sidebarTitle}>Добавить вопрос</div>
-                    {QUESTION_TYPES.map((t) => (
-                        <button
-                            key={t.value}
-                            type="button"
-                            className={styles.sidebarBtn}
-                            onClick={() => setSidebarQuestionType(t.value)}
-                            title={t.label}
-                        >
-                            <span className={styles.sidebarIcon}>
-                                {t.value === "text" && "▭"}
-                                {t.value === "textarea" && "¶"}
-                                {t.value === "radio" && "○"}
-                                {t.value === "checkbox" && "☑"}
-                                {t.value === "select" && "▾"}
-                            </span>
-                            <span className={styles.sidebarLabel}>{t.label}</span>
-                        </button>
-                    ))}
-                </aside>
+                {/* На мобильных панель рендерится в body (sticky внизу), на десктопе — справа */}
+                {isMobileToolbar ? createPortal(toolbarContent, document.body) : toolbarContent}
             </div>
         </div>
     )

@@ -277,3 +277,64 @@
     transform: translateX(-50%) translateY(0);
   }
 }
+
+@media (max-width: 768px) {
+  .pageHeader {
+    margin-bottom: 20px;
+  }
+
+  .pageTitle {
+    font-size: 1.5rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .editRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .editRow .input {
+    min-width: 0;
+  }
+
+  .emptyState {
+    padding: 32px 20px;
+  }
+
+  .emptyText {
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageTitle {
+    font-size: 1.25rem;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .actionBtn {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  .editForm .buttonPrimary,
+  .editForm .buttonSecondary {
+    min-height: 44px;
+  }
+
+  .copyToast {
+    bottom: max(24px, env(safe-area-inset-bottom));
+    max-width: calc(100vw - 32px);
+  }
+}

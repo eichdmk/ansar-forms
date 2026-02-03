@@ -18,3 +18,10 @@ export interface ResponseWithAnswers {
   created_at: string
   answers: AnswerView[]
 }
+
+export interface ResponsesPageResult {
+  items: ResponseWithAnswers[]
+  total: number
+  page: number
+  limit: number
+}

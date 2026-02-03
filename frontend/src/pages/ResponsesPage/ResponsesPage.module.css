@@ -121,6 +121,12 @@
   white-space: pre-wrap;
 }
 
+.loading {
+  padding: 24px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
 .empty {
   margin: 24px 0 0 0;
   padding: 32px 24px;
@@ -137,4 +143,57 @@
   font-weight: 500;
   margin: 16px 0 0 0;
   font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .wrap {
+    padding: 0 4px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .responseCard {
+    padding: 20px 16px;
+  }
+
+  .pagination {
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .paginationBtn {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  .paginationInfo {
+    font-size: 0.875rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .wrap {
+    padding: 0;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .responseCard {
+    padding: 16px 14px;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .paginationBtn {
+    width: 100%;
+    min-height: 48px;
+  }
 }

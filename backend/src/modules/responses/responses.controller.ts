@@ -11,7 +11,10 @@ export class ResponsesController {
         if (!userId) {
             return reply.status(401).send({ error: 'Необходима авторизация' })
         }
-        const result = await this.responsesService.list(formId, userId)
+        const query = (req as any).query || {}
+        const page = query.page != null ? Number(query.page) : 1
+        const limit = query.limit != null ? Number(query.limit) : 1
+        const result = await this.responsesService.list(formId, userId, page, limit)
         reply.send(result)
     }
 

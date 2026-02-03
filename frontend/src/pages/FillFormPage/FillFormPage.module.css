@@ -4,6 +4,68 @@
   padding: 24px 24px 48px;
   min-height: 100vh;
   background: var(--color-page-bg);
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 20px 16px 40px;
+  }
+
+  .headerCard {
+    padding: 20px 16px 24px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .questionItem {
+    padding: 20px 16px 24px;
+  }
+
+  .submitWrap {
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 16px 12px max(32px, env(safe-area-inset-bottom));
+  }
+
+  .headerCard {
+    padding: 16px 14px 20px;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .questionItem {
+    padding: 16px 14px 20px;
+  }
+
+  .input,
+  .textarea {
+    min-height: 48px;
+    padding: 14px 0;
+  }
+
+  .radioLabel,
+  .checkboxLabel {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .submitButton {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .submitWrap {
+    padding: 0 12px;
+  }
 }
 
 .headerCard {

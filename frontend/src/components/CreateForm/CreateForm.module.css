@@ -110,3 +110,37 @@
   margin: 8px 0 0 0;
   font-size: 0.875rem;
 }
+
+@media (max-width: 768px) {
+  .card {
+    padding: 20px 20px 24px;
+  }
+
+  .form {
+    max-width: none;
+  }
+
+  .select {
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 16px 14px 20px;
+  }
+
+  .title {
+    font-size: 1.125rem;
+  }
+
+  .input,
+  .select {
+    min-height: 48px;
+  }
+
+  .button {
+    min-height: 48px;
+    width: 100%;
+  }
+}
