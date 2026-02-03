@@ -1,0 +1,26 @@
+export interface Question {
+    id: string,
+    form_id: string,
+    type: string,
+    label: string,
+    required: boolean,
+    "order": number,
+    options: any,
+    created_at: Date
+}
+
+export interface CreateQuestionDto{
+    type: string
+    label: string
+    required: boolean
+    "order": number
+    options?: any
+}
+
+export interface UpdateQuestionDto{
+    type: string
+    label: string
+    required: boolean
+    "order": number
+    options?: any
+}

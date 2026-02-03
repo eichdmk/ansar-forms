@@ -1,3 +1,5 @@
+import { Question } from "../questions/questions.types";
+
 export interface Form {
     id: string;
     owner_id: string
@@ -19,5 +21,7 @@ export interface UpdateFormDto{
     description?: string;
     is_published?: boolean;
 }
+
+export type FormWithQuestions = Form & { questions: Question[] }
 
 export type ParamsId = { Params: { id: string } }

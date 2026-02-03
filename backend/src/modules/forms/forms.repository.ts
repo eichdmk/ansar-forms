@@ -1,5 +1,5 @@
 import { Pool } from "pg"
-import { CreateFormDto, Form, UpdateFormDto } from "./forms.types"
+import { CreateFormDto, Form, FormWithQuestions, UpdateFormDto } from "./forms.types"
 
 export class FormsRepository {
     constructor(private pool: Pool) { }
@@ -10,8 +10,41 @@ export class FormsRepository {
         return rows[0]
     }
 
+    findFormByIdOnly = async (id: string) => {
+        const { rows } = await this.pool.query<Form>(
+            'SELECT * FROM forms WHERE id = $1',
+            [id]
+        )
+        return rows[0]
+    }
+
     findFormById = async (id: string) => {
-        const {rows} = await this.pool.query<Form>('SELECT * FROM forms WHERE id = $1', [id])
+        const { rows } = await this.pool.query<FormWithQuestions>(`
+                    SELECT 
+                        f.id,
+                        f.owner_id,
+                        f.title,
+                        f.description,
+                        f.is_published,
+                        f.created_at,
+                        f.updated_at,
+                        COALESCE(
+                            (SELECT json_agg(
+                            json_build_object(
+                                'id', q.id,
+                                'form_id', q.form_id,
+                                'type', q.type,
+                                'label', q.label,
+                                'required', q.required,
+                                'order', q."order",
+                                'options', q.options,
+                                'created_at', q.created_at
+                            ) ORDER BY q."order"
+                            ) FROM questions q WHERE q.form_id = f.id),
+                            '[]'::json
+                        ) AS questions
+                        FROM forms f
+                        WHERE f.id = $1`, [id])
 
         return rows[0]
     }
@@ -29,8 +62,8 @@ export class FormsRepository {
     }
 
     deleteForm = async (id: string) => {
-        const {rows} = await this.pool.query("DELETE FROM forms WHERE id = $1 RETURNING *", [id])
-        
+        const { rows } = await this.pool.query("DELETE FROM forms WHERE id = $1 RETURNING *", [id])
+
         return rows[0]
     }
 }

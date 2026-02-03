@@ -1,3 +1,5 @@
+import type { Question } from "./questions"
+
 export interface Form {
   id: string
   owner_id: string
@@ -19,3 +21,5 @@ export interface UpdateFormDto {
   description?: string
   is_published?: boolean
 }
+
+export type FormWithQuestions = Form & { questions: Question[] }
