@@ -24,7 +24,7 @@ export class QuestionContoller {
         reply.send(result)
     }
 
-    updateQuestiion = async (req: FastifyRequest, reply: FastifyReply) => {
+    updateQuestion = async (req: FastifyRequest, reply: FastifyReply) => {
         const form_id = (req as any).params.formId
         const question_id = (req as any).params.questionId
         const dto = req.body as UpdateQuestionDto

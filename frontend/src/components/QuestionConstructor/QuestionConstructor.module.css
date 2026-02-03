@@ -1,0 +1,136 @@
+.typeButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.typeButton {
+  padding: 8px 20px;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.typeButton:hover {
+  background: var(--color-accent-tint);
+  border-color: var(--color-accent);
+}
+
+.card {
+  border: 1px solid var(--color-border);
+  padding: 24px;
+  margin-bottom: 16px;
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-card);
+}
+
+.typeLabel {
+  margin: 0 0 8px 0;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.input {
+  width: 100%;
+  max-width: 480px;
+  padding: 12px 0;
+  font-size: 1rem;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 8px;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-bottom-color: var(--color-accent);
+  border-bottom-width: 2px;
+  padding-bottom: 11px;
+}
+
+.checkboxLabel {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.optionsBlock {
+  margin-bottom: 12px;
+}
+
+.optionRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: center;
+}
+
+.optionInput {
+  flex: 1;
+  max-width: 320px;
+  padding: 10px 0;
+  font-size: 0.875rem;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.optionInput:focus {
+  outline: none;
+  border-bottom-color: var(--color-accent);
+}
+
+.addOptionBtn {
+  margin-top: 8px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.buttonPrimary {
+  padding: 8px 24px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-bg);
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.buttonPrimary:hover {
+  background: var(--color-accent-hover);
+}
+
+.buttonSecondary {
+  padding: 8px 24px;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.buttonSecondary:hover {
+  background: var(--color-accent-tint);
+}

@@ -1,7 +1,7 @@
 import { ResponsesRepository } from './responses.repository'
 import { FormService } from '../forms/forms.service'
 import { QuestionsRepository } from '../questions/questions.repository'
-import { BadRequestError, NotFoundError } from '../../errors'
+import { BadRequestError, ForbiddenError, NotFoundError } from '../../errors'
 import { CreateResponseDto } from './responses.types'
 
 export class ResponsesService {
@@ -10,6 +10,20 @@ export class ResponsesService {
         private formService: FormService,
         private questionsRepository: QuestionsRepository
     ) { }
+
+    list = async (formId: string, ownerId: string) => {
+        if (!formId) {
+            throw new BadRequestError('id формы не указан')
+        }
+        const form = await this.formService.findById(formId)
+        if (!form) {
+            throw new NotFoundError('Форма не найдена')
+        }
+        if (form.owner_id !== ownerId) {
+            throw new ForbiddenError()
+        }
+        return this.responsesRepository.getResponsesWithAnswers(formId)
+    }
 
     create = async (formId: string, dto: CreateResponseDto) => {
         if (!formId) {

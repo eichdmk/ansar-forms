@@ -1,11 +1,12 @@
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "../../hooks/useAppSelector";
-import { useEffect, useState } from "react";
-import { formsAPI } from "../../api";
-import { deleteForm, setForms, setSelectedForm, updateForm } from "../../store/slices/formSlices";
-import { CreateForm } from "../../components/CreateForm/CreateForm";
-import type { AxiosError } from "axios";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux"
+import { useAppSelector } from "../../hooks/useAppSelector"
+import { useEffect, useState } from "react"
+import { formsAPI } from "../../api"
+import { deleteForm, setForms, setSelectedForm, updateForm } from "../../store/slices/formSlices"
+import { CreateForm } from "../../components/CreateForm/CreateForm"
+import type { AxiosError } from "axios"
+import { Link } from "react-router-dom"
+import styles from "./FormPage.module.css"
 
 export function FormsPage() {
     const forms = useAppSelector(state => state.forms.forms)
@@ -64,45 +65,73 @@ export function FormsPage() {
     return (
         <>
             <CreateForm />
-            <ul style={{ listStyle: 'none', padding: 0 }}>
-                {forms.map(f => {
+            <ul className={styles.list}>
+                {forms.map((f) => {
                     const isEditing = selectedForm?.id === f.id
                     return (
-                        <li key={f.id} style={{ marginBottom: 12 }}>
+                        <li key={f.id} className={styles.listItem}>
                             {isEditing ? (
-                                <>
+                                <div className={styles.editRow}>
                                     <input
+                                        className={styles.input}
                                         type="text"
                                         value={title}
-                                        onChange={e => setTitle(e.target.value)}
+                                        onChange={(e) => setTitle(e.target.value)}
                                         placeholder="Название"
-                                        style={{ marginRight: 8 }}
                                     />
                                     <input
+                                        className={styles.input}
                                         type="text"
                                         value={description}
-                                        onChange={e => setDescription(e.target.value)}
+                                        onChange={(e) => setDescription(e.target.value)}
                                         placeholder="Описание"
-                                        style={{ marginRight: 8 }}
                                     />
                                     <select
-                                        value={is_published ? 'true' : 'false'}
-                                        onChange={e => setIs_published(e.target.value === 'true')}
-                                        style={{ marginRight: 8 }}
+                                        className={styles.select}
+                                        value={is_published ? "true" : "false"}
+                                        onChange={(e) => setIs_published(e.target.value === "true")}
                                     >
                                         <option value="false">Черновик</option>
                                         <option value="true">Опубликовать</option>
                                     </select>
-                                    <button type="button" onClick={handleSave}>Сохранить</button>
-                                    <button type="button" onClick={() => dispatch(setSelectedForm(undefined))}>Отмена</button>
-                                </>
+                                    <button
+                                        type="button"
+                                        className={styles.buttonPrimary}
+                                        onClick={handleSave}
+                                    >
+                                        Сохранить
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles.buttonSecondary}
+                                        onClick={() => dispatch(setSelectedForm(undefined))}
+                                    >
+                                        Отмена
+                                    </button>
+                                </div>
                             ) : (
                                 <>
-                                    <Link to={`/forms/${f.id}`}>{f.title}</Link>
-                                    {f.description && <span style={{ marginLeft: 8, color: '#666' }}>{f.description}</span>}
-                                    <div style={{ display: 'inline-flex', gap: 8, marginLeft: 8 }}>
-                                        <button type="button" onClick={() => dispatch(setSelectedForm(f))}>Редактировать</button>
-                                        <button type="button" onClick={() => handleDelete(f.id)}>Удалить</button>
+                                    <Link className={styles.link} to={`/forms/edit/${f.id}`}>
+                                        {f.title}
+                                    </Link>
+                                    {f.description && (
+                                        <span className={styles.meta}>{f.description}</span>
+                                    )}
+                                    <div className={styles.actions}>
+                                        <button
+                                            type="button"
+                                            className={styles.buttonSecondary}
+                                            onClick={() => dispatch(setSelectedForm(f))}
+                                        >
+                                            Редактировать
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={styles.buttonSecondary}
+                                            onClick={() => handleDelete(f.id)}
+                                        >
+                                            Удалить
+                                        </button>
                                     </div>
                                 </>
                             )}
@@ -110,7 +139,7 @@ export function FormsPage() {
                     )
                 })}
             </ul>
-            {message && <p>{message}</p>}
+            {message && <p className={styles.message}>{message}</p>}
         </>
     )
 }

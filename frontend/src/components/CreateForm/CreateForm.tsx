@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { formsAPI } from '../../api'
-import { useDispatch } from 'react-redux'
-import { addForm, setSelectedForm, updateForm } from '../../store/slices/formSlices'
-import type { AxiosError } from "axios";
-import { useAppSelector } from '../../hooks/useAppSelector';
-
+import React, { useState } from "react"
+import { formsAPI } from "../../api"
+import { useDispatch } from "react-redux"
+import { addForm, updateForm } from "../../store/slices/formSlices"
+import type { AxiosError } from "axios"
+import { useAppSelector } from "../../hooks/useAppSelector"
+import styles from "./CreateForm.module.css"
 
 export function CreateForm() {
     const [title, setTitle] = useState('')
@@ -57,19 +57,34 @@ export function CreateForm() {
 
     return (
         <>
-            <form onSubmit={handleSubmit}>
-                <input type="text" value={title} onChange={e => setTitle(e.target.value)} />
-                <input type="text" value={description} onChange={e => setDescription(e.target.value)} />
+            <form className={styles.form} onSubmit={handleSubmit}>
+                <input
+                    className={styles.input}
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Название"
+                />
+                <input
+                    className={styles.input}
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Описание"
+                />
                 <select
-                    value={is_published ? 'true' : 'false'}
-                    onChange={e => setIs_published(e.target.value === 'true')}
+                    className={styles.select}
+                    value={is_published ? "true" : "false"}
+                    onChange={(e) => setIs_published(e.target.value === "true")}
                 >
                     <option value="false">Черновик</option>
                     <option value="true">Опубликовать</option>
                 </select>
-                <button disabled={loading}>Добавить</button>
-            </form >
-            {message && <p>{message}</p>}
+                <button className={styles.button} disabled={loading} type="submit">
+                    Добавить
+                </button>
+            </form>
+            {message && <p className={styles.message}>{message}</p>}
         </>
     )
 }

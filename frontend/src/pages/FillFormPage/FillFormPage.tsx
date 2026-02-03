@@ -4,6 +4,7 @@ import { formsAPI, questionsApi, responsesAPI } from "../../api"
 import type { Form, Question, CreateResponseDto } from "../../types"
 import type { AxiosError } from "axios"
 import { QUESTION_TYPES } from "../../constants/questionTypes"
+import styles from "./FillFormPage.module.css"
 
 type AnswerValue = string | string[]
 
@@ -64,18 +65,20 @@ export function FillFormPage() {
     }
 
     if (message && !form) {
-        return <p>{message}</p>
+        return <p className={styles.errorOnly}>{message}</p>
     }
 
     if (!form) {
-        return <p>Загрузка...</p>
+        return <p className={styles.loading}>Загрузка...</p>
     }
 
     if (success) {
         return (
-            <div style={{ maxWidth: 600, margin: "0 auto", padding: 24 }}>
-                <h1>Спасибо!</h1>
-                <p>Ваши ответы успешно отправлены.</p>
+            <div className={styles.page}>
+                <div className={styles.successCard}>
+                    <h1 className={styles.successTitle}>Спасибо!</h1>
+                    <p className={styles.successText}>Ваши ответы успешно отправлены.</p>
+                </div>
             </div>
         )
     }
@@ -84,72 +87,74 @@ export function FillFormPage() {
         Array.isArray(q.options) ? q.options : q.options ? [String(q.options)] : []
 
     return (
-        <div style={{ maxWidth: 600, margin: "0 auto", padding: 24 }}>
-            <h1>{form.title}</h1>
-            {form.description && (
-                <p style={{ color: "#666", marginBottom: 24 }}>{form.description}</p>
-            )}
+        <div className={styles.page}>
+            <div className={styles.headerCard}>
+                <h1 className={styles.title}>{form.title}</h1>
+                {form.description && (
+                    <p className={styles.description}>{form.description}</p>
+                )}
+                {!form.is_published && (
+                    <p className={styles.warning}>
+                        Форма не опубликована. Ответы пока не принимаются.
+                    </p>
+                )}
+            </div>
 
-            {!form.is_published && (
-                <p style={{ color: "#c00", marginBottom: 16 }}>
-                    Форма не опубликована. Ответы пока не принимаются.
-                </p>
-            )}
-
-            <form onSubmit={handleSubmit}>
-                <ul style={{ listStyle: "none", padding: 0 }}>
+            <form className={styles.form} onSubmit={handleSubmit}>
+                <ul className={styles.questionList}>
                     {questions.map((q) => {
                         const typeLabel =
                             QUESTION_TYPES.find((t) => t.value === q.type)?.label ?? q.type
                         const options = opts(q)
                         const value = answers[q.id]
-                        const valueStr = typeof value === "string" ? value : (Array.isArray(value) ? value.join(",") : "")
+                        const valueStr =
+                            typeof value === "string"
+                                ? value
+                                : Array.isArray(value)
+                                  ? value.join(",")
+                                  : ""
 
                         return (
-                            <li
-                                key={q.id}
-                                style={{
-                                    marginBottom: 20,
-                                    paddingBottom: 16,
-                                    borderBottom: "1px solid #eee",
-                                }}
-                            >
-                                <p style={{ margin: "0 0 4px", fontWeight: 500 }}>
+                            <li key={q.id} className={styles.questionItem}>
+                                <p className={styles.questionLabel}>
                                     {q.label}
-                                    {q.required && <span style={{ color: "#c00" }}> *</span>}
+                                    {q.required && <span className={styles.requiredStar}> *</span>}
                                 </p>
-                                <p style={{ margin: 0, fontSize: 14, color: "#888" }}>
-                                    {typeLabel}
-                                </p>
+                                <p className={styles.typeLabel}>{typeLabel}</p>
 
                                 {q.type === "text" && (
                                     <input
+                                        className={styles.input}
                                         type="text"
                                         value={valueStr}
                                         onChange={(e) => setAnswer(q.id, e.target.value)}
                                         required={q.required}
-                                        style={{ width: "100%", padding: 8, marginTop: 8 }}
                                     />
                                 )}
                                 {q.type === "textarea" && (
                                     <textarea
+                                        className={styles.textarea}
                                         value={valueStr}
                                         onChange={(e) => setAnswer(q.id, e.target.value)}
                                         required={q.required}
                                         rows={4}
-                                        style={{ width: "100%", padding: 8, marginTop: 8 }}
                                     />
                                 )}
                                 {q.type === "radio" && (
-                                    <div style={{ marginTop: 8 }}>
+                                    <div className={styles.radioGroup}>
                                         {options.map((opt) => (
-                                            <label key={String(opt)} style={{ display: "block", marginBottom: 4 }}>
+                                            <label
+                                                key={String(opt)}
+                                                className={styles.radioLabel}
+                                            >
                                                 <input
                                                     type="radio"
                                                     name={q.id}
                                                     value={String(opt)}
                                                     checked={value === String(opt)}
-                                                    onChange={() => setAnswer(q.id, String(opt))}
+                                                    onChange={() =>
+                                                        setAnswer(q.id, String(opt))
+                                                    }
                                                 />{" "}
                                                 {String(opt)}
                                             </label>
@@ -157,12 +162,19 @@ export function FillFormPage() {
                                     </div>
                                 )}
                                 {q.type === "checkbox" && (
-                                    <div style={{ marginTop: 8 }}>
+                                    <div className={styles.checkboxGroup}>
                                         {options.map((opt) => {
-                                            const arr = Array.isArray(value) ? value : value ? [value] : []
+                                            const arr = Array.isArray(value)
+                                                ? value
+                                                : value
+                                                  ? [value]
+                                                  : []
                                             const checked = arr.includes(String(opt))
                                             return (
-                                                <label key={String(opt)} style={{ display: "block", marginBottom: 4 }}>
+                                                <label
+                                                    key={String(opt)}
+                                                    className={styles.checkboxLabel}
+                                                >
                                                     <input
                                                         type="checkbox"
                                                         value={String(opt)}
@@ -170,7 +182,9 @@ export function FillFormPage() {
                                                         onChange={(e) => {
                                                             const next = e.target.checked
                                                                 ? [...arr, String(opt)]
-                                                                : arr.filter((x) => x !== String(opt))
+                                                                : arr.filter(
+                                                                      (x) => x !== String(opt)
+                                                                  )
                                                             setAnswer(q.id, next)
                                                         }}
                                                     />{" "}
@@ -182,10 +196,10 @@ export function FillFormPage() {
                                 )}
                                 {q.type === "select" && (
                                     <select
+                                        className={styles.select}
                                         value={valueStr}
                                         onChange={(e) => setAnswer(q.id, e.target.value)}
                                         required={q.required}
-                                        style={{ width: "100%", padding: 8, marginTop: 8 }}
                                     >
                                         <option value="">— Выберите —</option>
                                         {options.map((opt) => (
@@ -200,17 +214,17 @@ export function FillFormPage() {
                     })}
                 </ul>
 
-                {message && (
-                    <p style={{ color: "#c00", marginBottom: 16 }}>{message}</p>
-                )}
+                {message && <p className={styles.error}>{message}</p>}
 
+                <div className={styles.submitWrap}>
                 <button
                     type="submit"
+                    className={styles.submitButton}
                     disabled={submitting || !form.is_published}
-                    style={{ padding: "10px 24px", fontSize: 16 }}
                 >
                     {submitting ? "Отправка…" : "Отправить"}
                 </button>
+                </div>
             </form>
         </div>
     )

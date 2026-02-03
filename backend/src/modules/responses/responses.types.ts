@@ -19,3 +19,15 @@ export interface AnswerDto {
 export interface CreateResponseDto {
     answers: AnswerDto[]
 }
+
+export interface AnswerView {
+    question_id: string
+    value: unknown
+}
+
+export interface ResponseWithAnswers {
+    id: string
+    form_id: string
+    created_at: Date
+    answers: AnswerView[]
+}

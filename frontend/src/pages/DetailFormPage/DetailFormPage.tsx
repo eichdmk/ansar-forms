@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, Link } from "react-router-dom"
 import { formsAPI, questionsApi } from "../../api"
 import type { Form, Question } from "../../types"
 import type { AxiosError } from "axios"
@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux"
 import { deleteQuestion, setQuestions, updateQuestion } from "../../store/slices/questionSlices"
 import { QUESTION_TYPES } from "../../constants/questionTypes"
 import { QuestionConstructor, questionToDraft } from "../../components/QuestionConstructor/QuestionConstructor"
+import styles from "./DetailFormPage.module.css"
 
 export function DetailFormPage() {
     const { id } = useParams()
@@ -90,9 +91,15 @@ export function DetailFormPage() {
 
     return (
         <>
-            <h1>{form?.title}</h1>
-            <p>{form?.description}</p>
-
+            <h1 className={styles.title}>{form?.title}</h1>
+            <p className={styles.description}>{form?.description}</p>
+            {id && (
+                <p className={styles.topActions}>
+                    <Link className={styles.responsesLink} to={`/forms/${id}/responses`}>
+                        Просмотр ответов
+                    </Link>
+                </p>
+            )}
             {id && (
                 <QuestionConstructor
                     formId={id}
@@ -101,68 +108,148 @@ export function DetailFormPage() {
                 />
             )}
 
-            <ul style={{ listStyle: 'none', padding: 0 }}>
-                {questions.map(q => {
+            <ul className={styles.list}>
+                {questions.map((q) => {
                     const isEditing = editingQuestionId === q.id
                     const draft = isEditing ? editDraft : null
-                    const needsOptions = draft != null && ['radio', 'checkbox', 'select'].includes(draft.type)
+                    const needsOptions =
+                        draft != null && ["radio", "checkbox", "select"].includes(draft.type)
 
                     return (
-                        <li key={q.id} style={{ border: '1px solid #eee', padding: 12, marginBottom: 8, borderRadius: 6 }}>
+                        <li key={q.id} className={styles.card}>
                             {isEditing && draft ? (
                                 <>
-                                    <p style={{ margin: '0 0 8px', fontSize: 14, color: '#666' }}><strong>Тип:</strong> {QUESTION_TYPES.find(t => t.value === draft.type)?.label}</p>
-                                    <div style={{ marginBottom: 8 }}>
-                                        <input
-                                            placeholder="Текст вопроса"
-                                            value={draft.label}
-                                            onChange={e => setEditDraft(prev => prev ? { ...prev, label: e.target.value } : null)}
-                                            style={{ width: '100%', maxWidth: 400 }}
-                                        />
-                                    </div>
-                                    <label style={{ display: 'block', marginBottom: 8 }}>
+                                    <p className={styles.typeLabel}>
+                                        <strong>Тип:</strong>{" "}
+                                        {QUESTION_TYPES.find((t) => t.value === draft.type)?.label}
+                                    </p>
+                                    <input
+                                        className={styles.input}
+                                        placeholder="Текст вопроса"
+                                        value={draft.label}
+                                        onChange={(e) =>
+                                            setEditDraft((prev) =>
+                                                prev ? { ...prev, label: e.target.value } : null
+                                            )
+                                        }
+                                    />
+                                    <label className={styles.checkboxLabel}>
                                         <input
                                             type="checkbox"
                                             checked={draft.required}
-                                            onChange={e => setEditDraft(prev => prev ? { ...prev, required: e.target.checked } : null)}
-                                        />
+                                            onChange={(e) =>
+                                                setEditDraft((prev) =>
+                                                    prev ? { ...prev, required: e.target.checked } : null
+                                                )
+                                            }
+                                        />{" "}
                                         Обязательный вопрос
                                     </label>
                                     {needsOptions && (
-                                        <div style={{ marginBottom: 12 }}>
+                                        <div className={styles.optionsBlock}>
                                             <strong>Варианты ответа:</strong>
                                             {draft.options.map((opt, i) => (
-                                                <div key={i} style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                                                <div key={i} className={styles.optionRow}>
                                                     <input
+                                                        className={styles.optionInput}
                                                         value={opt}
-                                                        onChange={e => {
+                                                        onChange={(e) => {
                                                             const next = [...draft.options]
                                                             next[i] = e.target.value
-                                                            setEditDraft(prev => prev ? { ...prev, options: next } : null)
+                                                            setEditDraft((prev) =>
+                                                                prev ? { ...prev, options: next } : null
+                                                            )
                                                         }}
                                                         placeholder={`Вариант ${i + 1}`}
-                                                        style={{ flex: 1, maxWidth: 300 }}
                                                     />
-                                                    <button type="button" onClick={() => setEditDraft(prev => prev ? { ...prev, options: prev.options.filter((_, j) => j !== i) } : null)}>−</button>
+                                                    <button
+                                                        type="button"
+                                                        className={styles.buttonSecondary}
+                                                        onClick={() =>
+                                                            setEditDraft((prev) =>
+                                                                prev
+                                                                    ? {
+                                                                          ...prev,
+                                                                          options: prev.options.filter(
+                                                                              (_, j) => j !== i
+                                                                          ),
+                                                                      }
+                                                                    : null
+                                                            )
+                                                        }
+                                                    >
+                                                        −
+                                                    </button>
                                                 </div>
                                             ))}
-                                            <button type="button" onClick={() => setEditDraft(prev => prev ? { ...prev, options: [...prev.options, ''] } : null)} style={{ marginTop: 8 }}>+ Добавить вариант</button>
+                                            <button
+                                                type="button"
+                                                className={`${styles.buttonSecondary} ${styles.addOptionBtn}`}
+                                                onClick={() =>
+                                                    setEditDraft((prev) =>
+                                                        prev
+                                                            ? {
+                                                                  ...prev,
+                                                                  options: [...prev.options, ""],
+                                                              }
+                                                            : null
+                                                    )
+                                                }
+                                            >
+                                                + Добавить вариант
+                                            </button>
                                         </div>
                                     )}
-                                    <div style={{ display: 'flex', gap: 8 }}>
-                                        <button type="button" onClick={cancelEditing}>Отмена</button>
-                                        <button type="button" onClick={handleSaveQuestion}>Сохранить</button>
+                                    <div className={styles.actions}>
+                                        <button
+                                            type="button"
+                                            className={styles.buttonSecondary}
+                                            onClick={cancelEditing}
+                                        >
+                                            Отмена
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={styles.buttonPrimary}
+                                            onClick={handleSaveQuestion}
+                                        >
+                                            Сохранить
+                                        </button>
                                     </div>
                                 </>
                             ) : (
                                 <>
-                                    <p><strong>{q.label}</strong> {q.required && '(обязательный)'}</p>
-                                    <p style={{ margin: 0, fontSize: 14, color: '#666' }}>{QUESTION_TYPES.find(t => t.value === q.type)?.label ?? q.type}</p>
-                                    {q.options && Array.isArray(q.options) && q.options.length > 0 && (
-                                        <p style={{ margin: '4px 0 0', fontSize: 13 }}>Варианты: {q.options.join(', ')}</p>
-                                    )}
-                                    <button type="button" onClick={() => startEditing(q)}>Редактировать</button>
-                                    <button type="button" onClick={() => handleDelete(q.id)}>Удалить</button>
+                                    <p className={styles.questionLabel}>
+                                        {q.label}
+                                        {q.required && <span className={styles.requiredStar}> *</span>}
+                                    </p>
+                                    <p className={styles.meta}>
+                                        {QUESTION_TYPES.find((t) => t.value === q.type)?.label ??
+                                            q.type}
+                                    </p>
+                                    {q.options &&
+                                        Array.isArray(q.options) &&
+                                        q.options.length > 0 && (
+                                            <p className={styles.optionsMeta}>
+                                                Варианты: {q.options.join(", ")}
+                                            </p>
+                                        )}
+                                    <div className={styles.cardActions}>
+                                        <button
+                                            type="button"
+                                            className={styles.buttonSecondary}
+                                            onClick={() => startEditing(q)}
+                                        >
+                                            Редактировать
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={styles.buttonSecondary}
+                                            onClick={() => handleDelete(q.id)}
+                                        >
+                                            Удалить
+                                        </button>
+                                    </div>
                                 </>
                             )}
                         </li>
@@ -170,7 +257,7 @@ export function DetailFormPage() {
                 })}
             </ul>
 
-            {message && <p>{message}</p>}
+            {message && <p className={styles.message}>{message}</p>}
         </>
     )
 }

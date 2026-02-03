@@ -1,53 +1,64 @@
-import { useState } from "react";
-import { authAPI } from "../../api";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
-import type { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react"
+import { authAPI } from "../../api"
+import { useLocalStorage } from "../../hooks/useLocalStorage"
+import type { AxiosError } from "axios"
+import { useNavigate } from "react-router-dom"
+import styles from "./LoginPage.module.css"
 
 export function LoginPage() {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
-    const [error, setError] = useState('')
-    const [value, setValue] = useLocalStorage('token')
-
+    const [error, setError] = useState("")
+    const [, setValue] = useLocalStorage("token")
     const navigate = useNavigate()
-
 
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault()
-
-        setError('')
+        setError("")
         setLoading(true)
         try {
             const result = await authAPI.login({ email, password })
             setValue(result)
-            navigate('/forms')
-
+            navigate("/forms")
         } catch (err) {
-            const error = err as AxiosError<{ error?: string }>;
-            if (error.response) {
-                const msg = error.response.data?.error ?? "Произошла ошибка";
-                console.log(msg);
-                setError(msg);
+            const errRes = err as AxiosError<{ error?: string }>
+            if (errRes.response) {
+                setError(errRes.response.data?.error ?? "Произошла ошибка")
             } else {
-                setError("Произошла ошибка");
+                setError("Произошла ошибка")
             }
         } finally {
             setLoading(false)
         }
     }
 
-
-
     return (
-        <>
-            <form onSubmit={handleSubmit}>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
-                <button disabled={loading} type="submit">Войти</button>
-            </form>
-            {error && <p>{error}</p>}
-        </>
+        <div className={styles.page}>
+            <div className={styles.card}>
+                <h1 className={styles.title}>Вход</h1>
+                <p className={styles.subtitle}>Войдите в аккаунт, чтобы управлять формами</p>
+                <form className={styles.form} onSubmit={handleSubmit}>
+                <input
+                    className={styles.input}
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Email"
+                />
+                <input
+                    className={styles.input}
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Пароль"
+                />
+                <button className={styles.button} disabled={loading} type="submit">
+                    Войти
+                </button>
+                {error && <p className={styles.error}>{error}</p>}
+                </form>
+            </div>
+        </div>
     )
 }

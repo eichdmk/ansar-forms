@@ -1,0 +1,103 @@
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.title {
+  margin: 0 0 4px 0;
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--color-text);
+}
+
+.description {
+  margin: 0 0 24px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 20px;
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.backLink:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+.count {
+  margin: 0 0 20px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.responseCard {
+  border: 1px solid var(--color-border);
+  padding: 24px;
+  margin-bottom: 16px;
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-card);
+}
+
+.responseDate {
+  margin: 0 0 16px 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.answerRow {
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.answerRow:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.answerLabel {
+  margin: 0 0 4px 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.answerValue {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  white-space: pre-wrap;
+}
+
+.empty {
+  margin: 24px 0 0 0;
+  padding: 32px 24px;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+}
+
+.message {
+  color: var(--color-required);
+  font-weight: 500;
+  margin: 16px 0 0 0;
+  font-size: 0.875rem;
+}

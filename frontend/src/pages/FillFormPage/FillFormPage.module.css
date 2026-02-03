@@ -1,0 +1,254 @@
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 24px 48px;
+  min-height: 100vh;
+  background: var(--color-page-bg);
+}
+
+.headerCard {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 24px 24px 32px;
+  margin-bottom: 12px;
+}
+
+.title {
+  margin: 0 0 8px 0;
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--color-text);
+  padding-bottom: 8px;
+  border-bottom: 1px solid transparent;
+}
+
+.description {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  padding-top: 8px;
+}
+
+.warning {
+  color: var(--color-required);
+  font-weight: 500;
+  margin: 16px 0;
+  font-size: 0.875rem;
+}
+
+.form {
+  margin-top: 0;
+}
+
+.questionList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.questionItem {
+  margin-bottom: 12px;
+  padding: 24px 24px 28px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+.questionLabel {
+  margin: 0 0 16px 0;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-text);
+}
+
+.requiredStar {
+  color: var(--color-required);
+  margin-left: 2px;
+}
+
+.typeLabel {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.input {
+  width: 100%;
+  padding: 12px 0;
+  font-size: 1rem;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  margin-top: 8px;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.input:focus {
+  outline: none;
+  border-bottom-color: var(--color-accent);
+  border-bottom-width: 2px;
+  padding-bottom: 11px;
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px 0;
+  font-size: 1rem;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  margin-top: 8px;
+  resize: vertical;
+  min-height: 80px;
+  box-sizing: border-box;
+}
+
+.textarea::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.textarea:focus {
+  outline: none;
+  border-bottom-color: var(--color-accent);
+  border-bottom-width: 2px;
+}
+
+.select {
+  width: 100%;
+  max-width: 100%;
+  padding: 12px 14px;
+  margin-top: 8px;
+  font-size: 1rem;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.radioGroup {
+  margin-top: 12px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.radioLabel input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-accent);
+}
+
+.checkboxGroup {
+  margin-top: 12px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.checkboxLabel input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-accent);
+}
+
+.submitWrap {
+  margin-top: 24px;
+  padding: 0 24px;
+}
+
+.submitButton {
+  padding: 12px 32px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-bg);
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  color: var(--color-required);
+  font-weight: 500;
+  margin: 16px 0;
+  font-size: 0.875rem;
+}
+
+.successCard {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 48px 32px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.successTitle {
+  margin: 0 0 8px 0;
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--color-text);
+}
+
+.successText {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.loading {
+  padding: 24px;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.errorOnly {
+  padding: 24px;
+  color: var(--color-required);
+  font-weight: 500;
+  font-size: 0.875rem;
+}

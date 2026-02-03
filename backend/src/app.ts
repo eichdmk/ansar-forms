@@ -30,6 +30,7 @@ app.register(async (instance) => {
     instance.get('/forms', {preHandler: authRequired}, (req, reply) => formModule.controller.getForms(req, reply))
     instance.put<ParamsId>('/forms/:id', {preHandler: authRequired}, (req, reply) => formModule.controller.updateForm(req, reply))
     instance.delete<ParamsId>('/forms/:id', {preHandler: authRequired}, (req, reply) => formModule.controller.deleteForm(req, reply))
+    instance.get('/forms/:formId/responses', { preHandler: authRequired }, (req, reply) => responsesModule.controller.getResponses(req, reply))
     instance.post('/forms/:formId/responses', (req, reply) => responsesModule.controller.createResponse(req, reply))
 }, { prefix: '/api' })
 
@@ -41,7 +42,7 @@ app.register(async (instance)=>{
 app.register(async (instance)=>{
     instance.get('/questions/:formId', (req, reply)=> questionModule.controller.findAllQuestions(req, reply))
     instance.post('/questions/:formId', {preHandler: authRequired}, (req, reply)=> questionModule.controller.createQuestion(req, reply))
-    instance.put('/questions/:formId/:questionId', {preHandler: authRequired}, (req, reply)=> questionModule.controller.updateQuestiion(req, reply))
+    instance.put('/questions/:formId/:questionId', {preHandler: authRequired}, (req, reply)=> questionModule.controller.updateQuestion(req, reply))
     instance.delete('/questions/:formId/:questionId', {preHandler: authRequired}, (req, reply)=> questionModule.controller.deleteQuestion(req, reply))
 }, { prefix: '/api' })
 

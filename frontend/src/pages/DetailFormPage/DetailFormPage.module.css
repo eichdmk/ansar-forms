@@ -1,0 +1,195 @@
+.title {
+  margin: 0 0 4px 0;
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--color-text);
+}
+
+.description {
+  margin: 0 0 24px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.topActions {
+  margin: 0 0 24px 0;
+}
+
+.responsesLink {
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.responsesLink:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.card {
+  border: 1px solid var(--color-border);
+  padding: 24px;
+  margin-bottom: 12px;
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-card);
+}
+
+.typeLabel {
+  margin: 0 0 8px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.questionLabel {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-text);
+}
+
+.requiredStar {
+  color: var(--color-required);
+  margin-left: 2px;
+}
+
+.meta {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.optionsMeta {
+  margin: 4px 0 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.input {
+  width: 100%;
+  max-width: 480px;
+  padding: 12px 0;
+  font-size: 1rem;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 8px;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-bottom-color: var(--color-accent);
+  border-bottom-width: 2px;
+  padding-bottom: 11px;
+}
+
+.checkboxLabel {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.optionsBlock {
+  margin-bottom: 12px;
+}
+
+.optionRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: center;
+}
+
+.optionInput {
+  flex: 1;
+  max-width: 320px;
+  padding: 10px 0;
+  font-size: 0.875rem;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.optionInput:focus {
+  outline: none;
+  border-bottom-color: var(--color-accent);
+}
+
+.addOptionBtn {
+  margin-top: 12px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.addOptionBtn:hover {
+  background: var(--color-accent-tint);
+  border-radius: var(--radius);
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cardActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.buttonPrimary {
+  padding: 8px 24px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-bg);
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.buttonPrimary:hover {
+  background: var(--color-accent-hover);
+}
+
+.buttonSecondary {
+  padding: 8px 24px;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.buttonSecondary:hover {
+  background: var(--color-accent-tint);
+}
+
+.message {
+  color: var(--color-required);
+  font-weight: 500;
+  margin: 16px 0 0 0;
+  font-size: 0.875rem;
+}
