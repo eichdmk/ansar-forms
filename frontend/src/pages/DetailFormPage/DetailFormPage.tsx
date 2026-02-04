@@ -114,7 +114,6 @@ export function DetailFormPage() {
             const updated = await formsAPI.update(id, {
                 title: formTitle.trim() || form.title,
                 description: formDescription.trim() || undefined,
-                is_published: form.is_published,
             })
             setForm(updated)
         } catch (error) {

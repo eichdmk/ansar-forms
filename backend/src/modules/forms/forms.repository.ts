@@ -22,7 +22,36 @@ export class FormsRepository {
     }
 
     updateForm = async (id: string, dto: UpdateFormDto) => {
-        const { rows } = await this.pool.query<Form>('UPDATE forms SET title = $1, description = $2, is_published = $3 WHERE id = $4 RETURNING *', [dto.title, dto.description, dto.is_published, id])
+        const updates: string[] = []
+        const values: unknown[] = []
+        let paramIndex = 1
+
+        if (dto.title !== undefined) {
+            updates.push(`title = $${paramIndex}`)
+            values.push(dto.title)
+            paramIndex++
+        }
+
+        if (dto.description !== undefined) {
+            updates.push(`description = $${paramIndex}`)
+            values.push(dto.description)
+            paramIndex++
+        }
+
+        if (updates.length === 0) {
+            return await this.findFormById(id)
+        }
+
+        values.push(id)
+        const query = `UPDATE forms SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`
+        
+        const { rows } = await this.pool.query<Form>(query, values)
+
+        return rows[0]
+    }
+
+    updateFormStatus = async (id: string, is_published: boolean) => {
+        const { rows } = await this.pool.query<Form>('UPDATE forms SET is_published = $1 WHERE id = $2 RETURNING *', [is_published, id])
 
         return rows[0]
     }

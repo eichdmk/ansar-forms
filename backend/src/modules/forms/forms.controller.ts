@@ -39,6 +39,20 @@ export class FormsController {
         reply.send(result)
     }
 
+    updateFormStatus = async (req: FastifyRequest<ParamsId>, reply: FastifyReply) => {
+        const id = req.params.id
+        const owner_id = (req as any).user.id
+        const { is_published } = req.body as { is_published: boolean }
+
+        if (typeof is_published !== 'boolean') {
+            return reply.status(400).send({ error: 'is_published должен быть boolean' })
+        }
+
+        const result = await this.formsService.updateStatus(id, is_published, owner_id)
+
+        reply.send(result)
+    }
+
     deleteForm = async (req: FastifyRequest<ParamsId>, reply: FastifyReply) => {
         const id = req.params.id
         const owner_id = (req as any).user.id

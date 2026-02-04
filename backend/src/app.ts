@@ -29,6 +29,7 @@ app.register(async (instance) => {
     instance.get<ParamsId>('/forms/:id', (req, reply) => formModule.controller.getFormById(req, reply))
     instance.get('/forms', {preHandler: authRequired}, (req, reply) => formModule.controller.getForms(req, reply))
     instance.put<ParamsId>('/forms/:id', {preHandler: authRequired}, (req, reply) => formModule.controller.updateForm(req, reply))
+    instance.patch<ParamsId>('/forms/:id/status', {preHandler: authRequired}, (req, reply) => formModule.controller.updateFormStatus(req, reply))
     instance.delete<ParamsId>('/forms/:id', {preHandler: authRequired}, (req, reply) => formModule.controller.deleteForm(req, reply))
     
     instance.get('/forms/:formId/responses', { preHandler: authRequired }, (req, reply) => responsesModule.controller.getResponses(req, reply))

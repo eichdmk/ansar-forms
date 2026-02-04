@@ -18,6 +18,10 @@ export const formsAPI = {
     const { data } = await api.put(`/forms/${id}`, form)
     return data
   },
+  updateStatus: async (id: string, is_published: boolean) => {
+    const { data } = await api.patch(`/forms/${id}/status`, { is_published })
+    return data
+  },
   delete: async (id: string) => {
     const { data } = await api.delete(`/forms/${id}`)
     return data

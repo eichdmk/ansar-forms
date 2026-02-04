@@ -5,13 +5,24 @@ import { FillFormPage } from "./pages/FillFormPage/FillFormPage"
 import { FormsPage } from "./pages/FormPage/FormPage"
 import { LoginPage } from "./pages/LoginPage/LoginPage"
 import { ResponsesPage } from "./pages/ResponsesPage/ResponsesPage"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { useLocalStorage } from "./hooks/useLocalStorage"
+
+function HomePage() {
+  const [token] = useLocalStorage("token")
+  
+  if (token) {
+    return <Navigate to="/forms" replace />
+  }
+  
+  return <LoginPage />
+}
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/forms/:id/fill" element={<FillFormPage />} />
 
         <Route element={<Layout />}>

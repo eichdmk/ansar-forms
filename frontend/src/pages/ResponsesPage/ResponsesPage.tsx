@@ -197,7 +197,6 @@ export function ResponsesPage() {
                       </span>
                     </th>
                   ))}
-                  <th className={`${styles.tableHeader} ${styles.actions}`}>Действия</th>
                 </tr>
               </thead>
               <tbody>
@@ -226,16 +225,6 @@ export function ResponsesPage() {
                             </div>
                           </td>
                         ))}
-                        <td className={`${styles.tableCell} ${styles.actions}`}>
-                          <button
-                            type="button"
-                            className={styles.expandButton}
-                            onClick={() => toggleResponse(response.id)}
-                            title={isExpanded ? "Свернуть детали" : "Развернуть детали"}
-                          >
-                            {isExpanded ? "▼" : "▶"}
-                          </button>
-                        </td>
                       </tr>
                       
                       {isExpanded && (

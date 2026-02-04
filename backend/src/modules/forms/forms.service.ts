@@ -46,10 +46,30 @@ export class FormService {
     }
 
     update = async (id: string, dto: UpdateFormDto, owner_id: string) => {
-        if (!dto.title) {
-            throw new BadRequestError('Введите корректные данные!')
+        if (!id) {
+            throw new BadRequestError('Отсутствует id')
         }
 
+        if (dto.title !== undefined && !dto.title.trim()) {
+            throw new BadRequestError('Название формы не может быть пустым')
+        }
+
+        const form = await this.formRepository.findFormById(id)
+
+        if (!form) {
+            throw new NotFoundError('Такой формы не существует')
+        }
+
+        if (form.owner_id !== owner_id) {
+            throw new ForbiddenError()
+        }
+
+        const result = await this.formRepository.updateForm(id, dto)
+
+        return result
+    }
+
+    updateStatus = async (id: string, is_published: boolean, owner_id: string) => {
         if (!id) {
             throw new BadRequestError('Отсутствует id')
         }
@@ -64,7 +84,7 @@ export class FormService {
             throw new ForbiddenError()
         }
 
-        const result = await this.formRepository.updateForm(id, dto)
+        const result = await this.formRepository.updateFormStatus(id, is_published)
 
         return result
     }

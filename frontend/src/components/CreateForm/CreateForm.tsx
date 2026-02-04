@@ -27,7 +27,7 @@ export function CreateForm({ onCreated }: CreateFormProps = {}) {
 
         if (selectedForm) {
             try {
-                const result = await formsAPI.update(selectedForm.id, { title, description, is_published })
+                const result = await formsAPI.update(selectedForm.id, { title, description })
                 dispatch(updateForm(result))
 
             } catch (error) {

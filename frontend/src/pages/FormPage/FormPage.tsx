@@ -96,17 +96,6 @@ export function FormsPage() {
       <section className={styles.recentSection}>
         <div className={styles.recentHeader}>
           <h2 className={styles.sectionTitle}>Недавние формы</h2>
-          <div className={styles.recentToolbar}>
-            <select className={styles.toolbarSelect} aria-label="Владелец">
-              <option>Владелец: кто угодно</option>
-            </select>
-            <button type="button" className={styles.toolbarIconBtn} title="Вид списка" aria-label="Вид списка">
-              <span aria-hidden>≡</span>
-            </button>
-            <button type="button" className={styles.toolbarIconBtn} title="Сортировка A–Z" aria-label="Сортировка">
-              <span aria-hidden>A–Z</span>
-            </button>
-          </div>
         </div>
 
         {filteredForms.length === 0 ? (

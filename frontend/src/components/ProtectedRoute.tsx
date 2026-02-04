@@ -9,7 +9,7 @@ export function ProtectedRoute({children}: ProtectedRouteProps){
     const [value] = useLocalStorage('token')
 
     if(!value){
-        return <Navigate to="/login" />
+        return <Navigate to="/" replace />
     }
 
     return <>{children}</>

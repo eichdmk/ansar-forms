@@ -43,7 +43,7 @@ function LayoutHeader() {
 
   function handleLogout() {
     localStorage.removeItem("token")
-    navigate("/login")
+    navigate("/")
   }
 
   async function handleCopyLink() {
@@ -61,11 +61,7 @@ function LayoutHeader() {
     if (!formId || !form) return
     setPublishLoading(true)
     try {
-      const updated = await formsAPI.update(formId, {
-        title: form.title,
-        description: form.description ?? undefined,
-        is_published: published,
-      })
+      const updated = await formsAPI.updateStatus(formId, published)
       setForm(updated)
     } catch {
       /* ignore */
