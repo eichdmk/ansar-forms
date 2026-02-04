@@ -21,23 +21,24 @@ function formatDate(s: string) {
 }
 
 function formatValue(value: unknown): string {
-  if (value === undefined || value === null) return "—"
+  if (value === undefined || value === null) return ""
   if (typeof value === "string") return value
   if (Array.isArray(value)) return value.join(", ")
   return String(value)
 }
 
-const PAGE_SIZE = 1
+const PAGE_SIZE = 50
 
 export function ResponsesPage() {
   const { id } = useParams()
   const [form, setForm] = useState<Form | null>(null)
   const [questions, setQuestions] = useState<Question[]>([])
-  const [currentResponse, setCurrentResponse] = useState<ResponseWithAnswers | null>(null)
+  const [responses, setResponses] = useState<ResponseWithAnswers[]>([])
   const [total, setTotal] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
+  const [expandedResponses, setExpandedResponses] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (!id) return
@@ -45,7 +46,12 @@ export function ResponsesPage() {
     Promise.all([formsAPI.getById(id), questionsApi.getByFormId(id)])
       .then(([formRes, questionsRes]) => {
         setForm(formRes)
-        setQuestions(questionsRes)
+        // Сортируем вопросы по порядку или дате создания
+        const sortedQuestions = [...questionsRes].sort((a, b) => 
+          (a.order || 0) - (b.order || 0) || 
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        )
+        setQuestions(sortedQuestions)
       })
       .catch((error: AxiosError<{ error?: string }>) => {
         if (error.response) {
@@ -61,16 +67,31 @@ export function ResponsesPage() {
       .getByFormId(id, currentPage, PAGE_SIZE)
       .then((res) => {
         setTotal(res.total)
-        setCurrentResponse(res.items[0] ?? null)
+        setResponses(res.items)
       })
       .catch((error: AxiosError<{ error?: string }>) => {
         if (error.response) {
           setMessage(error.response.data?.error ?? "Произошла ошибка")
         }
-        setCurrentResponse(null)
+        setResponses([])
       })
       .finally(() => setLoading(false))
   }, [id, currentPage])
+
+  const toggleResponse = (responseId: string) => {
+    const newSet = new Set(expandedResponses)
+    if (newSet.has(responseId)) {
+      newSet.delete(responseId)
+    } else {
+      newSet.add(responseId)
+    }
+    setExpandedResponses(newSet)
+  }
+
+  const getAnswerValue = (response: ResponseWithAnswers, questionId: string) => {
+    const answer = response.answers.find(a => a.question_id === questionId)
+    return answer ? formatValue(answer.value) : ""
+  }
 
   const questionMap = new Map(questions.map((q) => [q.id, q]))
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
@@ -87,58 +108,186 @@ export function ResponsesPage() {
           )}
         </>
       )}
-      <p className={styles.count}>
-        Ответов: {total}
-      </p>
+      
+      <div className={styles.header}>
+        <p className={styles.count}>
+          Ответов: {total}
+          {total > 0 && ` (показано ${responses.length})`}
+        </p>
+        
+        {total > 0 && (
+          <Link to={`/forms/${id}`} className={styles.viewFormLink}>
+            Открыть форму
+          </Link>
+        )}
+      </div>
 
       {total === 0 && !message && !loading && form && (
-        <p className={styles.empty}>Пока нет ответов на форму.</p>
+        <div className={styles.emptyState}>
+          <p className={styles.emptyText}>Пока нет ответов на форму.</p>
+          <Link to={`/forms/${id}`} className={styles.emptyLink}>
+            Открыть форму для заполнения
+          </Link>
+        </div>
       )}
 
       {loading && (
-        <p className={styles.loading}>Загрузка…</p>
+        <div className={styles.loading}>
+          <div className={styles.spinner}></div>
+          <p>Загрузка ответов...</p>
+        </div>
       )}
 
-      {!loading && currentResponse && (
+      {!loading && responses.length > 0 && (
         <>
-          <article className={styles.responseCard}>
-            <p className={styles.responseDate}>
-              {formatDate(currentResponse.created_at)}
-            </p>
-            {currentResponse.answers.map((a) => {
-              const q = questionMap.get(a.question_id)
-              const label = q ? q.label : a.question_id
-              return (
-                <div key={a.question_id} className={styles.answerRow}>
-                  <p className={styles.answerLabel}>{label}</p>
-                  <p className={styles.answerValue}>{formatValue(a.value)}</p>
-                </div>
-              )
-            })}
-          </article>
+          <div className={styles.tableContainer}>
+            <table className={styles.responsesTable}>
+              <thead>
+                <tr>
+                  <th className={`${styles.tableHeader} ${styles.rowNumber}`}>#</th>
+                  <th className={`${styles.tableHeader} ${styles.timestamp}`}>
+                    Отправлено
+                    <span className={styles.sortIndicator}>▼</span>
+                  </th>
+                  {questions.map((question, index) => (
+                    <th 
+                      key={question.id} 
+                      className={styles.tableHeader}
+                      title={question.label}
+                    >
+                      <span className={styles.questionNumber}>Q{index + 1}</span>
+                      <span className={styles.questionLabel}>
+                        {question.label.length > 30 
+                          ? `${question.label.substring(0, 30)}...` 
+                          : question.label}
+                      </span>
+                    </th>
+                  ))}
+                  <th className={`${styles.tableHeader} ${styles.actions}`}>Действия</th>
+                </tr>
+              </thead>
+              <tbody>
+                {responses.map((response, rowIndex) => {
+                  const isExpanded = expandedResponses.has(response.id)
+                  return (
+                    <>
+                      <tr 
+                        key={response.id} 
+                        className={`${styles.tableRow} ${isExpanded ? styles.expanded : ''}`}
+                      >
+                        <td className={`${styles.tableCell} ${styles.rowNumber}`}>
+                          {(currentPage - 1) * PAGE_SIZE + rowIndex + 1}
+                        </td>
+                        <td className={`${styles.tableCell} ${styles.timestamp}`}>
+                          {formatDate(response.created_at)}
+                        </td>
+                        {questions.map((question) => (
+                          <td 
+                            key={`${response.id}-${question.id}`} 
+                            className={styles.tableCell}
+                            title={getAnswerValue(response, question.id)}
+                          >
+                            <div className={styles.cellContent}>
+                              {getAnswerValue(response, question.id)}
+                            </div>
+                          </td>
+                        ))}
+                        <td className={`${styles.tableCell} ${styles.actions}`}>
+                          <button
+                            type="button"
+                            className={styles.expandButton}
+                            onClick={() => toggleResponse(response.id)}
+                            title={isExpanded ? "Свернуть детали" : "Развернуть детали"}
+                          >
+                            {isExpanded ? "▼" : "▶"}
+                          </button>
+                        </td>
+                      </tr>
+                      
+                      {isExpanded && (
+                        <tr className={styles.detailRow}>
+                          <td colSpan={questions.length + 3} className={styles.detailCell}>
+                            <div className={styles.responseDetail}>
+                              <h3 className={styles.detailTitle}>
+                                Ответ от {formatDate(response.created_at)}
+                              </h3>
+                              <div className={styles.detailGrid}>
+                                {questions.map((question) => {
+                                  const value = getAnswerValue(response, question.id)
+                                  return (
+                                    <div key={question.id} className={styles.detailItem}>
+                                      <div className={styles.detailLabel}>{question.label}</div>
+                                      <div className={styles.detailValue}>
+                                        {value || <span className={styles.emptyAnswer}>—</span>}
+                                      </div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
 
-          <nav className={styles.pagination} aria-label="Навигация по ответам">
-            <button
-              type="button"
-              className={styles.paginationBtn}
-              disabled={!hasPrev}
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            >
-              ← Назад
-            </button>
-            <span className={styles.paginationInfo}>
-              Ответ {currentPage} из {totalPages}
-              {total > 0 && ` (всего ${total})`}
-            </span>
-            <button
-              type="button"
-              className={styles.paginationBtn}
-              disabled={!hasNext}
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            >
-              Вперёд →
-            </button>
-          </nav>
+          {totalPages > 1 && (
+            <nav className={styles.pagination} aria-label="Навигация по страницам">
+              <button
+                type="button"
+                className={styles.paginationBtn}
+                disabled={!hasPrev}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              >
+                ← Предыдущая
+              </button>
+              
+              <div className={styles.paginationPages}>
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum: number
+                  if (totalPages <= 5) {
+                    pageNum = i + 1
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i
+                  } else {
+                    pageNum = currentPage - 2 + i
+                  }
+                  
+                  return (
+                    <button
+                      key={pageNum}
+                      type="button"
+                      className={`${styles.pageBtn} ${
+                        currentPage === pageNum ? styles.activePage : ''
+                      }`}
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </button>
+                  )
+                })}
+              </div>
+              
+              <button
+                type="button"
+                className={styles.paginationBtn}
+                disabled={!hasNext}
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              >
+                Следующая →
+              </button>
+              
+              <div className={styles.pageInfo}>
+                Страница {currentPage} из {totalPages}
+              </div>
+            </nav>
+          )}
         </>
       )}
 

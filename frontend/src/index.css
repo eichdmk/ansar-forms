@@ -1,9 +1,8 @@
-/* Google Forms–inspired palette */
 :root {
   --color-accent: #1a73e8;
   --color-accent-hover: #1765cc;
   --color-bg: #ffffff;
-  --color-page-bg: #f0ebf8;
+  --color-page-bg: #f3f6ff;
   --color-accent-tint: rgba(26, 115, 232, 0.08);
   --color-accent-muted: #5f6368;
   --color-border: #dadce0;
