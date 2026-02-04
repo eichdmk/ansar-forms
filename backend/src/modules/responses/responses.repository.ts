@@ -28,7 +28,14 @@ export class ResponsesRepository {
         return rows[0]
     }
 
-    getResponsesCount = async (form_id: string): Promise<number> => {
+    getResponsesCount = async (form_id: string, fromDate?: string): Promise<number> => {
+        if (fromDate) {
+            const { rows } = await this.pool.query<{ count: string }>(
+                'SELECT COUNT(*) AS count FROM responses WHERE form_id = $1 AND created_at >= $2',
+                [form_id, fromDate]
+            )
+            return parseInt(rows[0]?.count ?? '0', 10)
+        }
         const { rows } = await this.pool.query<{ count: string }>(
             'SELECT COUNT(*) AS count FROM responses WHERE form_id = $1',
             [form_id]
@@ -51,8 +58,25 @@ export class ResponsesRepository {
     getResponsesWithAnswersPaginated = async (
         form_id: string,
         limit: number,
-        offset: number
+        offset: number,
+        fromDate?: string
     ): Promise<ResponseWithAnswers[]> => {
+        if (fromDate) {
+            const { rows } = await this.pool.query<ResponseRow>(
+                `SELECT r.id AS response_id, r.form_id, r.created_at, a.question_id, a.value
+                 FROM (
+                   SELECT id, form_id, created_at FROM responses
+                   WHERE form_id = $1 AND created_at >= $4
+                   ORDER BY created_at DESC
+                   LIMIT $2 OFFSET $3
+                 ) r
+                 LEFT JOIN answers a ON a.response_id = r.id
+                 ORDER BY r.created_at DESC, a.question_id`,
+                [form_id, limit, offset, fromDate]
+            )
+            return this.groupRowsIntoResponses(rows)
+        }
+        
         const { rows } = await this.pool.query<ResponseRow>(
             `SELECT r.id AS response_id, r.form_id, r.created_at, a.question_id, a.value
              FROM (

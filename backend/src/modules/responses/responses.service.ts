@@ -15,7 +15,8 @@ export class ResponsesService {
         formId: string,
         ownerId: string,
         page: number = 1,
-        limit: number = 1
+        limit: number = 1,
+        fromDate?: string
     ) => {
         if (!formId) {
             throw new BadRequestError('id формы не указан')
@@ -31,8 +32,8 @@ export class ResponsesService {
         const limitNum = Math.max(1, Math.min(100, Math.floor(limit)))
         const offset = (pageNum - 1) * limitNum
         const [items, total] = await Promise.all([
-            this.responsesRepository.getResponsesWithAnswersPaginated(formId, limitNum, offset),
-            this.responsesRepository.getResponsesCount(formId),
+            this.responsesRepository.getResponsesWithAnswersPaginated(formId, limitNum, offset, fromDate),
+            this.responsesRepository.getResponsesCount(formId, fromDate),
         ])
         return { items, total, page: pageNum, limit: limitNum }
     }

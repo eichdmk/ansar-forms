@@ -39,6 +39,7 @@ export function ResponsesPage() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [expandedResponses, setExpandedResponses] = useState<Set<string>>(new Set())
+  const [filterDate, setFilterDate] = useState<string>("")
 
   useEffect(() => {
     if (!id) return
@@ -46,7 +47,6 @@ export function ResponsesPage() {
     Promise.all([formsAPI.getById(id), questionsApi.getByFormId(id)])
       .then(([formRes, questionsRes]) => {
         setForm(formRes)
-        // Сортируем вопросы по порядку или дате создания
         const sortedQuestions = [...questionsRes].sort((a, b) => 
           (a.order || 0) - (b.order || 0) || 
           new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -62,9 +62,17 @@ export function ResponsesPage() {
 
   useEffect(() => {
     if (!id) return
+    // При изменении фильтра сбрасываем страницу на 1
+    if (filterDate) {
+      setCurrentPage(1)
+    }
+  }, [id, filterDate])
+
+  useEffect(() => {
+    if (!id) return
     setLoading(true)
     responsesAPI
-      .getByFormId(id, currentPage, PAGE_SIZE)
+      .getByFormId(id, currentPage, PAGE_SIZE, filterDate || undefined)
       .then((res) => {
         setTotal(res.total)
         setResponses(res.items)
@@ -76,7 +84,7 @@ export function ResponsesPage() {
         setResponses([])
       })
       .finally(() => setLoading(false))
-  }, [id, currentPage])
+  }, [id, currentPage, filterDate])
 
   const toggleResponse = (responseId: string) => {
     const newSet = new Set(expandedResponses)
@@ -93,7 +101,6 @@ export function ResponsesPage() {
     return answer ? formatValue(answer.value) : ""
   }
 
-  const questionMap = new Map(questions.map((q) => [q.id, q]))
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const hasPrev = currentPage > 1
   const hasNext = currentPage < totalPages
@@ -110,13 +117,40 @@ export function ResponsesPage() {
       )}
       
       <div className={styles.header}>
-        <p className={styles.count}>
-          Ответов: {total}
-          {total > 0 && ` (показано ${responses.length})`}
-        </p>
+        <div className={styles.headerLeft}>
+          <p className={styles.count}>
+            Ответов: {total}
+            {total > 0 && ` (показано ${responses.length})`}
+          </p>
+          {total > 0 && (
+            <div className={styles.dateFilter}>
+              <label htmlFor="filterDate" className={styles.dateFilterLabel}>
+                С даты:
+              </label>
+              <input
+                id="filterDate"
+                type="date"
+                className={styles.dateFilterInput}
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+                aria-label="Фильтр по дате"
+              />
+              {filterDate && (
+                <button
+                  type="button"
+                  className={styles.dateFilterClear}
+                  onClick={() => setFilterDate("")}
+                  title="Сбросить фильтр"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          )}
+        </div>
         
         {total > 0 && (
-          <Link to={`/forms/${id}`} className={styles.viewFormLink}>
+          <Link to={`/forms/${id}/fill`} className={styles.viewFormLink}>
             Открыть форму
           </Link>
         )}
@@ -125,7 +159,7 @@ export function ResponsesPage() {
       {total === 0 && !message && !loading && form && (
         <div className={styles.emptyState}>
           <p className={styles.emptyText}>Пока нет ответов на форму.</p>
-          <Link to={`/forms/${id}`} className={styles.emptyLink}>
+          <Link to={`/forms/${id}/fill`} className={styles.emptyLink}>
             Открыть форму для заполнения
           </Link>
         </div>
