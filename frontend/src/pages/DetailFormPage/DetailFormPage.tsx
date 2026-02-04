@@ -31,6 +31,46 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 
 
+
+function SortableQuestionItem({
+    question,
+    ...rest
+}: {
+    question: Question
+} & Omit<React.ComponentProps<typeof QuestionListItem>, "question">) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: question.id })
+
+    const style = {
+        transition,
+        transform: CSS.Transform.toString(transform),
+        opacity: isDragging ? 0.5 : 1,
+    }
+
+    return (
+        <li ref={setNodeRef} style={style} className={styles.card} {...attributes}>
+            <div className={styles.dragHandleRow}>
+                <span
+                    className={styles.dragHandle}
+                    {...listeners}
+                    title="Перетащить"
+                    aria-label="Перетащить вопрос"
+                >
+                    ⋮⋮
+                </span>
+            </div>
+            <QuestionListItem question={question} renderAs="div" {...rest} />
+        </li>
+    )
+}
+
+
 export function DetailFormPage() {
     const { id } = useParams()
     const [form, setForm] = useState<Form | null>(null)
@@ -158,10 +198,11 @@ export function DetailFormPage() {
         return () => mq.removeEventListener("change", handler)
     }, [])
 
-    function handleDragEnd(event: DragEndEvent) {
+    async function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event
 
         if (!over || active.id === over.id) return
+        if (!id) return
 
         const oldIndex = questions.findIndex(q => q.id === active.id)
         const newIndex = questions.findIndex(q => q.id === over.id)
@@ -170,45 +211,30 @@ export function DetailFormPage() {
 
         const newOrder = arrayMove(questions, oldIndex, newIndex)
         dispatch(setQuestions(newOrder))
-    }
 
-    function SortableQuestionItem({
-        question,
-        ...rest
-    }: {
-        question: Question
-    } & Omit<React.ComponentProps<typeof QuestionListItem>, "question">) {
-        const {
-            attributes,
-            listeners,
-            setNodeRef,
-            transform,
-            transition,
-            isDragging,
-        } = useSortable({ id: question.id })
-
-        const style = {
-            transition,
-            transform: CSS.Transform.toString(transform),
-            opacity: isDragging ? 0.5 : 1,
+        try {
+            setMessage("")
+            const updates = newOrder.map((q, index) =>
+                questionsApi.update(q.id, id, {
+                    type: q.type,
+                    label: q.label,
+                    required: q.required,
+                    order: index,
+                    options: q.options ?? undefined,
+                })
+            )
+            const results = await Promise.all(updates)
+            results.forEach((updated) => dispatch(updateQuestion(updated)))
+        } catch (error) {
+            const err = error as AxiosError<{ error?: string }>
+            if (err.response) {
+                setMessage(err.response.data?.error ?? "Не удалось сохранить порядок вопросов")
+            }
+            dispatch(setQuestions(questions))
         }
-
-        return (
-            <li ref={setNodeRef} style={style} className={styles.card} {...attributes}>
-                <div className={styles.dragHandleRow}>
-                    <span
-                        className={styles.dragHandle}
-                        {...listeners}
-                        title="Перетащить"
-                        aria-label="Перетащить вопрос"
-                    >
-                        ⋮⋮
-                    </span>
-                </div>
-                <QuestionListItem question={question} renderAs="div" {...rest} />
-            </li>
-        )
     }
+
+
 
     const toolbarContent = (
         <QuestionTypesToolbar onSelectType={setSidebarQuestionType} />
