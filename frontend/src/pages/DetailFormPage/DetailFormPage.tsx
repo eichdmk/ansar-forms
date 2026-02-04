@@ -214,17 +214,27 @@ export function DetailFormPage() {
 
         try {
             setMessage("")
-            const updates = newOrder.map((q, index) =>
-                questionsApi.update(q.id, id, {
-                    type: q.type,
-                    label: q.label,
-                    required: q.required,
-                    order: index,
-                    options: q.options ?? undefined,
+
+            const toUpdate = newOrder
+                .map((q, newIndex) => {
+                    const oldIndex = questions.findIndex((oq) => oq.id === q.id)
+                    if (oldIndex === newIndex) return null
+                    return { q, newIndex }
                 })
-            )
-            const results = await Promise.all(updates)
-            results.forEach((updated) => dispatch(updateQuestion(updated)))
+                .filter((x): x is { q: Question; newIndex: number } => x !== null)
+
+            if (toUpdate.length > 0) {
+                const updates = toUpdate.map(({ q, newIndex }) =>
+                    questionsApi.update(q.id, id, {
+                        type: q.type,
+                        label: q.label,
+                        required: q.required,
+                        order: newIndex,
+                        options: q.options ?? undefined,
+                    })
+                )
+                await Promise.all(updates)
+            }
         } catch (error) {
             const err = error as AxiosError<{ error?: string }>
             if (err.response) {
