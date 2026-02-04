@@ -11,6 +11,25 @@ import { QuestionConstructor, questionToDraft } from "../../components/QuestionC
 import { QuestionTypesToolbar } from "./QuestionTypesToolbar"
 import { QuestionListItem } from "./QuestionListItem"
 import styles from "./DetailFormPage.module.css"
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    type DragEndEvent,
+} from "@dnd-kit/core"
+
+import {
+    SortableContext,
+    arrayMove,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+
 
 export function DetailFormPage() {
     const { id } = useParams()
@@ -24,6 +43,10 @@ export function DetailFormPage() {
     const [formSaving, setFormSaving] = useState(false)
     const questions = useAppSelector(state => state.questions.questions)
     const dispatch = useDispatch()
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+        useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    )
 
     useEffect(() => {
         if (form) {
@@ -135,6 +158,58 @@ export function DetailFormPage() {
         return () => mq.removeEventListener("change", handler)
     }, [])
 
+    function handleDragEnd(event: DragEndEvent) {
+        const { active, over } = event
+
+        if (!over || active.id === over.id) return
+
+        const oldIndex = questions.findIndex(q => q.id === active.id)
+        const newIndex = questions.findIndex(q => q.id === over.id)
+
+        if (oldIndex === -1 || newIndex === -1) return
+
+        const newOrder = arrayMove(questions, oldIndex, newIndex)
+        dispatch(setQuestions(newOrder))
+    }
+
+    function SortableQuestionItem({
+        question,
+        ...rest
+    }: {
+        question: Question
+    } & Omit<React.ComponentProps<typeof QuestionListItem>, "question">) {
+        const {
+            attributes,
+            listeners,
+            setNodeRef,
+            transform,
+            transition,
+            isDragging,
+        } = useSortable({ id: question.id })
+
+        const style = {
+            transition,
+            transform: CSS.Transform.toString(transform),
+            opacity: isDragging ? 0.5 : 1,
+        }
+
+        return (
+            <li ref={setNodeRef} style={style} className={styles.card} {...attributes}>
+                <div className={styles.dragHandleRow}>
+                    <span
+                        className={styles.dragHandle}
+                        {...listeners}
+                        title="Перетащить"
+                        aria-label="Перетащить вопрос"
+                    >
+                        ⋮⋮
+                    </span>
+                </div>
+                <QuestionListItem question={question} renderAs="div" {...rest} />
+            </li>
+        )
+    }
+
     const toolbarContent = (
         <QuestionTypesToolbar onSelectType={setSidebarQuestionType} />
     )
@@ -183,21 +258,32 @@ export function DetailFormPage() {
                             />
                         )}
 
-                        <ul className={styles.list}>
-                            {questions.map((q) => (
-                                <QuestionListItem
-                                    key={q.id}
-                                    question={q}
-                                    isEditing={editingQuestionId === q.id}
-                                    draft={editingQuestionId === q.id ? editDraft : null}
-                                    onDraftChange={setEditDraft}
-                                    onSave={handleSaveQuestion}
-                                    onCancel={cancelEditing}
-                                    onEdit={() => startEditing(q)}
-                                    onDelete={() => handleDelete(q.id)}
-                                />
-                            ))}
-                        </ul>
+                        <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext
+                                items={questions.map(q => q.id)}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                <ul className={styles.list}>
+                                    {questions.map((q) => (
+                                        <SortableQuestionItem
+                                            key={q.id}
+                                            question={q}
+                                            isEditing={editingQuestionId === q.id}
+                                            draft={editingQuestionId === q.id ? editDraft : null}
+                                            onDraftChange={setEditDraft}
+                                            onSave={handleSaveQuestion}
+                                            onCancel={cancelEditing}
+                                            onEdit={() => startEditing(q)}
+                                            onDelete={() => handleDelete(q.id)}
+                                        />
+                                    ))}
+                                </ul>
+                            </SortableContext>
+                        </DndContext>
 
                         {message && <p className={styles.message}>{message}</p>}
                     </main>

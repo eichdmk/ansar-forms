@@ -12,6 +12,7 @@ type QuestionListItemProps = {
     onCancel: () => void
     onEdit: () => void
     onDelete: () => void
+    renderAs?: 'li' | 'div'
 }
 
 export function QuestionListItem({
@@ -23,13 +24,15 @@ export function QuestionListItem({
     onCancel,
     onEdit,
     onDelete,
+    renderAs = 'li'
 }: QuestionListItemProps) {
     const needsOptions =
         draft != null && ["radio", "checkbox", "select"].includes(draft.type)
 
+        const Wrapper = renderAs === 'div' ? 'div' : 'li'
     if (isEditing && draft) {
         return (
-            <li className={styles.card}>
+            <Wrapper className={renderAs === 'li' ? styles.card : undefined}>
                 <p className={styles.typeLabel}>
                     {QUESTION_TYPES.find((t) => t.value === draft.type)?.label}
                 </p>
@@ -130,12 +133,12 @@ export function QuestionListItem({
                         Сохранить
                     </button>
                 </div>
-            </li>
+            </Wrapper>
         )
     }
 
     return (
-        <li className={styles.card}>
+        <Wrapper className={renderAs === 'li' ? styles.card : undefined}>
             <p className={styles.questionLabel}>
                 {question.label}
                 {question.required && (
@@ -169,6 +172,6 @@ export function QuestionListItem({
                     Удалить
                 </button>
             </div>
-        </li>
+        </Wrapper>
     )
 }
