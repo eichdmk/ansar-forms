@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom"
 import { formsAPI, questionsApi, responsesAPI } from "../../api"
 import type { Form, Question, CreateResponseDto } from "../../types"
 import type { AxiosError } from "axios"
-import { QUESTION_TYPES } from "../../constants/questionTypes"
 import styles from "./FillFormPage.module.css"
 
 type AnswerValue = string | string[]
@@ -16,6 +15,7 @@ export function FillFormPage() {
     const [message, setMessage] = useState("")
     const [success, setSuccess] = useState(false)
     const [submitting, setSubmitting] = useState(false)
+    const [acceptTerms, setAcceptTerms] = useState(false)
 
     useEffect(() => {
         async function load() {
@@ -103,8 +103,6 @@ export function FillFormPage() {
             <form className={styles.form} onSubmit={handleSubmit}>
                 <ul className={styles.questionList}>
                     {questions.map((q) => {
-                        const typeLabel =
-                            QUESTION_TYPES.find((t) => t.value === q.type)?.label ?? q.type
                         const options = opts(q)
                         const value = answers[q.id]
                         const valueStr =
@@ -120,12 +118,12 @@ export function FillFormPage() {
                                     {q.label}
                                     {q.required && <span className={styles.requiredStar}> *</span>}
                                 </p>
-                                <p className={styles.typeLabel}>{typeLabel}</p>
 
                                 {q.type === "text" && (
                                     <input
                                         className={styles.input}
                                         type="text"
+                                        placeholder="Мой ответ"
                                         value={valueStr}
                                         onChange={(e) => setAnswer(q.id, e.target.value)}
                                         required={q.required}
@@ -134,6 +132,7 @@ export function FillFormPage() {
                                 {q.type === "textarea" && (
                                     <textarea
                                         className={styles.textarea}
+                                        placeholder="Мой ответ"
                                         value={valueStr}
                                         onChange={(e) => setAnswer(q.id, e.target.value)}
                                         required={q.required}
@@ -216,11 +215,24 @@ export function FillFormPage() {
 
                 {message && <p className={styles.error}>{message}</p>}
 
+                <div className={styles.termsBlock}>
+                    <label className={styles.termsAccept}>
+                        <input
+                            type="checkbox"
+                            checked={acceptTerms}
+                            onChange={(e) => setAcceptTerms(e.target.checked)}
+                        />
+                        <span className={styles.termsText}>
+                            Я принимаю условия обработки пользовательских данных
+                        </span>
+                    </label>
+                </div>
+
                 <div className={styles.submitWrap}>
                 <button
                     type="submit"
                     className={styles.submitButton}
-                    disabled={submitting || !form.is_published}
+                    disabled={submitting || !form.is_published || !acceptTerms}
                 >
                     {submitting ? "Отправка…" : "Отправить"}
                 </button>
