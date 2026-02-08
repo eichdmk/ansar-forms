@@ -1,11 +1,11 @@
-export type role = 'owner' | 'editor' | 'viewer'
+export type FormAccessRole = 'owner' | 'editor' | 'viewer'
 
 export interface FormAccess{
     id: string,
     form_id: string
     user_id: string
     role: string
-    created_at: string
+    created_at: Date
 }
 
 export interface FormInvite {
@@ -13,8 +13,9 @@ export interface FormInvite {
     form_id: string
     token: string
     role: string
-    created_at: string
-    used_at: string
+    created_at: Date
+    used_at: Date
+    expires_at: Date
 }
 
 export interface CreateInviteDto{

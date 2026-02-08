@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import { FormInvite } from "./form-access.types";
 
 export class FormInvitesRepository{
     constructor(private pool: Pool){}
@@ -13,12 +14,12 @@ export class FormInvitesRepository{
     }
 
     async findByToken(token: string){
-        const {rows} = await this.pool.query("SELECT * FROM form_invites WHERE token = $1 AND expires_at IS NULL OR expires_at > now() AND used_at IS NULL" [token])
+        const {rows} = await this.pool.query<FormInvite>("SELECT * FROM form_invites WHERE token = $1 AND (expires_at IS NULL OR expires_at > now()) AND used_at IS NULL", [token])
 
         return rows[0]
     }
 
-    async markUser(id: string){
-        await this.pool.query("UPDATE form_access SET used_at = now() WHERE id = $1", [id])
+    async markUsed(id: string){
+        await this.pool.query("UPDATE form_invites SET used_at = now() WHERE id = $1", [id])
     }
 }
