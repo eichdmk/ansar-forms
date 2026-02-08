@@ -112,38 +112,34 @@ export function ResponsesPage() {
             Ответов: {total}
             {total > 0 && ` (показано ${responses.length})`}
           </p>
-          {total > 0 && (
-            <div className={styles.dateFilter}>
-              <label htmlFor="filterDate" className={styles.dateFilterLabel}>
-                С даты:
-              </label>
-              <input
-                id="filterDate"
-                type="date"
-                className={styles.dateFilterInput}
-                value={filterDate}
-                onChange={(e) => setFilterDate(e.target.value)}
-                aria-label="Фильтр по дате"
-              />
-              {filterDate && (
-                <button
-                  type="button"
-                  className={styles.dateFilterClear}
-                  onClick={() => setFilterDate("")}
-                  title="Сбросить фильтр"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-          )}
+          <div className={styles.dateFilter}>
+            <label htmlFor="filterDate" className={styles.dateFilterLabel}>
+              С даты:
+            </label>
+            <input
+              id="filterDate"
+              type="date"
+              className={styles.dateFilterInput}
+              value={filterDate}
+              onChange={(e) => setFilterDate(e.target.value)}
+              aria-label="Фильтр по дате"
+            />
+            {filterDate && (
+              <button
+                type="button"
+                className={styles.dateFilterClear}
+                onClick={() => setFilterDate("")}
+                title="Сбросить фильтр"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
         
-        {total > 0 && (
-          <Link to={`/forms/${id}/fill`} className={styles.viewFormLink}>
-            Открыть форму
-          </Link>
-        )}
+        <Link to={`/forms/${id}/fill`} className={styles.viewFormLink}>
+          Открыть форму
+        </Link>
       </div>
 
       {total === 0 && !message && !loading && form && (

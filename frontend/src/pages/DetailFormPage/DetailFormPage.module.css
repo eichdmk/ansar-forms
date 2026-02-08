@@ -333,6 +333,276 @@
   cursor: not-allowed;
 }
 
+.formTitleReadOnly {
+  margin: 0 0 8px 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.formDescriptionReadOnly {
+  margin: 0 0 16px 0;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+}
+
+.roleBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius);
+}
+
+.accessCard {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.accessTitle {
+  margin: 0 0 16px 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.accessLoading,
+.accessEmpty {
+  margin: 0 0 12px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.accessList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+}
+
+.accessRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.875rem;
+}
+
+.accessRow:last-child {
+  border-bottom: none;
+}
+
+.accessEmail {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text);
+}
+
+.accessRole {
+  color: var(--color-text-secondary);
+}
+
+.accessRemoveBtn {
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+  font-family: var(--font);
+  color: var(--color-danger);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.accessRemoveBtn:hover {
+  background: var(--color-bg-secondary);
+}
+
+.inviteBtn {
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--color-accent);
+  background: var(--color-accent-light);
+  border: 1px solid var(--color-accent-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.inviteBtn:hover {
+  background: var(--color-accent-secondary-tint);
+}
+
+.viewerQuestionsHint {
+  margin: 0 0 12px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tab,
+.tabActive {
+  padding: 12px 20px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  font-family: var(--font);
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.tab:hover {
+  color: var(--color-text);
+}
+
+.tabActive {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+  font-weight: 600;
+}
+
+.settingsTab {
+  margin-bottom: 24px;
+}
+
+.accessIntro {
+  margin: 0 0 20px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.modal {
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: var(--shadow-elevated);
+}
+
+.modalTitle {
+  margin: 0 0 16px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.modalHint {
+  margin: 0 0 16px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.inviteLinkRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.inviteLinkInput {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  font-size: 0.875rem;
+  font-family: var(--font);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.copyBtn {
+  padding: 10px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--color-bg);
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.copyBtn:hover {
+  background: var(--color-accent-hover);
+}
+
+.modalCloseBtn {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--color-bg);
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.modalCloseBtn:hover {
+  background: var(--color-accent-hover);
+}
+
+.modalLabel {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.modalSelect,
+.modalInput {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  font-size: 0.875rem;
+  font-family: var(--font);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
 .list {
   list-style: none;
   padding: 0;

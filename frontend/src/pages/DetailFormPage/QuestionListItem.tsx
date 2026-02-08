@@ -13,6 +13,7 @@ type QuestionListItemProps = {
     onEdit: () => void
     onDelete: () => void
     renderAs?: 'li' | 'div'
+    readOnly?: boolean
 }
 
 export function QuestionListItem({
@@ -24,7 +25,8 @@ export function QuestionListItem({
     onCancel,
     onEdit,
     onDelete,
-    renderAs = 'li'
+    renderAs = 'li',
+    readOnly = false
 }: QuestionListItemProps) {
     const needsOptions =
         draft != null && ["radio", "checkbox", "select"].includes(draft.type)
@@ -156,22 +158,24 @@ export function QuestionListItem({
                         {question.options.join(", ")}
                     </p>
                 )}
-            <div className={styles.cardActions}>
-                <button
-                    type="button"
-                    className={styles.buttonSecondary}
-                    onClick={onEdit}
-                >
-                    Редактировать
-                </button>
-                <button
-                    type="button"
-                    className={styles.buttonDanger}
-                    onClick={onDelete}
-                >
-                    Удалить
-                </button>
-            </div>
+            {!readOnly && (
+                <div className={styles.cardActions}>
+                    <button
+                        type="button"
+                        className={styles.buttonSecondary}
+                        onClick={onEdit}
+                    >
+                        Редактировать
+                    </button>
+                    <button
+                        type="button"
+                        className={styles.buttonDanger}
+                        onClick={onDelete}
+                    >
+                        Удалить
+                    </button>
+                </div>
+            )}
         </Wrapper>
     )
 }

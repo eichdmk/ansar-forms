@@ -2,7 +2,7 @@ import { useState } from "react"
 import { authAPI } from "../../api"
 import { useLocalStorage } from "../../hooks/useLocalStorage"
 import type { AxiosError } from "axios"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import styles from "./LoginPage.module.css"
 
 export function LoginPage() {
@@ -12,6 +12,8 @@ export function LoginPage() {
     const [error, setError] = useState("")
     const [, setValue] = useLocalStorage("token")
     const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
+    const returnUrl = searchParams.get("returnUrl")
 
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -20,7 +22,7 @@ export function LoginPage() {
         try {
             const result = await authAPI.login({ email, password })
             setValue(result)
-            navigate("/forms")
+            navigate(returnUrl ? decodeURIComponent(returnUrl) : "/forms", { replace: true })
         } catch (err) {
             const errRes = err as AxiosError<{ error?: string }>
             if (errRes.response) {

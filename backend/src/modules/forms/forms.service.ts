@@ -31,11 +31,8 @@ export class FormService {
         return result
     }
 
-    findForms = async (owner_id: string) => {
-        const result = await this.formRepository.findAllForms(owner_id)
-
-        return result
-
+    findForms = async (userId: string) => {
+        return await this.formRepository.findAllFormsForUser(userId)
     }
 
     findById = async (id: string) => {
@@ -50,7 +47,15 @@ export class FormService {
         }
 
         return result
+    }
 
+    findByIdWithRole = async (id: string, userId: string) => {
+        if (!id) throw new BadRequestError('Отсутствует id')
+        const form = await this.formRepository.findFormById(id)
+        if (!form) throw new NotFoundError('Такой формы не существует')
+        const role = await this.formAccessService.getUserFormRole(id, userId)
+        if (role === null) throw new ForbiddenError()
+        return { ...form, role }
     }
 
     update = async (id: string, dto: UpdateFormDto, owner_id: string) => {

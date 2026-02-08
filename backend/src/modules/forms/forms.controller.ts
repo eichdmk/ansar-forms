@@ -23,9 +23,14 @@ export class FormsController {
 
     getFormById = async (req: FastifyRequest<ParamsId>, reply: FastifyReply) => {
         const id = req.params.id
-
         const result = await this.formsService.findById(id)
+        reply.send(result)
+    }
 
+    getFormByIdWithRole = async (req: FastifyRequest<ParamsId>, reply: FastifyReply) => {
+        const id = req.params.id
+        const userId = (req as any).user.id
+        const result = await this.formsService.findByIdWithRole(id, userId)
         reply.send(result)
     }
 

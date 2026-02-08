@@ -30,6 +30,7 @@ const responsesModule = createResponsesModule(formModule.service, formAccessModu
 app.register(async (instance) => {
     instance.post('/forms', {preHandler: authRequired}, (req, reply) => formModule.controller.createForm(req, reply))
     instance.get<ParamsId>('/forms/:id', (req, reply) => formModule.controller.getFormById(req, reply))
+    instance.get<ParamsId>('/forms/:id/me', { preHandler: authRequired }, (req, reply) => formModule.controller.getFormByIdWithRole(req, reply))
     instance.get('/forms', {preHandler: authRequired}, (req, reply) => formModule.controller.getForms(req, reply))
     instance.put<ParamsId>('/forms/:id', {preHandler: authRequired}, (req, reply) => formModule.controller.updateForm(req, reply))
     instance.patch<ParamsId>('/forms/:id/status', {preHandler: authRequired}, (req, reply) => formModule.controller.updateFormStatus(req, reply))

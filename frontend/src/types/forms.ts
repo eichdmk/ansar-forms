@@ -1,3 +1,4 @@
+export type FormAccessRole = 'owner' | 'editor' | 'viewer'
 
 export interface Form {
   id: string
@@ -7,6 +8,7 @@ export interface Form {
   is_published: boolean
   created_at: Date
   updated_at: Date
+  role?: FormAccessRole
 }
 
 export interface CreateFormDto {

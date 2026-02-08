@@ -4,7 +4,9 @@ import { DetailFormPage } from "./pages/DetailFormPage/DetailFormPage"
 import { FillFormPage } from "./pages/FillFormPage/FillFormPage"
 import { FormsPage } from "./pages/FormPage/FormPage"
 import { LoginPage } from "./pages/LoginPage/LoginPage"
+import { JoinPage } from "./pages/JoinPage/JoinPage"
 import { ResponsesPage } from "./pages/ResponsesPage/ResponsesPage"
+import { FormSettingsPage } from "./pages/FormSettingsPage/FormSettingsPage"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { useLocalStorage } from "./hooks/useLocalStorage"
 
@@ -24,6 +26,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/forms/:id/fill" element={<FillFormPage />} />
+        <Route path="/join" element={<JoinPage />} />
 
         <Route element={<Layout />}>
           <Route
@@ -39,6 +42,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <DetailFormPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/forms/edit/:id/settings"
+            element={
+              <ProtectedRoute>
+                <FormSettingsPage />
               </ProtectedRoute>
             }
           />

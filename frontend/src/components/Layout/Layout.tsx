@@ -16,13 +16,17 @@ function LayoutHeader() {
     formId &&
     (location.pathname.startsWith("/forms/edit/") ||
       location.pathname.includes("/responses"))
-  const isQuestions = location.pathname.startsWith("/forms/edit/")
+  const isQuestions =
+    location.pathname.startsWith("/forms/edit/") &&
+    !location.pathname.endsWith("/settings")
   const isResponses = location.pathname.includes("/responses")
+  const isSettings = location.pathname.endsWith("/settings")
   const fillUrl = formId
     ? `${typeof window !== "undefined" ? window.location.origin : ""}/forms/${formId}/fill`
     : ""
   const editUrl = formId ? `/forms/edit/${formId}` : ""
   const responsesUrl = formId ? `/forms/${formId}/responses` : ""
+  const settingsUrl = formId ? `/forms/edit/${formId}/settings` : ""
   const [copyToast, setCopyToast] = useState(false)
   const [form, setForm] = useState<Form | null>(null)
   const [publishLoading, setPublishLoading] = useState(false)
@@ -33,7 +37,7 @@ function LayoutHeader() {
       return
     }
     let cancelled = false
-    formsAPI.getById(formId).then((f) => {
+    formsAPI.getByIdWithRole(formId).then((f) => {
       if (!cancelled) setForm(f)
     }).catch(() => {
       if (!cancelled) setForm(null)
@@ -98,18 +102,28 @@ function LayoutHeader() {
             >
               Просмотр
             </a>
-            <Link
-              className={isQuestions ? styles.formNavLinkActive : styles.formNavLink}
-              to={editUrl}
-            >
-              Вопросы
-            </Link>
+            {(form?.role === "owner" || form?.role === "editor") && (
+              <Link
+                className={isQuestions ? styles.formNavLinkActive : styles.formNavLink}
+                to={editUrl}
+              >
+                Вопросы
+              </Link>
+            )}
             <Link
               className={isResponses ? styles.formNavLinkActive : styles.formNavLink}
               to={responsesUrl}
             >
               Ответы
             </Link>
+            {form?.role === "owner" && (
+              <Link
+                className={isSettings ? styles.formNavLinkActive : styles.formNavLink}
+                to={settingsUrl}
+              >
+                Настройки
+              </Link>
+            )}
             <button
               type="button"
               className={styles.copyLinkBtn}
@@ -122,7 +136,7 @@ function LayoutHeader() {
         )}
       </div>
       <div className={styles.headerRight}>
-        {isFormContext && form && (
+        {isFormContext && form && (form.role === "owner" || form.role === "editor") && (
           <select
             className={styles.statusSelect}
             value={form.is_published ? "published" : "draft"}

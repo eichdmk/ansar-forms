@@ -14,6 +14,10 @@ export const formsAPI = {
     const { data } = await api.get(`/forms/${id}`)
     return data
   },
+  getByIdWithRole: async (id: string) => {
+    const { data } = await api.get(`/forms/${id}/me`)
+    return data
+  },
   update: async (id: string, form: UpdateFormDto) => {
     const { data } = await api.put(`/forms/${id}`, form)
     return data

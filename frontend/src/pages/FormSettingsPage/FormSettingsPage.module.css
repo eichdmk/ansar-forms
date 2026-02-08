@@ -1,0 +1,270 @@
+.page {
+  min-height: 100%;
+  padding: 32px;
+}
+
+.wrap {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.title {
+  margin: 0 0 24px 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.loading,
+.message {
+  margin: 0 0 16px 0;
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+}
+
+.message {
+  color: var(--color-danger, #c00);
+}
+
+.accessCard {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.accessTitle {
+  margin: 0 0 8px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.accessIntro {
+  margin: 0 0 20px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.accessLoading,
+.accessEmpty {
+  margin: 0 0 16px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.accessList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.accessRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.875rem;
+}
+
+.accessRow:last-child {
+  border-bottom: none;
+}
+
+.accessEmail {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text);
+}
+
+.accessRole {
+  color: var(--color-text-secondary);
+}
+
+.accessRemoveBtn {
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+  font-family: var(--font);
+  color: var(--color-danger, #c00);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.accessRemoveBtn:hover {
+  background: var(--color-bg-secondary);
+}
+
+.inviteBtn {
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--color-accent);
+  background: var(--color-accent-light);
+  border: 1px solid var(--color-accent-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.inviteBtn:hover {
+  background: var(--color-accent-secondary-tint);
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.modal {
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: var(--shadow-elevated);
+}
+
+.modalTitle {
+  margin: 0 0 16px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.modalHint {
+  margin: 0 0 16px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.inviteLinkRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.inviteLinkInput {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  font-size: 0.875rem;
+  font-family: var(--font);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.copyBtn {
+  padding: 10px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--color-bg);
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.copyBtn:hover {
+  background: var(--color-accent-hover);
+}
+
+.modalCloseBtn {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--color-bg);
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.modalCloseBtn:hover {
+  background: var(--color-accent-hover);
+}
+
+.modalLabel {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.modalSelect,
+.modalInput {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  font-size: 0.875rem;
+  font-family: var(--font);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.buttonPrimary {
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--color-bg);
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.buttonPrimary:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.buttonPrimary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.buttonSecondary {
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.buttonSecondary:hover {
+  background: var(--color-border);
+}

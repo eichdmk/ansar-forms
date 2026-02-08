@@ -101,7 +101,7 @@ export function DetailFormPage() {
             dispatch(setQuestions([]))
             try {
                 const [fResult, qResult] = await Promise.all([
-                    formsAPI.getById(id),
+                    formsAPI.getByIdWithRole(id),
                     questionsApi.getByFormId(id),
                 ])
                 setForm(fResult)
@@ -115,6 +115,8 @@ export function DetailFormPage() {
         }
         loadFormAndQuestions()
     }, [id, dispatch])
+
+    const canEdit = form?.role === 'owner' || form?.role === 'editor'
 
     const handleOpenWithTypeConsumed = useCallback(() => {
         setSidebarQuestionType(null)
@@ -257,33 +259,48 @@ export function DetailFormPage() {
                     <main className={styles.main}>
                         {form && (
                             <div className={styles.headerCard}>
-                                <input
-                                    className={styles.formTitleInput}
-                                    value={formTitle}
-                                    onChange={(e) => setFormTitle(e.target.value)}
-                                    placeholder="Название формы"
-                                    aria-label="Название формы"
-                                />
-                                <input
-                                    className={styles.formDescriptionInput}
-                                    value={formDescription}
-                                    onChange={(e) => setFormDescription(e.target.value)}
-                                    placeholder="Описание формы (необязательно)"
-                                    aria-label="Описание формы"
-                                />
-                                <div className={styles.formHeaderActions}>
-                                    <button
-                                        type="button"
-                                        className={styles.formSaveBtn}
-                                        onClick={handleSaveForm}
-                                        disabled={formSaving}
-                                    >
-                                        {formSaving ? "Сохранение…" : "Сохранить"}
-                                    </button>
-                                </div>
+                                {canEdit ? (
+                                    <>
+                                        <input
+                                            className={styles.formTitleInput}
+                                            value={formTitle}
+                                            onChange={(e) => setFormTitle(e.target.value)}
+                                            placeholder="Название формы"
+                                            aria-label="Название формы"
+                                        />
+                                        <input
+                                            className={styles.formDescriptionInput}
+                                            value={formDescription}
+                                            onChange={(e) => setFormDescription(e.target.value)}
+                                            placeholder="Описание формы (необязательно)"
+                                            aria-label="Описание формы"
+                                        />
+                                        <div className={styles.formHeaderActions}>
+                                            <button
+                                                type="button"
+                                                className={styles.formSaveBtn}
+                                                onClick={handleSaveForm}
+                                                disabled={formSaving}
+                                            >
+                                                {formSaving ? "Сохранение…" : "Сохранить"}
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <h1 className={styles.formTitleReadOnly}>{form.title}</h1>
+                                        {form.description && (
+                                            <p className={styles.formDescriptionReadOnly}>{form.description}</p>
+                                        )}
+                                        {form.role === 'viewer' && (
+                                            <span className={styles.roleBadge}>Только просмотр</span>
+                                        )}
+                                    </>
+                                )}
                             </div>
                         )}
-                        {id && (
+
+                        {id && canEdit && (
                             <QuestionConstructor
                                 formId={id}
                                 questionsCount={questions.length}
@@ -293,33 +310,56 @@ export function DetailFormPage() {
                                 showTypeButtons={false}
                             />
                         )}
+                        {id && !canEdit && questions.length > 0 && (
+                            <p className={styles.viewerQuestionsHint}>Вопросы формы (только просмотр)</p>
+                        )}
 
-                        <DndContext
-                            sensors={sensors}
-                            collisionDetection={closestCenter}
-                            onDragEnd={handleDragEnd}
-                        >
-                            <SortableContext
-                                items={questions.map(q => q.id)}
-                                strategy={verticalListSortingStrategy}
+                        {canEdit ? (
+                            <DndContext
+                                sensors={sensors}
+                                collisionDetection={closestCenter}
+                                onDragEnd={handleDragEnd}
                             >
-                                <ul className={styles.list}>
-                                    {questions.map((q) => (
-                                        <SortableQuestionItem
-                                            key={q.id}
-                                            question={q}
-                                            isEditing={editingQuestionId === q.id}
-                                            draft={editingQuestionId === q.id ? editDraft : null}
-                                            onDraftChange={setEditDraft}
-                                            onSave={handleSaveQuestion}
-                                            onCancel={cancelEditing}
-                                            onEdit={() => startEditing(q)}
-                                            onDelete={() => handleDelete(q.id)}
-                                        />
-                                    ))}
-                                </ul>
-                            </SortableContext>
-                        </DndContext>
+                                <SortableContext
+                                    items={questions.map(q => q.id)}
+                                    strategy={verticalListSortingStrategy}
+                                >
+                                    <ul className={styles.list}>
+                                        {questions.map((q) => (
+                                            <SortableQuestionItem
+                                                key={q.id}
+                                                question={q}
+                                                isEditing={editingQuestionId === q.id}
+                                                draft={editingQuestionId === q.id ? editDraft : null}
+                                                onDraftChange={setEditDraft}
+                                                onSave={handleSaveQuestion}
+                                                onCancel={cancelEditing}
+                                                onEdit={() => startEditing(q)}
+                                                onDelete={() => handleDelete(q.id)}
+                                            />
+                                        ))}
+                                    </ul>
+                                </SortableContext>
+                            </DndContext>
+                        ) : (
+                            <ul className={styles.list}>
+                                {questions.map((q) => (
+                                    <QuestionListItem
+                                        key={q.id}
+                                        question={q}
+                                        renderAs="li"
+                                        readOnly
+                                        isEditing={false}
+                                        draft={null}
+                                        onDraftChange={() => {}}
+                                        onSave={() => {}}
+                                        onCancel={() => {}}
+                                        onEdit={() => {}}
+                                        onDelete={() => {}}
+                                    />
+                                ))}
+                            </ul>
+                        )}
 
                         {message && <p className={styles.message}>{message}</p>}
                     </main>

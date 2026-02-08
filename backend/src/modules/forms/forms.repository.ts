@@ -21,6 +21,17 @@ export class FormsRepository {
         return rows
     }
 
+    findAllFormsForUser = async (userId: string): Promise<(Form & { role: string })[]> => {
+        const { rows } = await this.pool.query<Form & { role: string }>(`
+            SELECT f.*, CASE WHEN f.owner_id = $1 THEN 'owner' ELSE fa.role END AS role
+            FROM forms f
+            LEFT JOIN form_access fa ON fa.form_id = f.id AND fa.user_id = $1
+            WHERE f.owner_id = $1 OR fa.user_id = $1
+            ORDER BY f.updated_at DESC NULLS LAST
+        `, [userId])
+        return rows
+    }
+
     updateForm = async (id: string, dto: UpdateFormDto) => {
         const updates: string[] = []
         const values: unknown[] = []

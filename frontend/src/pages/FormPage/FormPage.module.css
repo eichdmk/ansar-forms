@@ -203,6 +203,16 @@
   border-radius: 20px;
 }
 
+.badgeRole {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-secondary);
+  border-radius: 20px;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

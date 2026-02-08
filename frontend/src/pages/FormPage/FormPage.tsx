@@ -133,6 +133,11 @@ export function FormsPage() {
                     >
                       {f.is_published ? "Опубликовано" : "Черновик"}
                     </span>
+                    {f.role && f.role !== 'owner' && (
+                      <span className={styles.badgeRole}>
+                        {f.role === 'editor' ? 'Редактор' : 'Просмотр'}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className={styles.actions}>
@@ -142,16 +147,18 @@ export function FormsPage() {
                   <Link className={styles.actionBtn} to={`/forms/${f.id}/responses`}>
                     Ответы
                   </Link>
-                  <button
-                    type="button"
-                    className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      handleDelete(f.id)
-                    }}
-                  >
-                    Удалить
-                  </button>
+                  {(f.role === 'owner' || f.role === 'editor') && (
+                    <button
+                      type="button"
+                      className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        handleDelete(f.id)
+                      }}
+                    >
+                      Удалить
+                    </button>
+                  )}
                 </div>
               </li>
             ))}

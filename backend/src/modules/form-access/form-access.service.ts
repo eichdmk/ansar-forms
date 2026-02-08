@@ -75,11 +75,16 @@ export class FormAccessService {
             throw new NotFoundError()
         }
 
-        await this.formAccessRepository.addAccess(findedToken.form_id, userId, findedToken.role as 'editor' | 'viewer')
+        const existingRole = await this.formAccessRepository.getUserRole(findedToken.form_id, userId)
+        const alreadyHadAccess = existingRole !== null
+
+        if (!alreadyHadAccess) {
+            await this.formAccessRepository.addAccess(findedToken.form_id, userId, findedToken.role as 'editor' | 'viewer')
+        }
 
         await this.formInvitesRepository.markUsed(findedToken.id)
 
-        return {form_id: findedToken.form_id}
+        return { form_id: findedToken.form_id, already_had_access: alreadyHadAccess }
     }
 
 }
