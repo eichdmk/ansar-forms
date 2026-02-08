@@ -1,14 +1,23 @@
 import { ResponsesRepository } from './responses.repository'
 import { FormService } from '../forms/forms.service'
 import { QuestionsRepository } from '../questions/questions.repository'
+import { FormAccessService } from '../form-access/form-access.service'
 import { BadRequestError, ForbiddenError, NotFoundError } from '../../errors'
 import { CreateResponseDto } from './responses.types'
+import { FormAccessRole } from '../form-access/form-access.types'
+
+const CAN_VIEW_RESPONSES_ROLES: FormAccessRole[] = ['owner', 'editor', 'viewer']
+
+function canViewResponses(role: FormAccessRole | null): boolean {
+    return role !== null && CAN_VIEW_RESPONSES_ROLES.includes(role)
+}
 
 export class ResponsesService {
     constructor(
         private responsesRepository: ResponsesRepository,
         private formService: FormService,
-        private questionsRepository: QuestionsRepository
+        private questionsRepository: QuestionsRepository,
+        private formAccessService: FormAccessService
     ) { }
 
     list = async (
@@ -25,7 +34,8 @@ export class ResponsesService {
         if (!form) {
             throw new NotFoundError('Форма не найдена')
         }
-        if (form.owner_id !== ownerId) {
+        const role = await this.formAccessService.getUserFormRole(formId, ownerId)
+        if (!canViewResponses(role)) {
             throw new ForbiddenError()
         }
         const pageNum = Math.max(1, Math.floor(page))

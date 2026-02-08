@@ -1,9 +1,17 @@
 import { BadRequestError, ForbiddenError, NotFoundError } from "../../errors";
 import { FormsRepository } from "./forms.repository";
 import { CreateFormDto, UpdateFormDto } from "./forms.types";
+import { FormAccessService } from '../form-access/form-access.service'
+import { FormAccessRole } from '../form-access/form-access.types'
+
+const CAN_EDIT_ROLES: FormAccessRole[] = ['owner', 'editor']
+
+function canEditForm(role: FormAccessRole | null): boolean {
+    return role !== null && CAN_EDIT_ROLES.includes(role)
+}
 
 export class FormService {
-    constructor(private formRepository: FormsRepository) { }
+    constructor(private formRepository: FormsRepository, private formAccessService: FormAccessService) { }
 
     create = async (dto: CreateFormDto, owner_id: string) => {
         if (!owner_id) {
@@ -60,7 +68,8 @@ export class FormService {
             throw new NotFoundError('Такой формы не существует')
         }
 
-        if (form.owner_id !== owner_id) {
+        const role = await this.formAccessService.getUserFormRole(id, owner_id)
+        if (!canEditForm(role)) {
             throw new ForbiddenError()
         }
 
@@ -80,7 +89,8 @@ export class FormService {
             throw new NotFoundError('Такой формы не существует')
         }
 
-        if (form.owner_id !== owner_id) {
+        const role = await this.formAccessService.getUserFormRole(id, owner_id)
+        if (!canEditForm(role)) {
             throw new ForbiddenError()
         }
 
@@ -101,8 +111,8 @@ export class FormService {
             throw new NotFoundError('Такой формы не существует')
         }
 
-
-        if (form.owner_id !== owner_id) {
+        const role = await this.formAccessService.getUserFormRole(id, owner_id)
+        if (!canEditForm(role)) {
             throw new ForbiddenError()
         }
 

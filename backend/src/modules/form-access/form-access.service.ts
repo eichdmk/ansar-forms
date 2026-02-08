@@ -75,7 +75,7 @@ export class FormAccessService {
             throw new NotFoundError()
         }
 
-        await this.formAccessRepository.addAccess(findedToken.form_id, userId, findedToken.role)
+        await this.formAccessRepository.addAccess(findedToken.form_id, userId, findedToken.role as 'editor' | 'viewer')
 
         await this.formInvitesRepository.markUsed(findedToken.id)
 

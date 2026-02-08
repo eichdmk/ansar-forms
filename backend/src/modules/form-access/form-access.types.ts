@@ -9,13 +9,13 @@ export interface FormAccess{
 }
 
 export interface FormInvite {
-    id: string,
+    id: string
     form_id: string
     token: string
     role: string
     created_at: Date
-    used_at: Date
-    expires_at: Date
+    used_at: Date | null
+    expires_at: Date | null
 }
 
 export interface CreateInviteDto{

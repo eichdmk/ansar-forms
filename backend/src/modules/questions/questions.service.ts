@@ -2,9 +2,21 @@ import { QuestionsRepository } from "./questions.repository";
 import { BadRequestError, ForbiddenError, NotFoundError } from '../../errors'
 import { CreateQuestionDto, UpdateQuestionDto } from "./questions.types";
 import { FormService } from "../forms/forms.service";
+import { FormAccessService } from "../form-access/form-access.service";
+import { FormAccessRole } from "../form-access/form-access.types";
+
+const CAN_EDIT_ROLES: FormAccessRole[] = ['owner', 'editor']
+
+function canEditForm(role: FormAccessRole | null): boolean {
+    return role !== null && CAN_EDIT_ROLES.includes(role)
+}
 
 export class QuestionService {
-    constructor(private questionRepository: QuestionsRepository, private formService: FormService) { }
+    constructor(
+        private questionRepository: QuestionsRepository,
+        private formService: FormService,
+        private formAccessService: FormAccessService
+    ) { }
 
     findAll = async (form_id: string) => {
         if (!form_id) {
@@ -45,7 +57,8 @@ export class QuestionService {
             throw new NotFoundError('Такой формы не существует')
         }
 
-        if (form.owner_id !== owner_id) {
+        const role = await this.formAccessService.getUserFormRole(form_id, owner_id)
+        if (!canEditForm(role)) {
             throw new ForbiddenError('У вас нет прав на добавление вопросов!')
         }
 
@@ -78,7 +91,8 @@ export class QuestionService {
             throw new ForbiddenError('Вопрос не принадлежит этой форме')
         }
 
-        if (form.owner_id !== owner_id) {
+        const role = await this.formAccessService.getUserFormRole(form_id, owner_id)
+        if (!canEditForm(role)) {
             throw new ForbiddenError('У вас нет прав на редактирование вопросов!')
         }
 
@@ -107,7 +121,8 @@ export class QuestionService {
             throw new ForbiddenError('Вопрос не принадлежит этой форме')
         }
 
-        if (form.owner_id !== owner_id) {
+        const role = await this.formAccessService.getUserFormRole(form_id, owner_id)
+        if (!canEditForm(role)) {
             throw new ForbiddenError('У вас нет прав на удаление вопросов!')
         }
 
