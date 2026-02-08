@@ -46,3 +46,20 @@ CREATE TABLE answers (
   question_id UUID NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
   value JSONB NOT NULL
 );
+
+CREATE TABLE form_access(
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  form_id UUID NOT NULL REFERENCES forms(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role TEXT NOT NULL CHECK (role IN ('editor', 'viewer'))
+);
+
+CREATE TABLE form_invites(
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  form_id UUID NOT NULL REFERENCES forms(id) ON DELETE CASCADE,
+  token TEXT UNIQUE NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('editor', 'viewer')),
+  created_at TIMESTAMP DEFAULT now(),
+  expires_at TIMESTAMP,
+  used_at TIMESTAMP
+);

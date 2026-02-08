@@ -38,7 +38,7 @@ export function ResponsesPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
-  const [expandedResponses, setExpandedResponses] = useState<Set<string>>(new Set())
+  const [expandedResponses ] = useState<Set<string>>(new Set())
   const [filterDate, setFilterDate] = useState<string>("")
 
   useEffect(() => {
@@ -85,16 +85,6 @@ export function ResponsesPage() {
       })
       .finally(() => setLoading(false))
   }, [id, currentPage, filterDate])
-
-  const toggleResponse = (responseId: string) => {
-    const newSet = new Set(expandedResponses)
-    if (newSet.has(responseId)) {
-      newSet.delete(responseId)
-    } else {
-      newSet.add(responseId)
-    }
-    setExpandedResponses(newSet)
-  }
 
   const getAnswerValue = (response: ResponseWithAnswers, questionId: string) => {
     const answer = response.answers.find(a => a.question_id === questionId)
