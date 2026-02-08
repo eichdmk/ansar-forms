@@ -65,7 +65,7 @@ export class FormAccessService {
         const expiresAt = dto.expiresInHours ? new Date(Date.now() + dto.expiresInHours * 60 * 60 * 1000) : undefined
         const invite = await this.formInvitesRepository.create(formId, dto.role, expiresAt)
 
-        return { ...invite, link: 'http://localhost:3000' }
+        return { ...invite, link: `${process.env.BASE_URL ?? ''}/join?token=${invite.token}` }
     }
 
     async acceptInvite(token: string, userId: string) {
