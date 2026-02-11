@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { createPortal } from "react-dom"
 import { useParams } from "react-router-dom"
 import { formsAPI, questionsApi } from "../../api"
@@ -81,19 +81,17 @@ export function DetailFormPage() {
     const [formTitle, setFormTitle] = useState("")
     const [formDescription, setFormDescription] = useState("")
     const [formSaving, setFormSaving] = useState(false)
+    const [publishLoading, setPublishLoading] = useState(false)
     const questions = useAppSelector(state => state.questions.questions)
     const dispatch = useDispatch()
+    const formIdRef = useRef<string | undefined>(undefined)
+    const lastSavedTitleRef = useRef<string>("")
+    const lastSavedDescriptionRef = useRef<string>("")
+    const isAutoSavingRef = useRef<boolean>(false)
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
         useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
     )
-
-    useEffect(() => {
-        if (form) {
-            setFormTitle(form.title)
-            setFormDescription(form.description ?? "")
-        }
-    }, [form])
 
     useEffect(() => {
         async function loadFormAndQuestions() {
@@ -117,6 +115,98 @@ export function DetailFormPage() {
     }, [id, dispatch])
 
     const canEdit = form?.role === 'owner' || form?.role === 'editor'
+
+    useEffect(() => {
+        if (!form || !id) return
+
+        // Пропускаем обновление, если идет автосохранение
+        if (isAutoSavingRef.current) {
+            return
+        }
+
+        if (formIdRef.current !== id) {
+            formIdRef.current = id
+            setFormTitle(form.title)
+            setFormDescription(form.description ?? "")
+            lastSavedTitleRef.current = form.title
+            lastSavedDescriptionRef.current = form.description ?? ""
+        }
+
+    }, [form, id])
+
+    useEffect(() => {
+        if (!id || !form || !canEdit) return
+
+        // Пропускаем, если идет автосохранение
+        if (isAutoSavingRef.current) {
+            return
+        }
+
+        // Вычисляем значения для сохранения одинаково в начале и внутри setTimeout
+        const titleToSave = formTitle.trim() || form.title
+        // Если поле описания очищено пользователем (пустая строка), отправляем пустую строку
+        const descriptionToSave = formDescription.trim()
+
+        // Сравниваем с последними сохраненными значениями
+        const titleChanged = titleToSave !== lastSavedTitleRef.current
+        const descriptionChanged = descriptionToSave !== lastSavedDescriptionRef.current
+
+        if (!titleChanged && !descriptionChanged) {
+            return
+        }
+
+        const timeoutId = setTimeout(async () => {
+            if (!id || !form) return
+
+            const finalTitleToSave = formTitle.trim() || form.title
+            // Отправляем пустую строку если поле очищено (бэкенд обновит поле на пустое значение)
+            const finalDescriptionToSave = formDescription.trim()
+
+            // Проверяем еще раз перед сохранением
+            if (finalTitleToSave === lastSavedTitleRef.current &&
+                finalDescriptionToSave === lastSavedDescriptionRef.current) {
+                return
+            }
+
+            isAutoSavingRef.current = true
+            setFormSaving(true)
+            setMessage("")
+            try {
+                const updated = await formsAPI.update(id, {
+                    title: finalTitleToSave,
+                    description: finalDescriptionToSave, // Отправляем пустую строку если поле очищено (бэкенд обновит поле)
+                })
+                // Обновляем refs ПЕРЕД обновлением формы, чтобы предотвратить повторные запросы
+                lastSavedTitleRef.current = updated.title
+                lastSavedDescriptionRef.current = updated.description ?? ""
+
+                // Обновляем форму, сохраняя текущее состояние редактирования
+                setForm(prevForm => prevForm ? {
+                    ...prevForm,
+                    title: updated.title,
+                    description: updated.description,
+                    id: prevForm.id,
+                    owner_id: prevForm.owner_id,
+                    is_published: prevForm.is_published,
+                    role: prevForm.role,
+                    created_at: prevForm.created_at,
+                    updated_at: updated.updated_at || prevForm.updated_at,
+                } : updated)
+            } catch (error) {
+                const err = error as AxiosError<{ error?: string }>
+                if (err.response) {
+                    setMessage(err.response.data?.error ?? "Произошла ошибка при сохранении")
+                }
+            } finally {
+                setFormSaving(false)
+                setTimeout(() => {
+                    isAutoSavingRef.current = false
+                }, 100)
+            }
+        }, 800)
+
+        return () => clearTimeout(timeoutId)
+    }, [formTitle, formDescription, id, form, canEdit])
 
     const handleOpenWithTypeConsumed = useCallback(() => {
         setSidebarQuestionType(null)
@@ -171,23 +261,19 @@ export function DetailFormPage() {
         }
     }
 
-    async function handleSaveForm() {
+    async function handleStatusChange(published: boolean) {
         if (!id || !form) return
-        setFormSaving(true)
-        setMessage("")
+        setPublishLoading(true)
         try {
-            const updated = await formsAPI.update(id, {
-                title: formTitle.trim() || form.title,
-                description: formDescription.trim() || undefined,
-            })
+            const updated = await formsAPI.updateStatus(id, published)
             setForm(updated)
         } catch (error) {
             const err = error as AxiosError<{ error?: string }>
             if (err.response) {
-                setMessage(err.response.data?.error ?? "Произошла ошибка")
+                setMessage(err.response.data?.error ?? "Не удалось изменить статус")
             }
         } finally {
-            setFormSaving(false)
+            setPublishLoading(false)
         }
     }
 
@@ -212,7 +298,6 @@ export function DetailFormPage() {
         if (oldIndex === -1 || newIndex === -1) return
 
         const newOrder = arrayMove(questions, oldIndex, newIndex)
-        dispatch(setQuestions(newOrder))
 
         try {
             setMessage("")
@@ -236,6 +321,8 @@ export function DetailFormPage() {
                     })
                 )
                 await Promise.all(updates)
+                dispatch(setQuestions(newOrder))
+
             }
         } catch (error) {
             const err = error as AxiosError<{ error?: string }>
@@ -276,14 +363,9 @@ export function DetailFormPage() {
                                             aria-label="Описание формы"
                                         />
                                         <div className={styles.formHeaderActions}>
-                                            <button
-                                                type="button"
-                                                className={styles.formSaveBtn}
-                                                onClick={handleSaveForm}
-                                                disabled={formSaving}
-                                            >
-                                                {formSaving ? "Сохранение…" : "Сохранить"}
-                                            </button>
+                                            {formSaving && (
+                                                <span className={styles.formSaveStatus}>Сохранение…</span>
+                                            )}
                                         </div>
                                     </>
                                 ) : (
@@ -297,6 +379,24 @@ export function DetailFormPage() {
                                         )}
                                     </>
                                 )}
+                            </div>
+                        )}
+
+                        {form && (form.role === "owner" || form.role === "editor") && (
+                            <div className={styles.statusBar}>
+                                <label className={styles.statusLabel}>
+                                    Статус формы:
+                                    <select
+                                        className={styles.statusSelect}
+                                        value={form.is_published ? "published" : "draft"}
+                                        onChange={(e) => handleStatusChange(e.target.value === "published")}
+                                        disabled={publishLoading}
+                                        aria-label="Статус формы"
+                                    >
+                                        <option value="draft">Черновик</option>
+                                        <option value="published">Опубликовано</option>
+                                    </select>
+                                </label>
                             </div>
                         )}
 
@@ -351,11 +451,11 @@ export function DetailFormPage() {
                                         readOnly
                                         isEditing={false}
                                         draft={null}
-                                        onDraftChange={() => {}}
-                                        onSave={() => {}}
-                                        onCancel={() => {}}
-                                        onEdit={() => {}}
-                                        onDelete={() => {}}
+                                        onDraftChange={() => { }}
+                                        onSave={() => { }}
+                                        onCancel={() => { }}
+                                        onEdit={() => { }}
+                                        onDelete={() => { }}
                                     />
                                 ))}
                             </ul>

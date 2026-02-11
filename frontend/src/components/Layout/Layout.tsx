@@ -29,7 +29,7 @@ function LayoutHeader() {
   const settingsUrl = formId ? `/forms/edit/${formId}/settings` : ""
   const [copyToast, setCopyToast] = useState(false)
   const [form, setForm] = useState<Form | null>(null)
-  const [publishLoading, setPublishLoading] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     if (!formId || !isFormContext) {
@@ -44,6 +44,12 @@ function LayoutHeader() {
     })
     return () => { cancelled = true }
   }, [formId, isFormContext])
+
+  useEffect(() => {
+    if (!isFormContext) {
+      setMobileMenuOpen(false)
+    }
+  }, [location.pathname, isFormContext])
 
   function handleLogout() {
     localStorage.removeItem("token")
@@ -61,24 +67,13 @@ function LayoutHeader() {
     }
   }
 
-  async function handleStatusChange(published: boolean) {
-    if (!formId || !form) return
-    setPublishLoading(true)
-    try {
-      const updated = await formsAPI.updateStatus(formId, published)
-      setForm(updated)
-    } catch {
-      /* ignore */
-    } finally {
-      setPublishLoading(false)
-    }
-  }
 
   return (
     <header className={styles.header}>
       <div className={styles.headerLeft}>
         <Link to="/forms" className={styles.brandLink}>
-          Ansar Forms
+          <img src="/logo.png" alt="Ansar Forms" className={styles.logo} />
+          <span className={styles.brandText}>Ansar Forms</span>
         </Link>
       </div>
       <div className={styles.headerCenter}>
@@ -93,61 +88,82 @@ function LayoutHeader() {
           />
         )}
         {isFormContext && (
-          <nav className={styles.formNav} aria-label="Разделы формы">
-            <a
-              className={styles.formNavLink}
-              href={fillUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Просмотр
-            </a>
-            {(form?.role === "owner" || form?.role === "editor") && (
-              <Link
-                className={isQuestions ? styles.formNavLinkActive : styles.formNavLink}
-                to={editUrl}
-              >
-                Вопросы
-              </Link>
-            )}
-            <Link
-              className={isResponses ? styles.formNavLinkActive : styles.formNavLink}
-              to={responsesUrl}
-            >
-              Ответы
-            </Link>
-            {form?.role === "owner" && (
-              <Link
-                className={isSettings ? styles.formNavLinkActive : styles.formNavLink}
-                to={settingsUrl}
-              >
-                Настройки
-              </Link>
-            )}
+          <>
             <button
               type="button"
-              className={styles.copyLinkBtn}
-              onClick={handleCopyLink}
-              title="Копировать ссылку на форму"
+              className={styles.burgerBtn}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Меню"
+              aria-expanded={mobileMenuOpen}
             >
-              Ссылка
+              <span className={styles.burgerIcon}>
+                <span className={`${styles.burgerLine} ${mobileMenuOpen ? styles.burgerLine1 : ''}`}></span>
+                <span className={`${styles.burgerLine} ${mobileMenuOpen ? styles.burgerLine2 : ''}`}></span>
+                <span className={`${styles.burgerLine} ${mobileMenuOpen ? styles.burgerLine3 : ''}`}></span>
+              </span>
             </button>
-          </nav>
+            <nav className={`${styles.formNav} ${mobileMenuOpen ? styles.formNavOpen : ''}`} aria-label="Разделы формы">
+              <a
+                className={styles.formNavLink}
+                href={fillUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Просмотр
+              </a>
+              {(form?.role === "owner" || form?.role === "editor") && (
+                <Link
+                  className={isQuestions ? styles.formNavLinkActive : styles.formNavLink}
+                  to={editUrl}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Вопросы
+                </Link>
+              )}
+              <Link
+                className={isResponses ? styles.formNavLinkActive : styles.formNavLink}
+                to={responsesUrl}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Ответы
+              </Link>
+              {form?.role === "owner" && (
+                <Link
+                  className={isSettings ? styles.formNavLinkActive : styles.formNavLink}
+                  to={settingsUrl}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Настройки
+                </Link>
+              )}
+              <button
+                type="button"
+                className={styles.copyLinkBtn}
+                onClick={() => {
+                  handleCopyLink()
+                  setMobileMenuOpen(false)
+                }}
+                title="Копировать ссылку на форму"
+              >
+                Ссылка
+              </button>
+              <div className={styles.mobileMenuDivider}></div>
+              <button
+                type="button"
+                className={styles.mobileLogoutBtn}
+                onClick={() => {
+                  handleLogout()
+                  setMobileMenuOpen(false)
+                }}
+              >
+                Выйти
+              </button>
+            </nav>
+          </>
         )}
       </div>
       <div className={styles.headerRight}>
-        {isFormContext && form && (form.role === "owner" || form.role === "editor") && (
-          <select
-            className={styles.statusSelect}
-            value={form.is_published ? "published" : "draft"}
-            onChange={(e) => handleStatusChange(e.target.value === "published")}
-            disabled={publishLoading}
-            aria-label="Статус формы"
-          >
-            <option value="draft">Черновик</option>
-            <option value="published">Опубликовано</option>
-          </select>
-        )}
         <button type="button" className={styles.logoutBtn} onClick={handleLogout}>
           Выйти
         </button>
@@ -156,6 +172,9 @@ function LayoutHeader() {
         <div className={styles.copyToast} role="status">
           Ссылка скопирована в буфер обмена
         </div>
+      )}
+      {isFormContext && mobileMenuOpen && (
+        <div className={styles.mobileMenuOverlay} onClick={() => setMobileMenuOpen(false)} />
       )}
     </header>
   )
