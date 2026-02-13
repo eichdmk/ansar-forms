@@ -1,8 +1,8 @@
-import { FormsRepository } from "./forms.repository";
-import { pool } from '../../db'
-import { FormService } from "./forms.service";
-import { FormsController } from "./forms.controller";
-import { FormAccessService } from "../form-access/form-access.service";
+import { FormsRepository } from "./forms.repository.js";
+import { pool } from '../../db.js'
+import { FormService } from "./forms.service.js";
+import { FormsController } from "./forms.controller.js";
+import { FormAccessService } from "../form-access/form-access.service.js";
 
 export function createFormModule(formAccessService: FormAccessService) {
     const repository = new FormsRepository(pool)

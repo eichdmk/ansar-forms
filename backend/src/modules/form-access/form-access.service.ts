@@ -1,8 +1,8 @@
-import { FormAccessRepository } from "./form-access.repository";
-import { BadRequestError, ForbiddenError, NotFoundError } from '../../errors'
-import { CreateInviteDto, FormAccessRole } from "./form-access.types";
-import { FormInvitesRepository } from "./form-invites.repository";
-import { FormsRepository } from '../forms/forms.repository'
+import { FormAccessRepository } from "./form-access.repository.js";
+import { BadRequestError, ForbiddenError, NotFoundError } from '../../errors.js'
+import { CreateInviteDto, FormAccessRole } from "./form-access.types.js";
+import { FormInvitesRepository } from "./form-invites.repository.js";
+import { FormsRepository } from '../forms/forms.repository.js'
 
 export class FormAccessService {
     constructor(private formsRepository: FormsRepository, private formAccessRepository: FormAccessRepository, private formInvitesRepository: FormInvitesRepository) { }

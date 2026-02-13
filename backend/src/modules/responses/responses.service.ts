@@ -1,10 +1,10 @@
-import { ResponsesRepository } from './responses.repository'
-import { FormService } from '../forms/forms.service'
-import { QuestionsRepository } from '../questions/questions.repository'
-import { FormAccessService } from '../form-access/form-access.service'
-import { BadRequestError, ForbiddenError, NotFoundError } from '../../errors'
-import { CreateResponseDto } from './responses.types'
-import { FormAccessRole } from '../form-access/form-access.types'
+import { ResponsesRepository } from './responses.repository.js'
+import { FormService } from '../forms/forms.service.js'
+import { QuestionsRepository } from '../questions/questions.repository.js'
+import { FormAccessService } from '../form-access/form-access.service.js'
+import { BadRequestError, ForbiddenError, NotFoundError } from '../../errors.js'
+import { CreateResponseDto } from './responses.types.js'
+import { FormAccessRole } from '../form-access/form-access.types.js'
 
 const CAN_VIEW_RESPONSES_ROLES: FormAccessRole[] = ['owner', 'editor', 'viewer']
 

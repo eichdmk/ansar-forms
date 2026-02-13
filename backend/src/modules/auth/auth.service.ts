@@ -1,6 +1,6 @@
-import { BadRequestError, NotFoundError } from "../../errors";
-import { AuthRepository } from "./auth.repository";
-import { LoginUserDto } from "./auth.types";
+import { BadRequestError, NotFoundError } from "../../errors.js";
+import { AuthRepository } from "./auth.repository.js";
+import { LoginUserDto } from "./auth.types.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 

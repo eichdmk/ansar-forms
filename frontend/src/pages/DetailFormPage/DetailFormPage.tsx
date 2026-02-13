@@ -119,7 +119,6 @@ export function DetailFormPage() {
     useEffect(() => {
         if (!form || !id) return
 
-        // Пропускаем обновление, если идет автосохранение
         if (isAutoSavingRef.current) {
             return
         }
@@ -174,13 +173,11 @@ export function DetailFormPage() {
             try {
                 const updated = await formsAPI.update(id, {
                     title: finalTitleToSave,
-                    description: finalDescriptionToSave, // Отправляем пустую строку если поле очищено (бэкенд обновит поле)
+                    description: finalDescriptionToSave, 
                 })
-                // Обновляем refs ПЕРЕД обновлением формы, чтобы предотвратить повторные запросы
                 lastSavedTitleRef.current = updated.title
                 lastSavedDescriptionRef.current = updated.description ?? ""
 
-                // Обновляем форму, сохраняя текущее состояние редактирования
                 setForm(prevForm => prevForm ? {
                     ...prevForm,
                     title: updated.title,

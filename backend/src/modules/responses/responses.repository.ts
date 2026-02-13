@@ -1,5 +1,5 @@
 import { Pool } from 'pg'
-import { Response, Answer, ResponseWithAnswers } from './responses.types'
+import { Response, Answer, ResponseWithAnswers } from './responses.types.js'
 
 interface ResponseRow {
     response_id: string

@@ -1,7 +1,7 @@
-import { AuthRepository } from "./auth.repository";
-import {pool} from '../../db'
-import { AuthService } from "./auth.service";
-import { AuthController } from "./auth.controller";
+import { AuthRepository } from "./auth.repository.js";
+import {pool} from '../../db.js'
+import { AuthService } from "./auth.service.js";
+import { AuthController } from "./auth.controller.js";
 
 export function createAuthModule(){
     const repository = new AuthRepository(pool)

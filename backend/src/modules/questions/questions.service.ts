@@ -1,9 +1,9 @@
-import { QuestionsRepository } from "./questions.repository";
-import { BadRequestError, ForbiddenError, NotFoundError } from '../../errors'
-import { CreateQuestionDto, UpdateQuestionDto } from "./questions.types";
-import { FormService } from "../forms/forms.service";
-import { FormAccessService } from "../form-access/form-access.service";
-import { FormAccessRole } from "../form-access/form-access.types";
+import { QuestionsRepository } from "./questions.repository.js";
+import { BadRequestError, ForbiddenError, NotFoundError } from '../../errors.js'
+import { CreateQuestionDto, UpdateQuestionDto } from "./questions.types.js";
+import { FormService } from "../forms/forms.service.js";
+import { FormAccessService } from "../form-access/form-access.service.js";
+import { FormAccessRole } from "../form-access/form-access.types.js";
 
 const CAN_EDIT_ROLES: FormAccessRole[] = ['owner', 'editor']
 

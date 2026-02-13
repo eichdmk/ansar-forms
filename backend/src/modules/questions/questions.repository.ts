@@ -1,5 +1,5 @@
 import { Pool } from 'pg'
-import { CreateQuestionDto, Question, UpdateQuestionDto } from './questions.types'
+import { CreateQuestionDto, Question, UpdateQuestionDto } from './questions.types.js'
 
 export class QuestionsRepository {
     constructor(private pool: Pool) { }

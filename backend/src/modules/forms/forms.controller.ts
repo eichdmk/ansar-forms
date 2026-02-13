@@ -1,6 +1,6 @@
-import { FormService } from "./forms.service";
+import { FormService } from "./forms.service.js";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CreateFormDto, ParamsId, UpdateFormDto } from "./forms.types";
+import { CreateFormDto, ParamsId, UpdateFormDto } from "./forms.types.js";
 
 export class FormsController {
     constructor(private formsService: FormService) { }

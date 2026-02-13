@@ -1,5 +1,5 @@
 import { Pool } from 'pg'
-import { FormAccessRole } from './form-access.types';
+import { FormAccessRole } from './form-access.types.js';
 
 export class FormAccessRepository {
     constructor(private pool: Pool) { }

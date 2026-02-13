@@ -1,5 +1,5 @@
 import { Pool } from "pg"
-import { CreateFormDto, Form, UpdateFormDto } from "./forms.types"
+import { CreateFormDto, Form, UpdateFormDto } from "./forms.types.js"
 
 export class FormsRepository {
     constructor(private pool: Pool) { }

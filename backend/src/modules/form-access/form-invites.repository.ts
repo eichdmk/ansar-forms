@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { FormInvite } from "./form-access.types";
+import { FormInvite } from "./form-access.types.js";
 
 export class FormInvitesRepository{
     constructor(private pool: Pool){}

@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { ResponsesService } from './responses.service'
-import { CreateResponseDto } from './responses.types'
+import { ResponsesService } from './responses.service.js'
+import { CreateResponseDto } from './responses.types.js'
 
 export class ResponsesController {
     constructor(private responsesService: ResponsesService) { }

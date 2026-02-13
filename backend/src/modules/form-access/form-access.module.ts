@@ -1,9 +1,9 @@
-import { FormAccessRepository } from "./form-access.repository";
-import { FormsRepository } from "../forms/forms.repository";
-import { FormAccessService } from "./form-access.service";
-import { FormInvitesRepository } from "./form-invites.repository";
-import { FormAccessController } from "./form-access.controller";
-import {pool} from '../../db'
+import { FormAccessRepository } from "./form-access.repository.js";
+import { FormsRepository } from "../forms/forms.repository.js";
+import { FormAccessService } from "./form-access.service.js";
+import { FormInvitesRepository } from "./form-invites.repository.js";
+import { FormAccessController } from "./form-access.controller.js";
+import {pool} from '../../db.js'
 
 export function createAccessModule(){
     const accessRepository = new FormAccessRepository(pool)

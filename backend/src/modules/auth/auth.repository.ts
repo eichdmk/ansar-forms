@@ -1,5 +1,5 @@
 import {Pool} from 'pg'
-import { LoginUserDto, User } from './auth.types'
+import { LoginUserDto, User } from './auth.types.js'
 
 export class AuthRepository{
     constructor(private pool: Pool){}

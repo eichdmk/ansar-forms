@@ -1,8 +1,8 @@
-import { BadRequestError, ForbiddenError, NotFoundError } from "../../errors";
-import { FormsRepository } from "./forms.repository";
-import { CreateFormDto, UpdateFormDto } from "./forms.types";
-import { FormAccessService } from '../form-access/form-access.service'
-import { FormAccessRole } from '../form-access/form-access.types'
+import { BadRequestError, ForbiddenError, NotFoundError } from "../../errors.js";
+import { FormsRepository } from "./forms.repository.js";
+import { CreateFormDto, UpdateFormDto } from "./forms.types.js";
+import { FormAccessService } from '../form-access/form-access.service.js'
+import { FormAccessRole } from '../form-access/form-access.types.js'
 
 const CAN_EDIT_ROLES: FormAccessRole[] = ['owner', 'editor']
 

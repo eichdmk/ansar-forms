@@ -1,10 +1,10 @@
-import { pool } from '../../db'
-import { ResponsesRepository } from './responses.repository'
-import { ResponsesService } from './responses.service'
-import { ResponsesController } from './responses.controller'
-import { FormService } from '../forms/forms.service'
-import { FormAccessService } from '../form-access/form-access.service'
-import { QuestionsRepository } from '../questions/questions.repository'
+import { pool } from '../../db.js'
+import { ResponsesRepository } from './responses.repository.js'
+import { ResponsesService } from './responses.service.js'
+import { ResponsesController } from './responses.controller.js'
+import { FormService } from '../forms/forms.service.js'
+import { FormAccessService } from '../form-access/form-access.service.js'
+import { QuestionsRepository } from '../questions/questions.repository.js'
 
 export function createResponsesModule(formService: FormService, formAccessService: FormAccessService) {
     const responsesRepository = new ResponsesRepository(pool)

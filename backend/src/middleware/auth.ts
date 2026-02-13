@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { NoAccessToken } from "../errors";
+import { NoAccessToken } from "../errors.js";
 import jwt from 'jsonwebtoken'
-import { JwtPayload } from "../modules/auth/auth.types";
+import { JwtPayload } from "../modules/auth/auth.types.js";
 
 
 const JWT_TOKEN = process.env.JWT_TOKEN as string

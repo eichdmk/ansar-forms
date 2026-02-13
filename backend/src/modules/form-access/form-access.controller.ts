@@ -1,4 +1,4 @@
-import { FormAccessService } from "./form-access.service";
+import { FormAccessService } from "./form-access.service.js";
 import { FastifyReply, FastifyRequest } from "fastify";
 
 export class FormAccessController {

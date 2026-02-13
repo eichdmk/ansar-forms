@@ -1,6 +1,6 @@
-import { QuestionService } from "./questions.service";
+import { QuestionService } from "./questions.service.js";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CreateQuestionDto, UpdateQuestionDto } from "./questions.types";
+import { CreateQuestionDto, UpdateQuestionDto } from "./questions.types.js";
 
 export class QuestionContoller {
     constructor(private questionService: QuestionService) { }
