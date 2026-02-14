@@ -7,8 +7,12 @@ export function useLocalStorage(key: string, defaultValue?: any){
     const [value, setValue] = useState(data ? data : defaultValue)
 
 
-    useEffect(()=>{
-        localStorage.setItem(key, value)
+    useEffect(() => {
+        if (value === undefined || value === null || (typeof value === 'string' && value.trim() === '')) {
+            localStorage.removeItem(key)
+        } else {
+            localStorage.setItem(key, value)
+        }
     }, [key, value])
 
     return [value, setValue]

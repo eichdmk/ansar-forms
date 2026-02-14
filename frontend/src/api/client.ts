@@ -4,6 +4,8 @@ export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 })
 
+let didRedirect401 = false
+
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token')
@@ -20,7 +22,10 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
-      window.location.href = '/'
+      if (!didRedirect401) {
+        didRedirect401 = true
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }
