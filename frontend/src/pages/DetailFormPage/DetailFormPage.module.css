@@ -27,6 +27,7 @@
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
+  touch-action: none;
 }
 .dragHandle:active {
   cursor: grabbing;
@@ -1339,6 +1340,108 @@
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-text);
+}
+
+.optionsDuplicateHint {
+  margin: 0 0 12px 0;
+  font-size: 0.8125rem;
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.typeLabelBlock {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.typeLabelBlock .typeLabel {
+  margin-bottom: 6px;
+}
+
+.typeHint {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.optionTypeIndicator {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.radioCircle {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-bg);
+}
+
+.checkboxSquare {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-border);
+  border-radius: 3px;
+  background: var(--color-bg);
+}
+
+.selectArrow {
+  font-size: 0.625rem;
+  color: var(--color-text-secondary);
+  line-height: 1;
+}
+
+/* Превью вариантов в готовом вопросе (режим просмотра) */
+.optionsPreview {
+  list-style: none;
+  margin: 12px 0 0 0;
+  padding: 0;
+}
+
+.optionsPreviewItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  font-size: 0.9375rem;
+  color: var(--color-text);
+}
+
+.optionsPreviewItem .radioCircle,
+.optionsPreviewItem .checkboxSquare {
+  flex-shrink: 0;
+}
+
+.optionsPreviewItem .selectArrow {
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+
+.optionsPreviewLabel {
+  flex: 1;
+}
+
+.optionsPreviewSelectPlaceholder {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  color: var(--color-text-disabled);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.optionsPreviewSelectPlaceholder .selectArrow {
+  flex-shrink: 0;
 }
 
 .optionRow {

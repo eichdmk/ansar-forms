@@ -21,6 +21,12 @@ const initialDraft = (type: string): QuestionDraft => ({
     options: ['radio', 'checkbox', 'select'].includes(type) ? ['', ''] : [],
 })
 
+export function hasDuplicateOptions(options: string[]): boolean {
+    const filled = options.map((o) => o.trim()).filter(Boolean)
+    const lower = filled.map((o) => o.toLowerCase())
+    return lower.length > 0 && new Set(lower).size !== lower.length
+}
+
 export function questionToDraft(q: Question): QuestionDraft {
     const opts = Array.isArray(q.options)
         ? q.options.map(String)
@@ -66,6 +72,10 @@ export function QuestionConstructor({ formId, questionsCount, onError, onQuestio
     async function handleAddQuestion() {
         if (!newQuestionDraft) return
         const opts = newQuestionDraft.options.filter(Boolean)
+        if (needsOptions && opts.length > 0 && hasDuplicateOptions(newQuestionDraft.options)) {
+            onError?.('Варианты ответа должны быть уникальными. Удалите дубликаты.')
+            return
+        }
         const dto = {
             type: newQuestionDraft.type,
             label: newQuestionDraft.label,
@@ -106,10 +116,21 @@ export function QuestionConstructor({ formId, questionsCount, onError, onQuestio
 
             {newQuestionDraft && (
                 <div className={styles.card}>
-                    <p className={styles.typeLabel}>
-                        <strong>Тип:</strong>{" "}
-                        {QUESTION_TYPES.find((t) => t.value === newQuestionDraft.type)?.label}
-                    </p>
+                    <div className={styles.typeLabelBlock}>
+                        <p className={styles.typeLabel}>
+                            <strong>Тип вопроса:</strong>{" "}
+                            {QUESTION_TYPES.find((t) => t.value === newQuestionDraft.type)?.label}
+                        </p>
+                        {newQuestionDraft.type === 'radio' && (
+                            <p className={styles.typeHint}>Респондент выберет один вариант (○ кружок)</p>
+                        )}
+                        {newQuestionDraft.type === 'checkbox' && (
+                            <p className={styles.typeHint}>Респондент может выбрать несколько вариантов (☐ галочка)</p>
+                        )}
+                        {newQuestionDraft.type === 'select' && (
+                            <p className={styles.typeHint}>Респондент выберет один вариант из выпадающего списка (▼)</p>
+                        )}
+                    </div>
                     <input
                         className={styles.input}
                         placeholder="Текст вопроса"
@@ -135,8 +156,16 @@ export function QuestionConstructor({ formId, questionsCount, onError, onQuestio
                     {needsOptions && (
                         <div className={styles.optionsBlock}>
                             <strong>Варианты ответа:</strong>
+                            {hasDuplicateOptions(newQuestionDraft.options) && (
+                                <p className={styles.optionsDuplicateHint}>Варианты должны отличаться друг от друга</p>
+                            )}
                             {newQuestionDraft.options.map((opt, i) => (
                                 <div key={i} className={styles.optionRow}>
+                                    <span className={styles.optionTypeIndicator} aria-hidden>
+                                        {newQuestionDraft.type === 'radio' && <span className={styles.radioCircle} />}
+                                        {newQuestionDraft.type === 'checkbox' && <span className={styles.checkboxSquare} />}
+                                        {newQuestionDraft.type === 'select' && <span className={styles.selectArrow}>▼</span>}
+                                    </span>
                                     <input
                                         className={styles.optionInput}
                                         value={opt}

@@ -7,7 +7,7 @@ import type { AxiosError } from "axios"
 import { useAppSelector } from "../../hooks/useAppSelector"
 import { useDispatch } from "react-redux"
 import { deleteQuestion, setQuestions, updateQuestion } from "../../store/slices/questionSlices"
-import { QuestionConstructor, questionToDraft } from "../../components/QuestionConstructor/QuestionConstructor"
+import { QuestionConstructor, questionToDraft, hasDuplicateOptions } from "../../components/QuestionConstructor/QuestionConstructor"
 import { QuestionTypesToolbar } from "./QuestionTypesToolbar"
 import { QuestionListItem } from "./QuestionListItem"
 import styles from "./DetailFormPage.module.css"
@@ -54,11 +54,12 @@ function SortableQuestionItem({
     }
 
     return (
-        <li ref={setNodeRef} id={`question-${question.id}`} style={style} className={styles.card} {...attributes}>
+        <li ref={setNodeRef} id={`question-${question.id}`} style={style} className={styles.card}>
             <div className={styles.dragHandleRow}>
                 <span
                     className={styles.dragHandle}
                     {...listeners}
+                    {...attributes}
                     title="Перетащить"
                     aria-label="Перетащить вопрос"
                 >
@@ -89,7 +90,7 @@ export function DetailFormPage() {
     const lastSavedDescriptionRef = useRef<string>("")
     const isAutoSavingRef = useRef<boolean>(false)
     const sensors = useSensors(
-        useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+        useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
         useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
     )
 
@@ -136,17 +137,13 @@ export function DetailFormPage() {
     useEffect(() => {
         if (!id || !form || !canEdit) return
 
-        // Пропускаем, если идет автосохранение
         if (isAutoSavingRef.current) {
             return
         }
 
-        // Вычисляем значения для сохранения одинаково в начале и внутри setTimeout
         const titleToSave = formTitle.trim() || form.title
-        // Если поле описания очищено пользователем (пустая строка), отправляем пустую строку
         const descriptionToSave = formDescription.trim()
 
-        // Сравниваем с последними сохраненными значениями
         const titleChanged = titleToSave !== lastSavedTitleRef.current
         const descriptionChanged = descriptionToSave !== lastSavedDescriptionRef.current
 
@@ -158,10 +155,8 @@ export function DetailFormPage() {
             if (!id || !form) return
 
             const finalTitleToSave = formTitle.trim() || form.title
-            // Отправляем пустую строку если поле очищено (бэкенд обновит поле на пустое значение)
             const finalDescriptionToSave = formDescription.trim()
 
-            // Проверяем еще раз перед сохранением
             if (finalTitleToSave === lastSavedTitleRef.current &&
                 finalDescriptionToSave === lastSavedDescriptionRef.current) {
                 return
@@ -173,7 +168,7 @@ export function DetailFormPage() {
             try {
                 const updated = await formsAPI.update(id, {
                     title: finalTitleToSave,
-                    description: finalDescriptionToSave, 
+                    description: finalDescriptionToSave,
                 })
                 lastSavedTitleRef.current = updated.title
                 lastSavedDescriptionRef.current = updated.description ?? ""
@@ -225,6 +220,10 @@ export function DetailFormPage() {
         if (!q) return
         const opts = editDraft.options.filter(Boolean)
         const needsOptions = ["radio", "checkbox", "select"].includes(editDraft.type)
+        if (needsOptions && opts.length > 0 && hasDuplicateOptions(editDraft.options)) {
+            setMessage('Варианты ответа должны быть уникальными. Удалите дубликаты.')
+            return
+        }
         const dto = {
             type: editDraft.type,
             label: editDraft.label,
@@ -314,6 +313,8 @@ export function DetailFormPage() {
         if (oldIndex === -1 || newIndex === -1) return
 
         const newOrder = arrayMove(sortedQuestions, oldIndex, newIndex)
+        const newOrderWithOrder = newOrder.map((q, idx) => ({ ...q, order: idx }))
+        dispatch(setQuestions(newOrderWithOrder))
 
         try {
             setMessage("")
@@ -337,7 +338,6 @@ export function DetailFormPage() {
                     })
                 )
                 await Promise.all(updates)
-                dispatch(setQuestions(newOrder))
             }
         } catch (error) {
             const err = error as AxiosError<{ error?: string }>
@@ -397,7 +397,7 @@ export function DetailFormPage() {
                             </div>
                         )}
 
-                        {form && (form.role === "owner" || form.role === "editor") && (
+                        {form && canEdit && (
                             <div className={styles.statusBar}>
                                 <label className={styles.statusLabel}>
                                     Статус формы:

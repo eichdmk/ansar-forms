@@ -42,13 +42,55 @@
   box-shadow: var(--shadow-card);
 }
 
-.typeLabel {
-  margin: 0 0 16px 0;
-  color: var(--color-text-secondary);
-  font-size: 0.875rem;
-  font-weight: 500;
+.typeLabelBlock {
+  margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--color-border);
+}
+
+.typeLabel {
+  margin: 0 0 6px 0;
+  color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.typeHint {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.optionTypeIndicator {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.radioCircle {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-bg);
+}
+
+.checkboxSquare {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-border);
+  border-radius: 3px;
+  background: var(--color-bg);
+}
+
+.selectArrow {
+  font-size: 0.625rem;
+  color: var(--color-text-secondary);
+  line-height: 1;
 }
 
 .input {
@@ -110,11 +152,22 @@
   font-weight: 600;
 }
 
+.optionsDuplicateHint {
+  margin: 0 0 12px 0;
+  font-size: 0.8125rem;
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
 .optionRow {
   display: flex;
   gap: 12px;
   margin-top: 12px;
   align-items: center;
+}
+
+.optionRow .optionInput {
+  flex: 1;
 }
 
 .optionInput {
