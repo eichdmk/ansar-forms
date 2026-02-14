@@ -263,7 +263,7 @@ export function DetailFormPage() {
         setPublishLoading(true)
         try {
             const updated = await formsAPI.updateStatus(id, published)
-            setForm(updated)
+            setForm((prev) => (prev ? { ...updated, role: updated.role ?? prev.role } : updated))
         } catch (error) {
             const err = error as AxiosError<{ error?: string }>
             if (err.response) {

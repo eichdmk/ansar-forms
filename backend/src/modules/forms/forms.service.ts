@@ -99,9 +99,8 @@ export class FormService {
             throw new ForbiddenError()
         }
 
-        const result = await this.formRepository.updateFormStatus(id, is_published)
-
-        return result
+        const updated = await this.formRepository.updateFormStatus(id, is_published)
+        return { ...updated, role }
     }
 
     delete = async (id: string, owner_id: string) => {
