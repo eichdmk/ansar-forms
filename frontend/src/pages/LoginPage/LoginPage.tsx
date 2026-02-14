@@ -16,7 +16,8 @@ export function LoginPage() {
     const returnUrl = searchParams.get("returnUrl")
 
     useEffect(() => {
-        if (token) {
+        const valid = typeof token === 'string' && token.trim().length > 0
+        if (valid) {
             navigate(returnUrl ? decodeURIComponent(returnUrl) : "/forms", { replace: true })
         }
     }, [token, navigate, returnUrl])

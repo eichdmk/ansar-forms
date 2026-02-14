@@ -15,7 +15,8 @@ export function RegisterPage() {
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (token) {
+        const valid = typeof token === 'string' && token.trim().length > 0
+        if (valid) {
             navigate("/forms", { replace: true })
         }
     }, [token, navigate])

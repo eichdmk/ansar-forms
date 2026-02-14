@@ -11,10 +11,14 @@ import { FormSettingsPage } from "./pages/FormSettingsPage/FormSettingsPage"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { useLocalStorage } from "./hooks/useLocalStorage"
 
+function hasValidToken(token: unknown): boolean {
+  return typeof token === 'string' && token.trim().length > 0
+}
+
 function HomePage() {
   const [token] = useLocalStorage("token")
   
-  if (token) {
+  if (hasValidToken(token)) {
     return <Navigate to="/forms" replace />
   }
   

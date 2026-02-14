@@ -1,6 +1,10 @@
 import { Navigate } from "react-router-dom";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
+function hasValidToken(token: unknown): boolean {
+    return typeof token === 'string' && token.trim().length > 0
+}
+
 interface ProtectedRouteProps {
     children: React.ReactNode
 }
@@ -8,7 +12,7 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({children}: ProtectedRouteProps){
     const [value] = useLocalStorage('token')
 
-    if(!value){
+    if (!hasValidToken(value)) {
         return <Navigate to="/" replace />
     }
 
