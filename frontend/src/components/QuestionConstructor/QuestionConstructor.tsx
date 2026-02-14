@@ -39,12 +39,14 @@ type QuestionConstructorProps = {
     formId: string
     questionsCount: number
     onError?: (message: string) => void
+    onQuestionAdded?: (questionId: string) => void
+    onOpen?: () => void
     openWithType?: string | null
     onOpenWithTypeConsumed?: () => void
     showTypeButtons?: boolean
 }
 
-export function QuestionConstructor({ formId, questionsCount, onError, openWithType, onOpenWithTypeConsumed, showTypeButtons = true }: QuestionConstructorProps) {
+export function QuestionConstructor({ formId, questionsCount, onError, onQuestionAdded, onOpen, openWithType, onOpenWithTypeConsumed, showTypeButtons = true }: QuestionConstructorProps) {
     const [newQuestionDraft, setNewQuestionDraft] = useState<QuestionDraft | null>(null)
     const dispatch = useDispatch()
 
@@ -54,6 +56,10 @@ export function QuestionConstructor({ formId, questionsCount, onError, openWithT
             onOpenWithTypeConsumed?.()
         }
     }, [openWithType, onOpenWithTypeConsumed])
+
+    useEffect(() => {
+        if (newQuestionDraft) onOpen?.()
+    }, [newQuestionDraft, onOpen])
 
     const needsOptions = newQuestionDraft != null && ['radio', 'checkbox', 'select'].includes(newQuestionDraft.type)
 
@@ -72,6 +78,7 @@ export function QuestionConstructor({ formId, questionsCount, onError, openWithT
             dispatch(addQuestion(result))
             setNewQuestionDraft(null)
             onError?.('')
+            onQuestionAdded?.(result.id)
         } catch (error) {
             const err = error as AxiosError<{ error?: string }>
             if (err.response && onError) {

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react"
+import { useEffect, useState, useCallback, useRef, useMemo } from "react"
 import { createPortal } from "react-dom"
 import { useParams } from "react-router-dom"
 import { formsAPI, questionsApi } from "../../api"
@@ -54,7 +54,7 @@ function SortableQuestionItem({
     }
 
     return (
-        <li ref={setNodeRef} style={style} className={styles.card} {...attributes}>
+        <li ref={setNodeRef} id={`question-${question.id}`} style={style} className={styles.card} {...attributes}>
             <div className={styles.dragHandleRow}>
                 <span
                     className={styles.dragHandle}
@@ -274,6 +274,25 @@ export function DetailFormPage() {
         }
     }
 
+    const sortedQuestions = useMemo(
+        () => [...questions].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+        [questions]
+    )
+
+    const scrollToQuestion = useCallback((questionId: string) => {
+        setTimeout(() => {
+            const el = document.getElementById(`question-${questionId}`)
+            el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        }, 150)
+    }, [])
+
+    const scrollToConstructor = useCallback(() => {
+        setTimeout(() => {
+            const el = document.getElementById('question-constructor-block')
+            el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 100)
+    }, [])
+
     const [isMobileToolbar, setIsMobileToolbar] = useState(false)
     useEffect(() => {
         const mq = window.matchMedia("(max-width: 900px)")
@@ -289,21 +308,21 @@ export function DetailFormPage() {
         if (!over || active.id === over.id) return
         if (!id) return
 
-        const oldIndex = questions.findIndex(q => q.id === active.id)
-        const newIndex = questions.findIndex(q => q.id === over.id)
+        const oldIndex = sortedQuestions.findIndex(q => q.id === active.id)
+        const newIndex = sortedQuestions.findIndex(q => q.id === over.id)
 
         if (oldIndex === -1 || newIndex === -1) return
 
-        const newOrder = arrayMove(questions, oldIndex, newIndex)
+        const newOrder = arrayMove(sortedQuestions, oldIndex, newIndex)
 
         try {
             setMessage("")
 
             const toUpdate = newOrder
-                .map((q, newIndex) => {
-                    const oldIndex = questions.findIndex((oq) => oq.id === q.id)
-                    if (oldIndex === newIndex) return null
-                    return { q, newIndex }
+                .map((q, idx) => {
+                    const prevIndex = sortedQuestions.findIndex((oq) => oq.id === q.id)
+                    if (prevIndex === idx) return null
+                    return { q, newIndex: idx }
                 })
                 .filter((x): x is { q: Question; newIndex: number } => x !== null)
 
@@ -319,7 +338,6 @@ export function DetailFormPage() {
                 )
                 await Promise.all(updates)
                 dispatch(setQuestions(newOrder))
-
             }
         } catch (error) {
             const err = error as AxiosError<{ error?: string }>
@@ -397,16 +415,6 @@ export function DetailFormPage() {
                             </div>
                         )}
 
-                        {id && canEdit && (
-                            <QuestionConstructor
-                                formId={id}
-                                questionsCount={questions.length}
-                                onError={setMessage}
-                                openWithType={sidebarQuestionType}
-                                onOpenWithTypeConsumed={handleOpenWithTypeConsumed}
-                                showTypeButtons={false}
-                            />
-                        )}
                         {id && !canEdit && questions.length > 0 && (
                             <p className={styles.viewerQuestionsHint}>Вопросы формы (только просмотр)</p>
                         )}
@@ -418,11 +426,11 @@ export function DetailFormPage() {
                                 onDragEnd={handleDragEnd}
                             >
                                 <SortableContext
-                                    items={questions.map(q => q.id)}
+                                    items={sortedQuestions.map(q => q.id)}
                                     strategy={verticalListSortingStrategy}
                                 >
                                     <ul className={styles.list}>
-                                        {questions.map((q) => (
+                                        {sortedQuestions.map((q) => (
                                             <SortableQuestionItem
                                                 key={q.id}
                                                 question={q}
@@ -440,7 +448,7 @@ export function DetailFormPage() {
                             </DndContext>
                         ) : (
                             <ul className={styles.list}>
-                                {questions.map((q) => (
+                                {sortedQuestions.map((q) => (
                                     <QuestionListItem
                                         key={q.id}
                                         question={q}
@@ -456,6 +464,21 @@ export function DetailFormPage() {
                                     />
                                 ))}
                             </ul>
+                        )}
+
+                        {id && canEdit && (
+                            <div id="question-constructor-block">
+                                <QuestionConstructor
+                                    formId={id}
+                                    questionsCount={questions.length}
+                                    onError={setMessage}
+                                    onQuestionAdded={scrollToQuestion}
+                                    onOpen={scrollToConstructor}
+                                    openWithType={sidebarQuestionType}
+                                    onOpenWithTypeConsumed={handleOpenWithTypeConsumed}
+                                    showTypeButtons={false}
+                                />
+                            </div>
                         )}
 
                         {message && <p className={styles.message}>{message}</p>}

@@ -15,6 +15,7 @@ const questionSlice = createSlice({
         },
         addQuestion: (state, action: PayloadAction<Question>) => {
             state.questions.push(action.payload)
+            state.questions.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
         },
         updateQuestion: (state, action: PayloadAction<Question>) => {
             state.questions = state.questions.map(q=> q.id === action.payload.id ? action.payload : q)
