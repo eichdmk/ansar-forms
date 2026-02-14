@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
+import { useAppSelector } from "../../hooks/useAppSelector"
+import { useDispatch } from "react-redux"
 import { formsAPI, questionsApi, responsesAPI } from "../../api"
+import { setCurrentForm } from "../../store/slices/currentFormSlice"
 import type { Form, Question, ResponseWithAnswers } from "../../types"
 import type { AxiosError } from "axios"
 import styles from "./ResponsesPage.module.css"
@@ -31,6 +34,10 @@ const PAGE_SIZE = 50
 
 export function ResponsesPage() {
   const { id } = useParams()
+  const dispatch = useDispatch()
+  const formFromRedux = useAppSelector((state) =>
+    state.currentForm.formId === id ? state.currentForm.form : null
+  )
   const [form, setForm] = useState<Form | null>(null)
   const [questions, setQuestions] = useState<Question[]>([])
   const [responses, setResponses] = useState<ResponseWithAnswers[]>([])
@@ -44,11 +51,23 @@ export function ResponsesPage() {
   useEffect(() => {
     if (!id) return
     setMessage("")
-    Promise.all([formsAPI.getById(id), questionsApi.getByFormId(id)])
+    if (formFromRedux?.id === id) {
+      setForm(formFromRedux)
+      questionsApi.getByFormId(id).then((questionsRes) => {
+        const sortedQuestions = [...questionsRes].sort((a, b) =>
+          (a.order || 0) - (b.order || 0) ||
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        )
+        setQuestions(sortedQuestions)
+      }).catch(() => {})
+      return
+    }
+    Promise.all([formsAPI.getByIdWithRole(id), questionsApi.getByFormId(id)])
       .then(([formRes, questionsRes]) => {
         setForm(formRes)
-        const sortedQuestions = [...questionsRes].sort((a, b) => 
-          (a.order || 0) - (b.order || 0) || 
+        dispatch(setCurrentForm({ formId: id, form: formRes }))
+        const sortedQuestions = [...questionsRes].sort((a, b) =>
+          (a.order || 0) - (b.order || 0) ||
           new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
         )
         setQuestions(sortedQuestions)
@@ -58,7 +77,7 @@ export function ResponsesPage() {
           setMessage(error.response.data?.error ?? "Произошла ошибка")
         }
       })
-  }, [id])
+  }, [id, formFromRedux, dispatch])
 
   useEffect(() => {
     if (!id) return

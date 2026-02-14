@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { useParams, useNavigate } from "react-router-dom"
+import { useAppSelector } from "../../hooks/useAppSelector"
+import { useDispatch } from "react-redux"
 import { formsAPI, formAccessAPI } from "../../api"
+import { setCurrentForm } from "../../store/slices/currentFormSlice"
 import type { Form } from "../../types"
 import type { FormAccessWithUser } from "../../types/formAccess"
 import type { AxiosError } from "axios"
@@ -10,6 +13,10 @@ import styles from "./FormSettingsPage.module.css"
 export function FormSettingsPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const formFromRedux = useAppSelector((state) =>
+    state.currentForm.formId === id ? state.currentForm.form : null
+  )
   const [form, setForm] = useState<Form | null>(null)
   const [message, setMessage] = useState("")
   const [accessList, setAccessList] = useState<FormAccessWithUser[] | null>(null)
@@ -22,10 +29,18 @@ export function FormSettingsPage() {
 
   useEffect(() => {
     if (!id) return
+    if (formFromRedux?.id === id) {
+      setForm(formFromRedux)
+      if (formFromRedux.role !== "owner") {
+        navigate(`/forms/edit/${id}`, { replace: true })
+      }
+      return
+    }
     formsAPI
       .getByIdWithRole(id)
       .then((f) => {
         setForm(f)
+        dispatch(setCurrentForm({ formId: id, form: f }))
         if (f.role !== "owner") {
           navigate(`/forms/edit/${id}`, { replace: true })
         }
@@ -33,7 +48,7 @@ export function FormSettingsPage() {
       .catch(() => {
         setMessage("Нет доступа к форме")
       })
-  }, [id, navigate])
+  }, [id, navigate, formFromRedux, dispatch])
 
   const canManageAccess = form?.role === "owner"
 

@@ -7,6 +7,7 @@ import type { AxiosError } from "axios"
 import { useAppSelector } from "../../hooks/useAppSelector"
 import { useDispatch } from "react-redux"
 import { deleteQuestion, setQuestions, updateQuestion } from "../../store/slices/questionSlices"
+import { updateCurrentForm } from "../../store/slices/currentFormSlice"
 import { QuestionConstructor, questionToDraft, hasDuplicateOptions } from "../../components/QuestionConstructor/QuestionConstructor"
 import { QuestionTypesToolbar } from "./QuestionTypesToolbar"
 import { QuestionListItem } from "./QuestionListItem"
@@ -85,6 +86,10 @@ export function DetailFormPage() {
     const [publishLoading, setPublishLoading] = useState(false)
     const questions = useAppSelector(state => state.questions.questions)
     const dispatch = useDispatch()
+    const formFromRedux = useAppSelector(state =>
+        state.currentForm.formId === id ? state.currentForm.form : null
+    )
+    const formFromStore = formFromRedux ?? form
     const formIdRef = useRef<string | undefined>(undefined)
     const lastSavedTitleRef = useRef<string>("")
     const lastSavedDescriptionRef = useRef<string>("")
@@ -94,28 +99,32 @@ export function DetailFormPage() {
         useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
     )
 
+    const questionsLoadedForIdRef = useRef<string | null>(null)
+
     useEffect(() => {
-        async function loadFormAndQuestions() {
-            if (!id) return
-            dispatch(setQuestions([]))
-            try {
-                const [fResult, qResult] = await Promise.all([
-                    formsAPI.getByIdWithRole(id),
-                    questionsApi.getByFormId(id),
-                ])
-                setForm(fResult)
-                dispatch(setQuestions(qResult))
-            } catch (error) {
-                const err = error as AxiosError<{ error?: string }>
-                if (err.response) {
-                    setMessage(err.response.data?.error ?? "Произошла ошибка")
-                }
-            }
-        }
-        loadFormAndQuestions()
+        if (!id) return
+        questionsLoadedForIdRef.current = null
+        dispatch(setQuestions([]))
     }, [id, dispatch])
 
-    const canEdit = form?.role === 'owner' || form?.role === 'editor'
+    useEffect(() => {
+        if (!id || formFromRedux?.id !== id) return
+        if (questionsLoadedForIdRef.current === id) return
+        questionsLoadedForIdRef.current = id
+        setForm(formFromRedux)
+        let cancelled = false
+        questionsApi.getByFormId(id).then((qResult) => {
+            if (!cancelled) dispatch(setQuestions(qResult))
+        }).catch((error) => {
+            if (!cancelled) {
+                const err = error as AxiosError<{ error?: string }>
+                if (err.response) setMessage(err.response.data?.error ?? "Произошла ошибка")
+            }
+        })
+        return () => { cancelled = true }
+    }, [id, formFromRedux, dispatch])
+
+    const canEdit = formFromStore?.role === 'owner' || formFromStore?.role === 'editor'
 
     useEffect(() => {
         if (!form || !id) return
@@ -173,17 +182,9 @@ export function DetailFormPage() {
                 lastSavedTitleRef.current = updated.title
                 lastSavedDescriptionRef.current = updated.description ?? ""
 
-                setForm(prevForm => prevForm ? {
-                    ...prevForm,
-                    title: updated.title,
-                    description: updated.description,
-                    id: prevForm.id,
-                    owner_id: prevForm.owner_id,
-                    is_published: prevForm.is_published,
-                    role: prevForm.role,
-                    created_at: prevForm.created_at,
-                    updated_at: updated.updated_at || prevForm.updated_at,
-                } : updated)
+                const nextForm = { ...form!, title: updated.title, description: updated.description, updated_at: updated.updated_at || form!.updated_at }
+                setForm(nextForm)
+                dispatch(updateCurrentForm(nextForm))
             } catch (error) {
                 const err = error as AxiosError<{ error?: string }>
                 if (err.response) {
@@ -258,11 +259,13 @@ export function DetailFormPage() {
     }
 
     async function handleStatusChange(published: boolean) {
-        if (!id || !form) return
+        if (!id || !formFromStore) return
         setPublishLoading(true)
         try {
             const updated = await formsAPI.updateStatus(id, published)
-            setForm((prev) => (prev ? { ...updated, role: updated.role ?? prev.role } : updated))
+            const nextForm = { ...updated, role: updated.role ?? formFromStore.role }
+            setForm(nextForm)
+            dispatch(updateCurrentForm(nextForm))
         } catch (error) {
             const err = error as AxiosError<{ error?: string }>
             if (err.response) {
@@ -359,7 +362,7 @@ export function DetailFormPage() {
             <div className={styles.scrollArea}>
                 <div className={styles.contentWrap}>
                     <main className={styles.main}>
-                        {form && (
+                        {formFromStore && (
                             <div className={styles.headerCard}>
                                 {canEdit ? (
                                     <>
@@ -385,11 +388,11 @@ export function DetailFormPage() {
                                     </>
                                 ) : (
                                     <>
-                                        <h1 className={styles.formTitleReadOnly}>{form.title}</h1>
-                                        {form.description && (
-                                            <p className={styles.formDescriptionReadOnly}>{form.description}</p>
+                                        <h1 className={styles.formTitleReadOnly}>{formFromStore.title}</h1>
+                                        {formFromStore.description && (
+                                            <p className={styles.formDescriptionReadOnly}>{formFromStore.description}</p>
                                         )}
-                                        {form.role === 'viewer' && (
+                                        {formFromStore.role === 'viewer' && (
                                             <span className={styles.roleBadge}>Только просмотр</span>
                                         )}
                                     </>
@@ -397,13 +400,13 @@ export function DetailFormPage() {
                             </div>
                         )}
 
-                        {form && canEdit && (
+                        {formFromStore && canEdit && (
                             <div className={styles.statusBar}>
                                 <label className={styles.statusLabel}>
                                     Статус формы:
                                     <select
                                         className={styles.statusSelect}
-                                        value={form.is_published ? "published" : "draft"}
+                                        value={formFromStore.is_published ? "published" : "draft"}
                                         onChange={(e) => handleStatusChange(e.target.value === "published")}
                                         disabled={publishLoading}
                                         aria-label="Статус формы"

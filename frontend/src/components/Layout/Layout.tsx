@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react"
 import { Outlet, Link, useNavigate, useLocation, useParams } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { useAppSelector } from "../../hooks/useAppSelector"
 import { FormsSearchProvider, useFormsSearch } from "../../contexts/FormsSearchContext"
 import { formsAPI } from "../../api"
-import type { Form } from "../../types"
+import { setCurrentForm, clearCurrentForm } from "../../store/slices/currentFormSlice"
 import styles from "./Layout.module.css"
 
 function LayoutHeader() {
   const location = useLocation()
   const navigate = useNavigate()
   const params = useParams()
+  const dispatch = useDispatch()
   const { searchQuery, setSearchQuery } = useFormsSearch()
   const formId = params.id
   const showSearch = location.pathname === "/forms"
@@ -28,22 +31,25 @@ function LayoutHeader() {
   const responsesUrl = formId ? `/forms/${formId}/responses` : ""
   const settingsUrl = formId ? `/forms/edit/${formId}/settings` : ""
   const [copyToast, setCopyToast] = useState(false)
-  const [form, setForm] = useState<Form | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const form = useAppSelector((state) =>
+    state.currentForm.formId === formId ? state.currentForm.form : null
+  )
 
   useEffect(() => {
     if (!formId || !isFormContext) {
-      setForm(null)
+      dispatch(clearCurrentForm())
       return
     }
     let cancelled = false
     formsAPI.getByIdWithRole(formId).then((f) => {
-      if (!cancelled) setForm(f)
+      if (!cancelled) dispatch(setCurrentForm({ formId, form: f }))
     }).catch(() => {
-      if (!cancelled) setForm(null)
+      if (!cancelled) dispatch(clearCurrentForm())
     })
     return () => { cancelled = true }
-  }, [formId, isFormContext])
+  }, [formId, isFormContext, dispatch])
 
   useEffect(() => {
     if (!isFormContext) {
