@@ -1,8 +1,8 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { authAPI } from "../../api"
 import { useLocalStorage } from "../../hooks/useLocalStorage"
 import type { AxiosError } from "axios"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import styles from "./LoginPage.module.css"
 
 export function LoginPage() {
@@ -10,10 +10,16 @@ export function LoginPage() {
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
-    const [, setValue] = useLocalStorage("token")
+    const [token, setValue] = useLocalStorage("token")
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const returnUrl = searchParams.get("returnUrl")
+
+    useEffect(() => {
+        if (token) {
+            navigate(returnUrl ? decodeURIComponent(returnUrl) : "/forms", { replace: true })
+        }
+    }, [token, navigate, returnUrl])
 
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -60,6 +66,12 @@ export function LoginPage() {
                 </button>
                 {error && <p className={styles.error}>{error}</p>}
                 </form>
+                <p className={styles.footer}>
+                    Нет аккаунта?{" "}
+                    <Link to="/register" className={styles.link}>
+                        Зарегистрироваться
+                    </Link>
+                </p>
             </div>
         </div>
     )

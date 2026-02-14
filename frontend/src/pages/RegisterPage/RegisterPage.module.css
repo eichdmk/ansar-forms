@@ -267,7 +267,7 @@
   }
 }
 
-@media (max-height: 500px) and (orientation: landscape) {
+@media (max-height: 560px) and (orientation: landscape) {
   .page {
     align-items: flex-start;
     padding-top: max(16px, env(safe-area-inset-top));
@@ -277,18 +277,32 @@
 
   .card {
     margin: 0 auto;
-    padding: 24px 32px;
+    padding: 20px 32px;
     max-height: calc(100dvh - 32px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 
+  .title {
+    font-size: 1.5rem;
+  }
+
   .subtitle {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+    font-size: 0.875rem;
   }
 
   .form {
     gap: 12px;
+  }
+
+  .input {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+
+  .footer {
+    margin-top: 16px;
   }
 }
 

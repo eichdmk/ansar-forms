@@ -2,7 +2,9 @@ FROM node:25-alpine
 
 WORKDIR /app
 
-COPY pakgage*.json tsconfig*.json ./
+COPY package*.json tsconfig*.json ./
+
+RUN npm ci
 
 COPY . .
 

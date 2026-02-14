@@ -18,15 +18,15 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: ansar_forms_backend
+    env_file:
+    - ./backend/.env
     environment:
-      # Настройки БД — хост = имя сервиса db
       DB_HOST: db
       DB_PORT: "5432"
       DB_USER: ansar_user
       DB_PASSWORD: ansar_password
       DB_NAME: ansar_forms
-      # BASE_URL для ссылок на фронт (когда будет домен — поменяешь)
-      BASE_URL: "http://frontend"
+      BASE_URL: "https://chgumk.ru"
     depends_on:
       - db
     ports:
@@ -36,14 +36,13 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: "https://chgumk.ru/api" 
     container_name: ansar_forms_frontend
     depends_on:
       - backend
     ports:
       - "5173:80"
-    # Важно: при билде Vite должен знать URL backend'а
-    environment:
-      VITE_API_URL: "http://backend:3000/api"
 
 volumes:
   db_data:

@@ -4,6 +4,7 @@ import { DetailFormPage } from "./pages/DetailFormPage/DetailFormPage"
 import { FillFormPage } from "./pages/FillFormPage/FillFormPage"
 import { FormsPage } from "./pages/FormPage/FormPage"
 import { LoginPage } from "./pages/LoginPage/LoginPage"
+import { RegisterPage } from "./pages/RegisterPage/RegisterPage"
 import { JoinPage } from "./pages/JoinPage/JoinPage"
 import { ResponsesPage } from "./pages/ResponsesPage/ResponsesPage"
 import { FormSettingsPage } from "./pages/FormSettingsPage/FormSettingsPage"
@@ -17,7 +18,7 @@ function HomePage() {
     return <Navigate to="/forms" replace />
   }
   
-  return <LoginPage />
+  return <Navigate to="/login" replace />
 }
 
 function App() {
@@ -25,6 +26,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/forms/:id/fill" element={<FillFormPage />} />
         <Route path="/join" element={<JoinPage />} />
 
