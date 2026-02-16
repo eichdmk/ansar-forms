@@ -8,6 +8,7 @@ CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,
   hash_password VARCHAR(255) NOT NULL,
+  terms_text TEXT,
   created_at TIMESTAMP DEFAULT now()
 );
 

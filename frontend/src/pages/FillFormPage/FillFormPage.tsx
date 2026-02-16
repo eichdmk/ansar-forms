@@ -223,7 +223,16 @@ export function FillFormPage() {
                             onChange={(e) => setAcceptTerms(e.target.checked)}
                         />
                         <span className={styles.termsText}>
-                            Я принимаю условия обработки пользовательских данных
+                            Я принимаю{" "}
+                            <a
+                                href={`/forms/${id}/terms`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.termsLink}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                условия обработки пользовательских данных
+                            </a>
                         </span>
                     </label>
                 </div>
@@ -238,6 +247,10 @@ export function FillFormPage() {
                 </button>
                 </div>
             </form>
+
+            <p className={styles.disclaimer}>
+                Компания Ansar не несёт ответственности за содержание и использование форм, созданных пользователями.
+            </p>
         </div>
     )
 }

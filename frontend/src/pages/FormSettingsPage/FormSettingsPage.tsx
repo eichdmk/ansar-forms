@@ -3,7 +3,7 @@ import { createPortal } from "react-dom"
 import { useParams, useNavigate } from "react-router-dom"
 import { useAppSelector } from "../../hooks/useAppSelector"
 import { useDispatch } from "react-redux"
-import { formsAPI, formAccessAPI } from "../../api"
+import { formsAPI, formAccessAPI, authAPI } from "../../api"
 import { setCurrentForm } from "../../store/slices/currentFormSlice"
 import type { Form } from "../../types"
 import type { FormAccessWithUser } from "../../types/formAccess"
@@ -26,6 +26,10 @@ export function FormSettingsPage() {
   const [inviteCreating, setInviteCreating] = useState(false)
   const [inviteRole, setInviteRole] = useState<"editor" | "viewer">("editor")
   const [inviteExpiresHours, setInviteExpiresHours] = useState("")
+  const [termsText, setTermsText] = useState("")
+  const [termsLoading, setTermsLoading] = useState(false)
+  const [termsSaving, setTermsSaving] = useState(false)
+  const [termsMessage, setTermsMessage] = useState("")
 
   useEffect(() => {
     if (!id) return
@@ -61,6 +65,32 @@ export function FormSettingsPage() {
       .catch(() => setAccessList([]))
       .finally(() => setAccessLoading(false))
   }, [id, canManageAccess])
+
+  useEffect(() => {
+    if (form?.role !== "owner") return
+    setTermsLoading(true)
+    authAPI
+      .getMe()
+      .then((me) => setTermsText(me.terms_text ?? ""))
+      .catch(() => setTermsMessage("Не удалось загрузить условия"))
+      .finally(() => setTermsLoading(false))
+  }, [form?.role])
+
+  async function handleSaveTerms(e: React.FormEvent) {
+    e.preventDefault()
+    setTermsSaving(true)
+    setTermsMessage("")
+    try {
+      await authAPI.updateTerms(termsText)
+      setTermsMessage("Условия сохранены")
+      setTimeout(() => setTermsMessage(""), 3000)
+    } catch (err) {
+      const ax = err as AxiosError<{ error?: string }>
+      setTermsMessage(ax.response?.data?.error ?? "Не удалось сохранить")
+    } finally {
+      setTermsSaving(false)
+    }
+  }
 
   async function handleCreateInvite(e: React.FormEvent) {
     e.preventDefault()
@@ -117,6 +147,40 @@ export function FormSettingsPage() {
     <div className={styles.page}>
       <div className={styles.wrap}>
         <h1 className={styles.title}>Настройки формы</h1>
+
+        <div className={styles.termsCard}>
+          <h2 className={styles.termsCardTitle}>Условия использования</h2>
+          <p className={styles.termsCardIntro}>
+            Применяются ко всем вашим формам. Отображаются респондентам при заполнении; по ним можно перейти по ссылке.
+          </p>
+          {termsLoading ? (
+            <p className={styles.loading}>Загрузка…</p>
+          ) : (
+            <form onSubmit={handleSaveTerms}>
+              <textarea
+                className={styles.termsTextarea}
+                value={termsText}
+                onChange={(e) => setTermsText(e.target.value)}
+                placeholder="Введите текст условий обработки данных (необязательно)"
+                rows={6}
+                aria-label="Условия использования"
+              />
+              {termsMessage && (
+                <p className={termsMessage === "Условия сохранены" ? styles.termsSuccess : styles.message}>
+                  {termsMessage}
+                </p>
+              )}
+              <button
+                type="submit"
+                className={styles.termsSaveBtn}
+                disabled={termsSaving}
+              >
+                {termsSaving ? "Сохранение…" : "Сохранить условия"}
+              </button>
+            </form>
+          )}
+        </div>
+
         <div className={styles.accessCard}>
           <h2 className={styles.accessTitle}>Доступ к форме</h2>
           <p className={styles.accessIntro}>

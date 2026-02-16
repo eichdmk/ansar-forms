@@ -8,6 +8,7 @@ import { RegisterPage } from "./pages/RegisterPage/RegisterPage"
 import { JoinPage } from "./pages/JoinPage/JoinPage"
 import { ResponsesPage } from "./pages/ResponsesPage/ResponsesPage"
 import { FormSettingsPage } from "./pages/FormSettingsPage/FormSettingsPage"
+import { FormTermsPage } from "./pages/FormTermsPage/FormTermsPage"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { useLocalStorage } from "./hooks/useLocalStorage"
 
@@ -33,6 +34,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forms/:id/fill" element={<FillFormPage />} />
+        <Route path="/forms/:id/terms" element={<FormTermsPage />} />
         <Route path="/join" element={<JoinPage />} />
 
         <Route element={<Layout />}>

@@ -15,6 +15,22 @@ export class FormsRepository {
         return rows[0]
     }
 
+    findFormByIdWithOwnerTerms = async (id: string) => {
+        const { rows } = await this.pool.query<Form & { owner_terms_text: string | null }>(
+            'SELECT f.*, u.terms_text AS owner_terms_text FROM forms f LEFT JOIN users u ON u.id = f.owner_id WHERE f.id = $1',
+            [id]
+        )
+        return rows[0]
+    }
+
+    findFormTermsForPublic = async (id: string) => {
+        const { rows } = await this.pool.query<{ title: string; terms_text: string | null }>(
+            'SELECT f.title, u.terms_text FROM forms f LEFT JOIN users u ON u.id = f.owner_id WHERE f.id = $1',
+            [id]
+        )
+        return rows[0]
+    }
+
     findAllForms = async (owner_id: string) => {
         const { rows } = await this.pool.query<Form>('SELECT * FROM forms WHERE owner_id = $1', [owner_id])
 

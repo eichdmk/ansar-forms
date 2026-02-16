@@ -30,6 +30,7 @@ const responsesModule = createResponsesModule(formModule.service, formAccessModu
 app.register(async (instance) => {
     instance.post('/forms', {preHandler: authRequired}, (req, reply) => formModule.controller.createForm(req, reply))
     instance.get<ParamsId>('/forms/:id', (req, reply) => formModule.controller.getFormById(req, reply))
+    instance.get<ParamsId>('/forms/:id/terms', (req, reply) => formModule.controller.getFormTerms(req, reply))
     instance.get<ParamsId>('/forms/:id/me', { preHandler: authRequired }, (req, reply) => formModule.controller.getFormByIdWithRole(req, reply))
     instance.get('/forms', {preHandler: authRequired}, (req, reply) => formModule.controller.getForms(req, reply))
     instance.put<ParamsId>('/forms/:id', {preHandler: authRequired}, (req, reply) => formModule.controller.updateForm(req, reply))
@@ -40,9 +41,11 @@ app.register(async (instance) => {
     instance.post('/forms/:formId/responses', (req, reply) => responsesModule.controller.createResponse(req, reply))
 }, { prefix: '/api' })
 
-app.register(async (instance)=>{
-    instance.post('/auth/login', (req, reply)=> authModule.controller.login(req, reply))
-    instance.post('/auth/register', (req, reply)=> authModule.controller.register(req, reply))
+app.register(async (instance) => {
+    instance.post('/auth/login', (req, reply) => authModule.controller.login(req, reply))
+    instance.post('/auth/register', (req, reply) => authModule.controller.register(req, reply))
+    instance.get('/auth/me', { preHandler: authRequired }, (req, reply) => authModule.controller.getMe(req, reply))
+    instance.patch('/auth/me', { preHandler: authRequired }, (req, reply) => authModule.controller.updateTerms(req, reply))
 }, { prefix: '/api' })
 
 app.register(async (instance)=>{

@@ -14,6 +14,10 @@ export const formsAPI = {
     const { data } = await api.get(`/forms/${id}`)
     return data
   },
+  getFormTerms: async (id: string): Promise<{ form_title: string; terms_text: string }> => {
+    const { data } = await api.get(`/forms/${id}/terms`)
+    return data
+  },
   getByIdWithRole: async (id: string) => {
     const { data } = await api.get(`/forms/${id}/me`)
     return data

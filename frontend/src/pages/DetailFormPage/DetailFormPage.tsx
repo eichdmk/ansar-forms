@@ -12,6 +12,7 @@ import { QuestionConstructor, questionToDraft, hasDuplicateOptions } from "../..
 import { QuestionTypesToolbar } from "./QuestionTypesToolbar"
 import { QuestionListItem } from "./QuestionListItem"
 import styles from "./DetailFormPage.module.css"
+import { CSS } from "@dnd-kit/utilities"
 import {
     DndContext,
     closestCenter,
@@ -29,7 +30,6 @@ import {
     useSortable,
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
 
 
 

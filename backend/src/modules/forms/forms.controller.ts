@@ -27,6 +27,12 @@ export class FormsController {
         reply.send(result)
     }
 
+    getFormTerms = async (req: FastifyRequest<ParamsId>, reply: FastifyReply) => {
+        const id = req.params.id
+        const result = await this.formsService.getFormTermsForPublic(id)
+        reply.send(result)
+    }
+
     getFormByIdWithRole = async (req: FastifyRequest<ParamsId>, reply: FastifyReply) => {
         const id = req.params.id
         const userId = (req as any).user.id

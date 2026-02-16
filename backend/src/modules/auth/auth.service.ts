@@ -50,4 +50,17 @@ export class AuthService {
         return result
     }
 
+    getMe = async (userId: string) => {
+        if (!userId) throw new BadRequestError('Отсутствует пользователь')
+        const user = await this.authRepository.findById(userId)
+        if (!user) throw new NotFoundError('Пользователь не найден')
+        return { id: user.id, email: user.email, terms_text: user.terms_text ?? '' }
+    }
+
+    updateTerms = async (userId: string, terms_text: string) => {
+        if (!userId) throw new BadRequestError('Отсутствует пользователь')
+        const updated = await this.authRepository.updateTermsText(userId, terms_text || null)
+        if (!updated) throw new NotFoundError('Пользователь не найден')
+        return { id: updated.id, email: updated.email, terms_text: updated.terms_text ?? '' }
+    }
 }

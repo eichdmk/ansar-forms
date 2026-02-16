@@ -40,13 +40,21 @@ export class FormService {
             throw new BadRequestError('Отствует id')
         }
 
-        const result = await this.formRepository.findFormById(id)
+        const result = await this.formRepository.findFormByIdWithOwnerTerms(id)
 
         if (!result) {
             throw new NotFoundError('Такой формы не существует')
         }
 
-        return result
+        const { owner_terms_text, ...form } = result
+        return { ...form, owner_terms_text: owner_terms_text ?? null }
+    }
+
+    getFormTermsForPublic = async (id: string) => {
+        if (!id) throw new BadRequestError('Отсутствует id')
+        const row = await this.formRepository.findFormTermsForPublic(id)
+        if (!row) throw new NotFoundError('Такой формы не существует')
+        return { form_title: row.title, terms_text: row.terms_text ?? '' }
     }
 
     findByIdWithRole = async (id: string, userId: string) => {

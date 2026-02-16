@@ -9,6 +9,7 @@ export interface Form {
   created_at: Date
   updated_at: Date
   role?: FormAccessRole
+  owner_terms_text?: string | null
 }
 
 export interface CreateFormDto {

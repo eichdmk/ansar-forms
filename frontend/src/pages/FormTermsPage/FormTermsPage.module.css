@@ -1,0 +1,71 @@
+.page {
+  min-height: 100vh;
+  background: var(--color-bg-secondary);
+  padding: 40px 24px;
+  box-sizing: border-box;
+}
+
+.card {
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-card);
+}
+
+.title {
+  margin: 0 0 24px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.termsTitle {
+  margin: 0 0 16px 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.termsBody {
+  margin-bottom: 24px;
+}
+
+.termsText {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  white-space: pre-wrap;
+}
+
+.termsEmpty {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.backLink {
+  display: inline-block;
+  font-size: 0.9375rem;
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.loading,
+.error {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.error {
+  color: var(--color-error, #c00);
+}

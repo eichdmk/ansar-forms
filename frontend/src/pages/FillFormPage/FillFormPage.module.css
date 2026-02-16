@@ -310,6 +310,15 @@
   line-height: 1.45;
 }
 
+.termsLink {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.termsLink:hover {
+  text-decoration: underline;
+}
+
 .termsAccept:hover .termsText {
   color: var(--color-accent);
 }
@@ -317,6 +326,16 @@
 .submitWrap {
   margin-top: 24px;
   padding: 0 32px;
+  text-align: center;
+}
+
+.disclaimer {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
   text-align: center;
 }
 
