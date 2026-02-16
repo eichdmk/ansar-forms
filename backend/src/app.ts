@@ -44,6 +44,7 @@ app.register(async (instance) => {
 app.register(async (instance) => {
     instance.post('/auth/login', (req, reply) => authModule.controller.login(req, reply))
     instance.post('/auth/register', (req, reply) => authModule.controller.register(req, reply))
+    
     instance.get('/auth/me', { preHandler: authRequired }, (req, reply) => authModule.controller.getMe(req, reply))
     instance.patch('/auth/me', { preHandler: authRequired }, (req, reply) => authModule.controller.updateTerms(req, reply))
 }, { prefix: '/api' })

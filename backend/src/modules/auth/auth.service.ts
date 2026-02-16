@@ -20,8 +20,12 @@ export class AuthService {
         if (!user) {
             throw new NotFoundError('Такого пользователя не существует')
         }
-
-        const isMatch = await bcrypt.compare(dto.password, user.hash_password)
+        const hash = user.hash_password
+        
+        if (!hash) {
+            throw new NotFoundError('Неверные данные пользователя')
+        }
+        const isMatch = await bcrypt.compare(dto.password, hash)
 
         if (!isMatch) {
             throw new BadRequestError('Неправильный логин или пароль!')
