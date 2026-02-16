@@ -7,7 +7,7 @@ export class FormsController {
 
     createForm = async (req: FastifyRequest, reply: FastifyReply) => {
         const dto = req.body as CreateFormDto
-        const owner_id = (req as any).user.id
+        const owner_id = req.user!.id
 
         const result = await this.formsService.create(dto, owner_id)
 
@@ -15,7 +15,7 @@ export class FormsController {
     }
 
     getForms = async (req: FastifyRequest, reply: FastifyReply) => {
-        const owner_id = (req as any).user.id
+        const owner_id = req.user!.id
         const result = await this.formsService.findForms(owner_id)
 
         reply.send(result)
@@ -35,14 +35,14 @@ export class FormsController {
 
     getFormByIdWithRole = async (req: FastifyRequest<ParamsId>, reply: FastifyReply) => {
         const id = req.params.id
-        const userId = (req as any).user.id
+        const userId = req.user!.id
         const result = await this.formsService.findByIdWithRole(id, userId)
         reply.send(result)
     }
 
     updateForm = async (req: FastifyRequest<ParamsId>, reply: FastifyReply) => {
         const id = req.params.id
-        const owner_id = (req as any).user.id
+        const owner_id = req.user!.id
 
         const dto = req.body as UpdateFormDto
         const result = await this.formsService.update(id, dto, owner_id)
@@ -52,7 +52,7 @@ export class FormsController {
 
     updateFormStatus = async (req: FastifyRequest<ParamsId>, reply: FastifyReply) => {
         const id = req.params.id
-        const owner_id = (req as any).user.id
+        const owner_id = req.user!.id
         const { is_published } = req.body as { is_published: boolean }
 
         if (typeof is_published !== 'boolean') {
@@ -66,7 +66,7 @@ export class FormsController {
 
     deleteForm = async (req: FastifyRequest<ParamsId>, reply: FastifyReply) => {
         const id = req.params.id
-        const owner_id = (req as any).user.id
+        const owner_id = req.user!.id
 
         const result = await this.formsService.delete(id, owner_id)
 

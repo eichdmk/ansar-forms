@@ -10,6 +10,11 @@ import { createAccessModule } from './modules/form-access/form-access.module.js'
 import fastifyCors from '@fastify/cors'
 import dotenv from 'dotenv'
 
+type ParamsFormId = { Params: { formId: string } }
+type ParamsFormIdQuestionId = { Params: { formId: string; questionId: string } }
+type ParamsFormIdUserId = { Params: { formId: string; userId: string } }
+type GetResponsesReq = { Params: { formId: string }; Querystring: { page?: string; limit?: string; fromDate?: string } }
+
 dotenv.config()
 
 const app = Fastify()
@@ -37,8 +42,8 @@ app.register(async (instance) => {
     instance.patch<ParamsId>('/forms/:id/status', {preHandler: authRequired}, (req, reply) => formModule.controller.updateFormStatus(req, reply))
     instance.delete<ParamsId>('/forms/:id', {preHandler: authRequired}, (req, reply) => formModule.controller.deleteForm(req, reply))
     
-    instance.get('/forms/:formId/responses', { preHandler: authRequired }, (req, reply) => responsesModule.controller.getResponses(req, reply))
-    instance.post('/forms/:formId/responses', (req, reply) => responsesModule.controller.createResponse(req, reply))
+    instance.get<GetResponsesReq>('/forms/:formId/responses', { preHandler: authRequired }, (req, reply) => responsesModule.controller.getResponses(req, reply))
+    instance.post<ParamsFormId>('/forms/:formId/responses', (req, reply) => responsesModule.controller.createResponse(req, reply))
 }, { prefix: '/api' })
 
 app.register(async (instance) => {
@@ -50,17 +55,17 @@ app.register(async (instance) => {
 }, { prefix: '/api' })
 
 app.register(async (instance)=>{
-    instance.get('/questions/:formId', (req, reply)=> questionModule.controller.findAllQuestions(req, reply))
-    instance.post('/questions/:formId', {preHandler: authRequired}, (req, reply)=> questionModule.controller.createQuestion(req, reply))
-    instance.put('/questions/:formId/:questionId', {preHandler: authRequired}, (req, reply)=> questionModule.controller.updateQuestion(req, reply))
-    instance.delete('/questions/:formId/:questionId', {preHandler: authRequired}, (req, reply)=> questionModule.controller.deleteQuestion(req, reply))
+    instance.get<ParamsFormId>('/questions/:formId', (req, reply)=> questionModule.controller.findAllQuestions(req, reply))
+    instance.post<ParamsFormId>('/questions/:formId', {preHandler: authRequired}, (req, reply)=> questionModule.controller.createQuestion(req, reply))
+    instance.put<ParamsFormIdQuestionId>('/questions/:formId/:questionId', {preHandler: authRequired}, (req, reply)=> questionModule.controller.updateQuestion(req, reply))
+    instance.delete<ParamsFormIdQuestionId>('/questions/:formId/:questionId', {preHandler: authRequired}, (req, reply)=> questionModule.controller.deleteQuestion(req, reply))
 }, { prefix: '/api' })
 
 app.register(async (instance)=>{
-    instance.get('/forms/:formId/access', {preHandler: authRequired}, (req, reply)=> formAccessModule.controller.getAccessList(req, reply))
-    instance.post('/forms/:formId/access', {preHandler: authRequired}, (req, reply)=> formAccessModule.controller.addAccess(req, reply))
-    instance.delete('/forms/:formId/access/:userId', {preHandler: authRequired}, (req, reply)=> formAccessModule.controller.removeAccess(req, reply))
-    instance.post('/forms/:formId/invites', {preHandler: authRequired}, (req, reply)=> formAccessModule.controller.createInvite(req, reply))
+    instance.get<ParamsFormId>('/forms/:formId/access', {preHandler: authRequired}, (req, reply)=> formAccessModule.controller.getAccessList(req, reply))
+    instance.post<ParamsFormId>('/forms/:formId/access', {preHandler: authRequired}, (req, reply)=> formAccessModule.controller.addAccess(req, reply))
+    instance.delete<ParamsFormIdUserId>('/forms/:formId/access/:userId', {preHandler: authRequired}, (req, reply)=> formAccessModule.controller.removeAccess(req, reply))
+    instance.post<ParamsFormId>('/forms/:formId/invites', {preHandler: authRequired}, (req, reply)=> formAccessModule.controller.createInvite(req, reply))
     instance.post('/forms/join', { preHandler: authRequired }, (req, reply) => formAccessModule.controller.acceptInvite(req, reply))
 }, {prefix: '/api'})
 

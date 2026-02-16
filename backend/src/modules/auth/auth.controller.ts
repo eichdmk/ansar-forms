@@ -21,13 +21,13 @@ export class AuthController{
     }
 
     getMe = async (req: FastifyRequest, reply: FastifyReply) => {
-        const userId = (req as any).user.id
+        const userId = req.user!.id
         const result = await this.authService.getMe(userId)
         reply.send(result)
     }
 
     updateTerms = async (req: FastifyRequest, reply: FastifyReply) => {
-        const userId = (req as any).user.id
+        const userId = req.user!.id
         const { terms_text } = req.body as { terms_text?: string }
         const result = await this.authService.updateTerms(userId, typeof terms_text === 'string' ? terms_text : '')
         reply.send(result)
