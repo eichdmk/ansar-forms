@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react"
 import { createPortal } from "react-dom"
-import { useParams } from "react-router-dom"
+import { useParams, Link } from "react-router-dom"
 import { formsAPI, questionsApi } from "../../api"
 import type { Form, Question } from "../../types"
 import type { AxiosError } from "axios"
@@ -83,7 +83,6 @@ export function DetailFormPage() {
     const [formTitle, setFormTitle] = useState("")
     const [formDescription, setFormDescription] = useState("")
     const [formSaving, setFormSaving] = useState(false)
-    const [publishLoading, setPublishLoading] = useState(false)
     const questions = useAppSelector(state => state.questions.questions)
     const dispatch = useDispatch()
     const formFromRedux = useAppSelector(state =>
@@ -258,24 +257,6 @@ export function DetailFormPage() {
         }
     }
 
-    async function handleStatusChange(published: boolean) {
-        if (!id || !formFromStore) return
-        setPublishLoading(true)
-        try {
-            const updated = await formsAPI.updateStatus(id, published)
-            const nextForm = { ...updated, role: updated.role ?? formFromStore.role }
-            setForm(nextForm)
-            dispatch(updateCurrentForm(nextForm))
-        } catch (error) {
-            const err = error as AxiosError<{ error?: string }>
-            if (err.response) {
-                setMessage(err.response.data?.error ?? "Не удалось изменить статус")
-            }
-        } finally {
-            setPublishLoading(false)
-        }
-    }
-
     const sortedQuestions = useMemo(
         () => [...questions].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
         [questions]
@@ -400,21 +381,16 @@ export function DetailFormPage() {
                             </div>
                         )}
 
-                        {formFromStore && canEdit && (
-                            <div className={styles.statusBar}>
-                                <label className={styles.statusLabel}>
-                                    Статус формы:
-                                    <select
-                                        className={styles.statusSelect}
-                                        value={formFromStore.is_published ? "published" : "draft"}
-                                        onChange={(e) => handleStatusChange(e.target.value === "published")}
-                                        disabled={publishLoading}
-                                        aria-label="Статус формы"
-                                    >
-                                        <option value="draft">Черновик</option>
-                                        <option value="published">Опубликовано</option>
-                                    </select>
-                                </label>
+                        {formFromStore && canEdit && (!formFromStore.owner_terms_text || !formFromStore.owner_terms_text.trim()) && (
+                            <div className={styles.termsRequiredBlock}>
+                                <div className={styles.termsRequiredHint}>
+                                    <p className={styles.termsRequiredText}>Чтобы открыть форму для ответов, укажите условия использования в настройках.</p>
+                                    {id && (
+                                        <Link to={`/forms/edit/${id}/settings`} className={styles.termsRequiredLink}>
+                                            Перейти в настройки
+                                        </Link>
+                                    )}
+                                </div>
                             </div>
                         )}
 

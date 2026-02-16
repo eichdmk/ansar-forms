@@ -1,36 +1,94 @@
 .page {
   min-height: 100vh;
   background: var(--color-bg-secondary);
-  padding: 40px 24px;
+  padding: 48px 24px;
   box-sizing: border-box;
 }
 
 .card {
-  max-width: 640px;
+  max-width: 720px;
   margin: 0 auto;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 32px;
+  padding: 40px 48px;
   box-shadow: var(--shadow-card);
 }
 
 .title {
+  margin: 0 0 8px 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+}
+
+.termsTitle {
   margin: 0 0 24px 0;
-  font-size: 1.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.termsBody {
+  margin-bottom: 32px;
+}
+
+.termsContent {
+  max-width: 70ch;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--color-text);
+}
+
+.termsContent p {
+  margin: 0 0 1em 0;
+}
+
+.termsContent p:last-child {
+  margin-bottom: 0;
+}
+
+.termsContent h1,
+.termsContent h2,
+.termsContent h3,
+.termsContent h4 {
+  margin: 1.25em 0 0.5em 0;
   font-weight: 600;
   color: var(--color-text);
 }
 
-.termsTitle {
-  margin: 0 0 16px 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
+.termsContent h1:first-child,
+.termsContent h2:first-child,
+.termsContent h3:first-child,
+.termsContent h4:first-child {
+  margin-top: 0;
 }
 
-.termsBody {
-  margin-bottom: 24px;
+.termsContent h1 { font-size: 1.5rem; }
+.termsContent h2 { font-size: 1.25rem; }
+.termsContent h3 { font-size: 1.125rem; }
+.termsContent h4 { font-size: 1rem; }
+
+.termsContent ul,
+.termsContent ol {
+  margin: 0.75em 0;
+  padding-left: 1.5em;
+}
+
+.termsContent li {
+  margin: 0.35em 0;
+}
+
+.termsContent a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.termsContent a:hover {
+  text-decoration: underline;
 }
 
 .termsText {
@@ -51,8 +109,10 @@
 .backLink {
   display: inline-block;
   font-size: 0.9375rem;
+  font-weight: 500;
   color: var(--color-accent);
   text-decoration: none;
+  margin-top: 8px;
 }
 
 .backLink:hover {

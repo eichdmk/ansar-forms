@@ -5,6 +5,7 @@ import { useAppSelector } from "../../hooks/useAppSelector"
 import { FormsSearchProvider, useFormsSearch } from "../../contexts/FormsSearchContext"
 import { formsAPI } from "../../api"
 import { setCurrentForm, clearCurrentForm } from "../../store/slices/currentFormSlice"
+import type { AxiosError } from "axios"
 import styles from "./Layout.module.css"
 
 function LayoutHeader() {
@@ -31,6 +32,8 @@ function LayoutHeader() {
   const responsesUrl = formId ? `/forms/${formId}/responses` : ""
   const settingsUrl = formId ? `/forms/edit/${formId}/settings` : ""
   const [copyToast, setCopyToast] = useState(false)
+  const [statusToast, setStatusToast] = useState<string | null>(null)
+  const [publishLoading, setPublishLoading] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const form = useAppSelector((state) =>
@@ -73,6 +76,25 @@ function LayoutHeader() {
     }
   }
 
+  async function handlePublishToggle() {
+    if (!formId || !form || publishLoading) return
+    const canChange = form.role === "owner" || form.role === "editor"
+    if (!canChange) return
+    const nextPublished = !form.is_published
+    setPublishLoading(true)
+    setStatusToast(null)
+    try {
+      const updated = await formsAPI.updateStatus(formId, nextPublished)
+      dispatch(setCurrentForm({ formId, form: { ...updated, role: updated.role ?? form.role } }))
+    } catch (err) {
+      const e = err as AxiosError<{ error?: string }>
+      const message = e.response?.data?.error ?? "Не удалось изменить статус"
+      setStatusToast(message)
+      setTimeout(() => setStatusToast(null), 4000)
+    } finally {
+      setPublishLoading(false)
+    }
+  }
 
   return (
     <header className={styles.header}>
@@ -84,14 +106,21 @@ function LayoutHeader() {
       </div>
       <div className={styles.headerCenter}>
         {showSearch && (
-          <input
-            type="search"
-            className={styles.searchInput}
-            placeholder="Поиск"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="Поиск форм"
-          />
+          <>
+            <div className={styles.searchWrap}>
+              <input
+                type="search"
+                className={styles.searchInput}
+                placeholder="Поиск"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Поиск форм"
+              />
+            </div>
+            <Link to="/forms/account/terms" className={styles.accountTermsLink}>
+              Условия использования
+            </Link>
+          </>
         )}
         {isFormContext && (
           <>
@@ -143,6 +172,20 @@ function LayoutHeader() {
                   Настройки
                 </Link>
               )}
+              {(form?.role === "owner" || form?.role === "editor") && (
+                <label className={styles.publishToggleWrap} title={form.is_published ? "Форма открыта для ответов" : "Форма в черновике"}>
+                  <span className={styles.publishToggleLabel}>Принимать ответы</span>
+                  <input
+                    type="checkbox"
+                    className={styles.publishToggleInput}
+                    checked={form.is_published}
+                    disabled={publishLoading}
+                    onChange={handlePublishToggle}
+                    aria-label="Форма открыта для ответов"
+                  />
+                  <span className={styles.publishToggleSlider} aria-hidden />
+                </label>
+              )}
               <button
                 type="button"
                 className={styles.copyLinkBtn}
@@ -177,6 +220,11 @@ function LayoutHeader() {
       {copyToast && (
         <div className={styles.copyToast} role="status">
           Ссылка скопирована в буфер обмена
+        </div>
+      )}
+      {statusToast && (
+        <div className={styles.statusToast} role="alert">
+          {statusToast}
         </div>
       )}
       {isFormContext && mobileMenuOpen && (

@@ -1056,6 +1056,39 @@
   outline: none;
 }
 
+.termsRequiredBlock {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.termsRequiredHint {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--color-bg-secondary);
+  border-left: 4px solid var(--color-accent);
+  border-radius: var(--radius);
+}
+
+.termsRequiredText {
+  margin: 0 0 8px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.termsRequiredLink {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.termsRequiredLink:hover {
+  text-decoration: underline;
+}
+
 .statusSelect:disabled {
   opacity: 0.7;
   cursor: not-allowed;

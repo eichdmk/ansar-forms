@@ -9,6 +9,7 @@ import { JoinPage } from "./pages/JoinPage/JoinPage"
 import { ResponsesPage } from "./pages/ResponsesPage/ResponsesPage"
 import { FormSettingsPage } from "./pages/FormSettingsPage/FormSettingsPage"
 import { FormTermsPage } from "./pages/FormTermsPage/FormTermsPage"
+import { AccountTermsPage } from "./pages/AccountTermsPage/AccountTermsPage"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { useLocalStorage } from "./hooks/useLocalStorage"
 
@@ -43,6 +44,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <FormsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/forms/account/terms"
+            element={
+              <ProtectedRoute>
+                <AccountTermsPage />
               </ProtectedRoute>
             }
           />

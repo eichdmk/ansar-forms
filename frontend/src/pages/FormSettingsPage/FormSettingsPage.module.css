@@ -30,13 +30,13 @@
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 28px;
-  margin-bottom: 24px;
+  padding: 32px;
+  margin-bottom: 28px;
   box-shadow: var(--shadow-card);
 }
 
 .termsCardTitle {
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text);
@@ -46,38 +46,149 @@
   margin: 0 0 16px 0;
   font-size: 0.875rem;
   color: var(--color-text-secondary);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
-.termsTextarea {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 14px;
+.termsLink {
+  display: inline-block;
   font-size: 0.9375rem;
-  font-family: inherit;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.termsLink:hover {
+  text-decoration: underline;
+}
+
+.termsEditorWrap {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg);
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.termsToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px;
+  background: linear-gradient(to bottom, var(--color-bg-secondary) 0%, var(--color-bg) 100%);
+  border-bottom: 1px solid var(--color-border);
+  min-height: 52px;
+}
+
+.toolbarBtn,
+.toolbarBtnActive {
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+  font-family: var(--font);
+  font-weight: 500;
   color: var(--color-text);
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  resize: vertical;
-  min-height: 120px;
-  margin-bottom: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.termsTextarea:focus {
-  outline: none;
+.toolbarBtn:hover {
+  background: var(--color-bg-secondary);
+  border-color: var(--color-accent-border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.toolbarBtnActive {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--color-accent-border);
+}
+
+.toolbarBtnActive:hover {
+  background: var(--color-accent-secondary-tint);
   border-color: var(--color-accent);
 }
 
+.toolbarDivider {
+  width: 1px;
+  height: 22px;
+  background: var(--color-border);
+  margin: 0 2px;
+  border-radius: 1px;
+  opacity: 0.8;
+}
+
+.termsEditorContent {
+  min-height: 220px;
+  padding: 16px 18px;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--color-text);
+}
+
+.termsEditorContent:focus {
+  outline: none;
+}
+
+.termsEditorContent p {
+  margin: 0 0 0.75em 0;
+}
+
+.termsEditorContent p:last-child {
+  margin-bottom: 0;
+}
+
+.termsEditorContent h1,
+.termsEditorContent h2,
+.termsEditorContent h3 {
+  margin: 1em 0 0.5em 0;
+  font-weight: 600;
+}
+
+.termsEditorContent h1:first-child,
+.termsEditorContent h2:first-child,
+.termsEditorContent h3:first-child {
+  margin-top: 0;
+}
+
+.termsEditorContent ul,
+.termsEditorContent ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.termsEditorContent li {
+  margin: 0.25em 0;
+}
+
+.termsEditorContent p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--color-text-disabled, #888);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
 .termsSaveBtn {
-  padding: 10px 24px;
+  padding: 12px 28px;
   font-size: 0.875rem;
   font-weight: 600;
+  font-family: var(--font);
   color: var(--color-bg);
   background: var(--color-accent);
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.termsSaveBtn:hover:not(:disabled) {
+  filter: brightness(1.05);
 }
 
 .termsSaveBtn:disabled {

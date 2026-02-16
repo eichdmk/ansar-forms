@@ -59,11 +59,18 @@ export class FormService {
 
     findByIdWithRole = async (id: string, userId: string) => {
         if (!id) throw new BadRequestError('Отсутствует id')
-        const form = await this.formRepository.findFormById(id)
-        if (!form) throw new NotFoundError('Такой формы не существует')
+
+        const result = await this.formRepository.findFormByIdWithOwnerTerms(id)
+
+        if (!result) throw new NotFoundError('Такой формы не существует')
+
         const role = await this.formAccessService.getUserFormRole(id, userId)
+
         if (role === null) throw new ForbiddenError()
-        return { ...form, role }
+
+        const { owner_terms_text, ...form } = result
+        
+        return { ...form, owner_terms_text: owner_terms_text ?? null, role }
     }
 
     update = async (id: string, dto: UpdateFormDto, owner_id: string) => {
@@ -96,15 +103,22 @@ export class FormService {
             throw new BadRequestError('Отсутствует id')
         }
 
-        const form = await this.formRepository.findFormById(id)
+        const formWithTerms = await this.formRepository.findFormByIdWithOwnerTerms(id)
 
-        if (!form) {
+        if (!formWithTerms) {
             throw new NotFoundError('Такой формы не существует')
         }
 
         const role = await this.formAccessService.getUserFormRole(id, owner_id)
         if (!canEditForm(role)) {
             throw new ForbiddenError()
+        }
+
+        if (is_published) {
+            const terms = formWithTerms.owner_terms_text?.trim()
+            if (!terms) {
+                throw new BadRequestError('Чтобы опубликовать форму, укажите условия использования в настройках формы.')
+            }
         }
 
         const updated = await this.formRepository.updateFormStatus(id, is_published)

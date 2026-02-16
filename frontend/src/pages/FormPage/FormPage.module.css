@@ -3,11 +3,31 @@
   margin-bottom: 40px;
 }
 
+.createSectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
 .createSectionTitle {
-  margin: 0 0 16px 0;
+  margin: 0;
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-text);
+}
+
+.termsPageLink {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.termsPageLink:hover {
+  text-decoration: underline;
 }
 
 .blankFormCard {

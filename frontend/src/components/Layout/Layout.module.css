@@ -64,10 +64,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 12px;
   min-width: 0;
   max-width: 720px;
   margin: 0 auto;
   position: relative;
+}
+
+.searchWrap {
+  flex: 1;
+  min-width: 0;
 }
 
 .searchInput {
@@ -97,6 +103,21 @@
   border-color: var(--color-accent);
   background: var(--color-bg);
   box-shadow: var(--shadow-focus), 0 0 0 3px var(--color-accent-light);
+}
+
+.accountTermsLink {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  text-decoration: none;
+  border-radius: var(--radius);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.accountTermsLink:hover {
+  background: var(--color-accent-light);
 }
 
 .burgerBtn {
@@ -204,6 +225,87 @@
   flex-shrink: 0;
 }
 
+.publishToggleWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-radius: var(--radius);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.publishToggleWrap:hover {
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+.publishToggleLabel {
+  order: 1;
+}
+
+.publishToggleInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.publishToggleSlider {
+  order: 2;
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+  background: var(--color-border);
+  border-radius: 11px;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.publishToggleSlider::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: var(--color-bg);
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.publishToggleInput:checked + .publishToggleSlider {
+  background: var(--color-accent);
+}
+
+.publishToggleInput:checked + .publishToggleSlider::after {
+  transform: translateX(18px);
+}
+
+.publishToggleInput:focus-visible + .publishToggleSlider {
+  box-shadow: 0 0 0 2px var(--color-accent-light);
+}
+
+.publishToggleInput:disabled + .publishToggleSlider {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.publishToggleWrap:has(.publishToggleInput:disabled) {
+  cursor: not-allowed;
+}
+
 .copyLinkBtn {
   padding: 8px 16px;
   font-size: 0.875rem;
@@ -277,6 +379,23 @@
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
+}
+
+.statusToast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(400px, calc(100vw - 32px));
+  padding: 12px 20px;
+  background: var(--color-danger, #c00);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-elevated);
+  z-index: 10000;
+  animation: layoutCopyFadeIn 0.2s ease;
 }
 
 .headerRight {
@@ -409,6 +528,13 @@
     min-height: 44px;
     display: flex;
     align-items: center;
+  }
+
+  .publishToggleWrap {
+    padding: 12px 16px;
+    width: 100%;
+    min-height: 44px;
+    justify-content: space-between;
   }
 
   .copyLinkBtn {

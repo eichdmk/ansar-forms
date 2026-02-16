@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
+import DOMPurify from "dompurify"
 import { formsAPI } from "../../api"
 import type { AxiosError } from "axios"
 import styles from "./FormTermsPage.module.css"
+
+const TERMS_ALLOWED_TAGS = ["p", "h1", "h2", "h3", "h4", "ul", "ol", "li", "strong", "em", "b", "i", "a", "br"]
+const TERMS_ALLOWED_ATTR = ["href", "target", "rel"]
 
 export function FormTermsPage() {
     const { id } = useParams()
@@ -55,7 +59,15 @@ export function FormTermsPage() {
                 <h2 className={styles.termsTitle}>Условия обработки пользовательских данных</h2>
                 <div className={styles.termsBody}>
                     {termsText ? (
-                        <p className={styles.termsText}>{termsText}</p>
+                        <div
+                            className={styles.termsContent}
+                            dangerouslySetInnerHTML={{
+                                __html: DOMPurify.sanitize(termsText, {
+                                    ALLOWED_TAGS: TERMS_ALLOWED_TAGS,
+                                    ALLOWED_ATTR: TERMS_ALLOWED_ATTR,
+                                }),
+                            }}
+                        />
                     ) : (
                         <p className={styles.termsEmpty}>
                             Владелец формы не указал дополнительные условия.

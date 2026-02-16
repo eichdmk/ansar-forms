@@ -78,7 +78,6 @@ export function FormsPage() {
   return (
     <>
       <section className={styles.createSection}>
-        <h2 className={styles.createSectionTitle}>Создать форму</h2>
         <button
           type="button"
           className={styles.blankFormCard}
