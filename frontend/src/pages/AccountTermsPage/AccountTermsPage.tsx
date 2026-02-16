@@ -28,6 +28,7 @@ function TermsToolbar({ editor }: { editor: Editor | null }) {
           : ""
 
   function handleHeadingChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    if (!editor) return
     const value = e.target.value
     if (value === "") {
       editor.chain().focus().setParagraph().run()
