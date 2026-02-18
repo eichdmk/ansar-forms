@@ -20,19 +20,29 @@ function formatDate(d: Date | string) {
   return date.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })
 }
 
+type OwnerFilter = "all" | "owned" | "shared"
+
 export function FormsPage() {
   const forms = useAppSelector(state => state.forms.forms)
   const { searchQuery } = useFormsSearch()
   const [message, setMessage] = useState("")
   const [creating, setCreating] = useState(false)
+  const [ownerFilter, setOwnerFilter] = useState<OwnerFilter>("all")
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const filteredForms = searchQuery.trim()
+  const filteredBySearch = searchQuery.trim()
     ? forms.filter(f =>
         f.title.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : forms
+
+  const filteredForms =
+    ownerFilter === "owned"
+      ? filteredBySearch.filter(f => f.role === "owner")
+      : ownerFilter === "shared"
+        ? filteredBySearch.filter(f => f.role && f.role !== "owner")
+        : filteredBySearch
 
   useEffect(() => {
     async function getForms() {
@@ -94,18 +104,38 @@ export function FormsPage() {
 
       <section className={styles.recentSection}>
         <div className={styles.recentHeader}>
-          <h2 className={styles.sectionTitle}>Недавние формы</h2>
+          <h2 className={styles.sectionTitle}>Формы</h2>
+          <select
+            className={styles.filterSelect}
+            value={ownerFilter}
+            onChange={(e) => setOwnerFilter(e.target.value as OwnerFilter)}
+            aria-label="Фильтр по владельцу"
+          >
+            <option value="all">Все</option>
+            <option value="owned">Мои</option>
+            <option value="shared">Совместный доступ</option>
+          </select>
         </div>
 
         {filteredForms.length === 0 ? (
           <div className={styles.emptyState}>
             <p className={styles.emptyTitle}>
-              {searchQuery.trim() ? "Ничего не найдено" : "Пока нет форм"}
+              {searchQuery.trim()
+                ? "Ничего не найдено"
+                : ownerFilter === "owned"
+                  ? "У вас пока нет созданных форм"
+                  : ownerFilter === "shared"
+                    ? "Нет форм с совместным доступом"
+                    : "Пока нет форм"}
             </p>
             <p className={styles.emptyText}>
               {searchQuery.trim()
-                ? "Попробуйте изменить запрос поиска."
-                : "Создайте первую форму с помощью карточки «Пустая форма» выше."}
+                ? "Попробуйте изменить запрос или фильтр."
+                : ownerFilter === "owned"
+                  ? "Создайте форму с помощью карточки «Пустая форма» выше."
+                  : ownerFilter === "shared"
+                    ? "Вам могут открыть доступ к форме по приглашению."
+                    : "Создайте первую форму с помощью карточки «Пустая форма» выше."}
             </p>
           </div>
         ) : (

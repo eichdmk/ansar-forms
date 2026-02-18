@@ -118,7 +118,8 @@ function LayoutHeader() {
               />
             </div>
             <Link to="/forms/account/terms" className={styles.accountTermsLink}>
-              Условия использования
+              <span className={styles.accountTermsTextLong}>Условия использования</span>
+              <span className={styles.accountTermsTextShort}>Условия</span>
             </Link>
           </>
         )}
