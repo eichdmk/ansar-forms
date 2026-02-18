@@ -1,7 +1,4 @@
 .page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-height: 100vh;
   min-height: 100dvh;
   padding: 24px;
@@ -9,74 +6,115 @@
   padding-bottom: max(24px, env(safe-area-inset-bottom));
   padding-left: max(24px, env(safe-area-inset-left));
   padding-right: max(24px, env(safe-area-inset-right));
-  background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-secondary) 100%);
-  position: relative;
-  overflow: hidden;
+  background: var(--color-bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
 }
 
-.page::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: var(--color-accent);
+.subtitle {
+  margin: 0 0 24px 0;
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  font-family: var(--font, system-ui, sans-serif);
 }
 
 .card {
   width: 100%;
-  max-width: 440px;
-  padding: 48px 40px;
+  max-width: 480px;
   background: var(--color-bg);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-elevated);
-  border: 2px solid var(--color-accent);
-  position: relative;
-  z-index: 1;
-  box-sizing: border-box;
-  overflow-y: auto;
-  max-height: calc(100dvh - 48px);
+  overflow: hidden;
+}
+
+.cardLeft {
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.brandLogo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: var(--color-accent-light);
+  padding: 6px;
+  box-shadow: var(--shadow-card);
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.brandName {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  font-family: var(--font, system-ui, sans-serif);
+  letter-spacing: 0.02em;
+}
+
+.brandTagline {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  font-family: var(--font, system-ui, sans-serif);
 }
 
 .title {
   margin: 0 0 8px 0;
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 600;
   color: var(--color-text);
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-family: var(--font, system-ui, sans-serif);
 }
 
 .subtitle {
-  margin: 0 0 32px 0;
-  font-size: 1rem;
+  margin: 0 0 24px 0;
+  font-size: 0.9375rem;
   color: var(--color-text-secondary);
   line-height: 1.5;
+  font-family: var(--font, system-ui, sans-serif);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  display: block;
+  margin-bottom: 6px;
+  font-family: var(--font, system-ui, sans-serif);
 }
 
 .input {
   width: 100%;
-  padding: 16px;
+  padding: 12px 14px;
   font-size: 1rem;
-  font-size: max(1rem, 16px);
-  font-family: var(--font);
+  font-family: var(--font, system-ui, sans-serif);
   color: var(--color-text);
   background: var(--color-bg);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  min-height: 48px;
+  transition: border-color 0.2s ease;
 }
 
 .input::placeholder {
@@ -89,206 +127,103 @@
   box-shadow: var(--shadow-focus);
 }
 
+.checkboxWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  font-family: var(--font, system-ui, sans-serif);
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.checkboxLabel {
+  user-select: none;
+}
+
 .button {
-  padding: 16px 32px;
+  width: 100%;
+  padding: 12px 24px;
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-bg);
   background: var(--color-accent);
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 8px;
+  font-family: var(--font, system-ui, sans-serif);
+  transition: background 0.2s ease;
+  margin-top: 4px;
 }
 
 .button:hover:not(:disabled) {
   background: var(--color-accent-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-elevated), var(--shadow-accent);
-}
-
-.button:active:not(:disabled) {
-  transform: translateY(-2px) scale(0.98);
 }
 
 .button:disabled {
-  opacity: 0.6;
+  opacity: 0.65;
   cursor: not-allowed;
 }
 
 .error {
-  color: var(--color-required);
-  font-weight: 500;
   margin: 0;
   font-size: 0.875rem;
-  padding: 12px 16px;
+  color: var(--color-required);
+  padding: 10px 12px;
   background: var(--color-required-bg);
-  border-radius: var(--radius);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-required);
 }
 
 .footer {
-  margin: 24px 0 0 0;
+  margin: 18px 0 0 0;
   font-size: 0.9375rem;
   color: var(--color-text-secondary);
-  text-align: center;
+  text-align: left;
+  font-family: var(--font, system-ui, sans-serif);
 }
 
 .link {
   color: var(--color-accent);
   font-weight: 600;
   text-decoration: none;
-  transition: color 0.2s ease;
 }
 
 .link:hover {
-  color: var(--color-accent-hover);
   text-decoration: underline;
 }
 
-@media (hover: none) {
-  .button:hover:not(:disabled) {
-    transform: none;
-  }
-  .button:active:not(:disabled) {
-    transform: scale(0.98);
-  }
-}
-
 @media (max-width: 768px) {
-  .page {
-    padding: 20px;
-    padding-top: max(20px, env(safe-area-inset-top));
-    padding-bottom: max(20px, env(safe-area-inset-bottom));
-  }
-
-  .card {
+  .cardLeft {
     padding: 40px 32px;
-    max-height: calc(100dvh - 40px);
-  }
-
-  .title {
-    font-size: 1.875rem;
-  }
-
-  .subtitle {
-    margin-bottom: 28px;
-  }
-
-  .form {
-    gap: 20px;
   }
 }
 
 @media (max-width: 480px) {
   .page {
     padding: 16px;
-    padding-top: max(24px, env(safe-area-inset-top));
-    padding-bottom: max(16px, env(safe-area-inset-bottom));
     align-items: flex-start;
-    justify-content: flex-start;
-    min-height: 100vh;
-    min-height: 100dvh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .card {
-    padding: 28px 20px;
-    max-width: none;
-    margin: auto 0;
-    flex-shrink: 0;
-    max-height: none;
-  }
-
-  .title {
-    font-size: 1.625rem;
-    margin-bottom: 6px;
-  }
-
-  .subtitle {
-    font-size: 0.9375rem;
-    margin-bottom: 24px;
-    line-height: 1.45;
-  }
-
-  .form {
-    gap: 18px;
-  }
-
-  .input {
-    min-height: 48px;
-    padding: 14px 16px;
-  }
-
-  .button {
-    min-height: 48px;
-    width: 100%;
-    padding: 14px 24px;
-    margin-top: 4px;
-  }
-
-  .error {
-    padding: 10px 14px;
-    font-size: 0.8125rem;
-  }
-
-  .footer {
-    margin-top: 20px;
-    font-size: 0.875rem;
-  }
-
-  .link {
-    padding: 4px 0;
-    display: inline-block;
-    min-height: 44px;
-    line-height: 36px;
-  }
-}
-
-@media (max-width: 360px) {
-  .page {
-    padding: 12px;
-    padding-top: max(20px, env(safe-area-inset-top));
-  }
-
-  .card {
-    padding: 24px 16px;
-  }
-
-  .title {
-    font-size: 1.5rem;
-  }
-
-  .subtitle {
-    font-size: 0.875rem;
-    margin-bottom: 20px;
-  }
-}
-
-@media (max-height: 500px) and (orientation: landscape) {
-  .page {
-    align-items: flex-start;
-    padding-top: max(16px, env(safe-area-inset-top));
-    padding-bottom: 16px;
-    overflow-y: auto;
   }
 
   .card {
     margin: 0 auto;
-    padding: 24px 32px;
-    max-height: calc(100dvh - 32px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    width: 100%;
   }
 
-  .subtitle {
-    margin-bottom: 16px;
+  .cardLeft {
+    padding: 28px 20px;
   }
 
-  .form {
-    gap: 12px;
+  .title {
+    font-size: 1.125rem;
+    margin-bottom: 18px;
   }
 }
 
@@ -297,9 +232,5 @@
   .button,
   .link {
     transition: none;
-  }
-  .button:hover:not(:disabled),
-  .button:active:not(:disabled) {
-    transform: none;
   }
 }

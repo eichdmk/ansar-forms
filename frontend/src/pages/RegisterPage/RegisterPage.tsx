@@ -38,8 +38,8 @@ export function RegisterPage() {
         setLoading(true)
         try {
             await authAPI.register({ email, password })
-            const token = await authAPI.login({ email, password })
-            setValue(token)
+            const loginToken = await authAPI.login({ email, password })
+            setValue(loginToken)
             navigate("/forms", { replace: true })
         } catch (err) {
             const errRes = err as AxiosError<{ error?: string }>
@@ -53,50 +53,87 @@ export function RegisterPage() {
         }
     }
 
-    return (
-        <div className={styles.page}>
-            <div className={styles.card}>
-                <h1 className={styles.title}>Регистрация</h1>
-                <p className={styles.subtitle}>Создайте аккаунт, чтобы создавать и управлять формами</p>
-                <form className={styles.form} onSubmit={handleSubmit}>
-                    <input
-                        className={styles.input}
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Email"
-                        required
-                    />
-                    <input
-                        className={styles.input}
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Пароль"
-                        minLength={6}
-                        required
-                    />
-                    <input
-                        className={styles.input}
-                        type="password"
-                        value={passwordConfirm}
-                        onChange={(e) => setPasswordConfirm(e.target.value)}
-                        placeholder="Повторите пароль"
-                        minLength={6}
-                        required
-                    />
-                    <button className={styles.button} disabled={loading} type="submit">
-                        Зарегистрироваться
-                    </button>
-                    {error && <p className={styles.error}>{error}</p>}
-                </form>
-                <p className={styles.footer}>
-                    Уже есть аккаунт?{" "}
-                    <Link to="/login" className={styles.link}>
-                        Войти
-                    </Link>
-                </p>
+  return (
+    <div className={styles.page}>
+      <div className={styles.card}>
+        <div className={styles.cardLeft}>
+          <div className={styles.brand}>
+            <img className={styles.brandLogo} src="/logo.png" alt="Ansar Forms" />
+            <div className={styles.brandText}>
+              <div className={styles.brandName}>Ansar Forms</div>
+              <div className={styles.brandTagline}>Конструктор форм</div>
             </div>
+          </div>
+
+          <h1 className={styles.title}>Регистрация</h1>
+          <p className={styles.subtitle}>Создайте аккаунт, чтобы создавать формы и собирать ответы</p>
+
+          <form className={styles.form} onSubmit={handleSubmit}>
+            <div>
+              <label className={styles.label} htmlFor="reg-email">
+                Логин (email)
+              </label>
+              <input
+                id="reg-email"
+                className={styles.input}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Введите email"
+                autoComplete="email"
+                required
+              />
+            </div>
+            <div>
+              <label className={styles.label} htmlFor="reg-password">
+                Пароль
+              </label>
+              <input
+                id="reg-password"
+                className={styles.input}
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Введите пароль"
+                minLength={6}
+                autoComplete="new-password"
+                required
+              />
+            </div>
+            <div>
+              <label className={styles.label} htmlFor="reg-password-confirm">
+                Повторите пароль
+              </label>
+              <input
+                id="reg-password-confirm"
+                className={styles.input}
+                type="password"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                placeholder="Введите пароль ещё раз"
+                minLength={6}
+                autoComplete="new-password"
+                required
+              />
+            </div>
+            <button className={styles.button} disabled={loading} type="submit">
+              {loading ? "Регистрация…" : "Зарегистрироваться"}
+            </button>
+            {error && (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+            )}
+          </form>
+
+          <p className={styles.footer}>
+            Уже есть аккаунт?{" "}
+            <Link to="/login" className={styles.link}>
+              Войти
+            </Link>
+          </p>
         </div>
-    )
+      </div>
+    </div>
+  )
 }
