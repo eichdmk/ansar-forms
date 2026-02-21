@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 import { Link } from "react-router-dom"
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
@@ -6,7 +6,11 @@ import Placeholder from "@tiptap/extension-placeholder"
 import type { Editor } from "@tiptap/core"
 import { authAPI } from "../../api"
 import type { AxiosError } from "axios"
+import { useTermsStatus } from "../../contexts/TermsStatusContext"
+import type { TermsStatus } from "../../contexts/TermsStatusContext"
 import styles from "./AccountTermsPage.module.css"
+
+const AUTO_SAVE_DELAY_MS = 1500
 
 const HEADING_OPTIONS = [
   { value: "", label: "Обычный текст" },
@@ -91,12 +95,16 @@ function TermsToolbar({ editor }: { editor: Editor | null }) {
 }
 
 export function AccountTermsPage() {
+  const termsStatusCtx = useTermsStatus()
   const [termsText, setTermsText] = useState("")
   const [termsLoading, setTermsLoading] = useState(true)
   const [termsSaving, setTermsSaving] = useState(false)
   const [termsMessage, setTermsMessage] = useState("")
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const prevTermsLoading = useRef<boolean | null>(null)
   const [, setToolbarUpdate] = useState(0)
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const debounceReadyRef = useRef(false)
 
   const editor = useEditor({
     extensions: [
@@ -110,6 +118,24 @@ export function AccountTermsPage() {
       },
     },
   })
+
+  const saveTerms = useCallback(async () => {
+    if (!editor) return
+    setTermsSaving(true)
+    setTermsMessage("")
+    try {
+      const html = editor.getHTML()
+      await authAPI.updateTerms(html)
+      setHasUnsavedChanges(false)
+      setTermsMessage("Условия сохранены")
+      setTimeout(() => setTermsMessage(""), 3000)
+    } catch (err) {
+      const ax = err as AxiosError<{ error?: string }>
+      setTermsMessage(ax.response?.data?.error ?? "Не удалось сохранить")
+    } finally {
+      setTermsSaving(false)
+    }
+  }, [editor])
 
   useEffect(() => {
     setTermsLoading(true)
@@ -135,32 +161,54 @@ export function AccountTermsPage() {
     const justFinishedLoading = prevTermsLoading.current === true && termsLoading === false
     if (editor && justFinishedLoading) {
       editor.commands.setContent(termsText ?? "")
+      debounceReadyRef.current = false
+      const t = setTimeout(() => {
+        debounceReadyRef.current = true
+      }, 400)
+      return () => clearTimeout(t)
     }
     prevTermsLoading.current = termsLoading
   }, [termsLoading, editor, termsText])
 
-  async function handleSaveTerms(e: React.FormEvent) {
-    e.preventDefault()
+  useEffect(() => {
     if (!editor) return
-    setTermsSaving(true)
-    setTermsMessage("")
-    try {
-      const html = editor.getHTML()
-      await authAPI.updateTerms(html)
-      setTermsMessage("Условия сохранены")
-      setTimeout(() => setTermsMessage(""), 3000)
-    } catch (err) {
-      const ax = err as AxiosError<{ error?: string }>
-      setTermsMessage(ax.response?.data?.error ?? "Не удалось сохранить")
-    } finally {
-      setTermsSaving(false)
+    const onUpdate = () => {
+      if (!debounceReadyRef.current) return
+      setHasUnsavedChanges(true)
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+      saveTimeoutRef.current = setTimeout(() => {
+        saveTimeoutRef.current = null
+        saveTerms()
+      }, AUTO_SAVE_DELAY_MS)
     }
-  }
+    editor.on("update", onUpdate)
+    return () => {
+      editor.off("update", onUpdate)
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+        saveTimeoutRef.current = null
+      }
+    }
+  }, [editor, saveTerms])
+
+  useEffect(() => {
+    const setStatus = termsStatusCtx?.setTermsStatus
+    const headerStatus: TermsStatus = termsSaving
+      ? "Сохраняется…"
+      : hasUnsavedChanges
+        ? "Несохранено"
+        : "Сохранено"
+    setStatus?.(headerStatus)
+    return () => setStatus?.(null)
+  }, [termsSaving, hasUnsavedChanges, termsStatusCtx?.setTermsStatus])
 
   return (
     <div className={styles.page}>
       <div className={styles.wrap}>
         <h1 className={styles.title}>Условия использования</h1>
+        {termsMessage && termsMessage !== "Условия сохранены" && (
+          <p className={styles.message}>{termsMessage}</p>
+        )}
         <p className={styles.intro}>
           Применяются ко всем вашим формам. Отображаются респондентам при заполнении; по ним можно перейти по ссылке. Без заполненных условий форму нельзя опубликовать.
         </p>
@@ -168,24 +216,10 @@ export function AccountTermsPage() {
         {termsLoading ? (
           <p className={styles.loading}>Загрузка…</p>
         ) : (
-          <form onSubmit={handleSaveTerms}>
-            <div className={styles.termsEditorWrap}>
-              <TermsToolbar editor={editor} />
-              <EditorContent editor={editor} />
-            </div>
-            {termsMessage && (
-              <p className={termsMessage === "Условия сохранены" ? styles.termsSuccess : styles.message}>
-                {termsMessage}
-              </p>
-            )}
-            <button
-              type="submit"
-              className={styles.termsSaveBtn}
-              disabled={termsSaving}
-            >
-              {termsSaving ? "Сохранение…" : "Сохранить условия"}
-            </button>
-          </form>
+          <div className={styles.termsEditorWrap}>
+            <TermsToolbar editor={editor} />
+            <EditorContent editor={editor} />
+          </div>
         )}
 
         <p className={styles.backWrap}>

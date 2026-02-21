@@ -41,6 +41,8 @@
   font-size: 1rem;
   line-height: 1.75;
   color: var(--color-text);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .termsContent p {

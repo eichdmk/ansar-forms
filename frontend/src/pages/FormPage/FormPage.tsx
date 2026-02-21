@@ -112,8 +112,8 @@ export function FormsPage() {
             aria-label="Фильтр по владельцу"
           >
             <option value="all">Все</option>
-            <option value="owned">Мои</option>
-            <option value="shared">Совместный доступ</option>
+            <option value="owned">я владелец</option>
+            <option value="shared">не я владелец</option>
           </select>
         </div>
 

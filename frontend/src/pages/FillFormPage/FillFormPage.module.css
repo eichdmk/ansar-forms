@@ -285,6 +285,9 @@
   background: var(--color-accent-light);
   border: 1px solid var(--color-accent);
   border-radius: var(--radius);
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .termsAccept {
@@ -308,6 +311,9 @@
   font-size: 0.9375rem;
   color: var(--color-text);
   line-height: 1.45;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  min-width: 0;
 }
 
 .termsLink {

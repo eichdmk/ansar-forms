@@ -3,8 +3,9 @@ import { Outlet, Link, useNavigate, useLocation, useParams } from "react-router-
 import { useDispatch } from "react-redux"
 import { useAppSelector } from "../../hooks/useAppSelector"
 import { FormsSearchProvider, useFormsSearch } from "../../contexts/FormsSearchContext"
-import { formsAPI } from "../../api"
+import { useTermsStatus, TermsStatusProvider } from "../../contexts/TermsStatusContext"
 import { setCurrentForm, clearCurrentForm } from "../../store/slices/currentFormSlice"
+import { formsAPI } from "../../api"
 import type { AxiosError } from "axios"
 import styles from "./Layout.module.css"
 
@@ -14,8 +15,10 @@ function LayoutHeader() {
   const params = useParams()
   const dispatch = useDispatch()
   const { searchQuery, setSearchQuery } = useFormsSearch()
+  const termsStatusCtx = useTermsStatus()
   const formId = params.id
   const showSearch = location.pathname === "/forms"
+  const isAccountTermsPage = location.pathname === "/forms/account/terms"
   const isFormContext =
     formId &&
     (location.pathname.startsWith("/forms/edit/") ||
@@ -105,6 +108,20 @@ function LayoutHeader() {
         </Link>
       </div>
       <div className={styles.headerCenter}>
+        {isAccountTermsPage && termsStatusCtx?.termsStatus && (
+          <span
+            className={
+              termsStatusCtx.termsStatus === "Сохраняется…"
+                ? styles.termsStatusSaving
+                : termsStatusCtx.termsStatus === "Несохранено"
+                  ? styles.termsStatusUnsaved
+                  : styles.termsStatusSaved
+            }
+            role="status"
+          >
+            {termsStatusCtx.termsStatus}
+          </span>
+        )}
         {showSearch && (
           <>
             <div className={styles.searchWrap}>
@@ -238,12 +255,14 @@ function LayoutHeader() {
 export function Layout() {
   return (
     <FormsSearchProvider>
-      <div className={styles.layout}>
-        <LayoutHeader />
-        <main className={styles.main}>
-          <Outlet />
-        </main>
-      </div>
+      <TermsStatusProvider>
+        <div className={styles.layout}>
+          <LayoutHeader />
+          <main className={styles.main}>
+            <Outlet />
+          </main>
+        </div>
+      </TermsStatusProvider>
     </FormsSearchProvider>
   )
 }

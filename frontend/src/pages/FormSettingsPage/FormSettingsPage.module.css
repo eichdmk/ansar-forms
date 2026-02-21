@@ -68,6 +68,7 @@
   margin-bottom: 16px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  min-width: 0;
 }
 
 .termsToolbar {
@@ -129,6 +130,8 @@
   font-size: 0.9375rem;
   line-height: 1.65;
   color: var(--color-text);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .termsEditorContent:focus {
