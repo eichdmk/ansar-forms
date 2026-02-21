@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from "react"
+import { createContext, useContext, useState } from "react"
 
 export type TermsStatus = "Сохранено" | "Сохраняется…" | "Несохранено" | null
 
